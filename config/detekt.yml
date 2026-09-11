@@ -1,0 +1,130 @@
+# detekt 규칙 — 기본 설정 위에 이 프로젝트에서 실제로 문제가 됐던 것만 조정했다.
+# (buildUponDefaultConfig = true 이므로 여기 없는 규칙은 detekt 기본값을 따른다.)
+
+build:
+  maxIssues: 0
+
+complexity:
+  # Compose 화면 함수는 선언적이라 줄 수와 분기 수가 같이 커진다. 여기서 걸러야 할 건
+  # "읽기 어려운 로직"이지 "긴 UI 트리"가 아니다.
+  LongMethod:
+    active: true
+    threshold: 220
+    ignoreAnnotated: ['Composable']
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 26
+    ignoreSimpleWhenEntries: true
+    ignoreAnnotated: ['Composable']
+  LongParameterList:
+    active: true
+    functionThreshold: 9
+    constructorThreshold: 16
+    ignoreDefaultParameters: true
+    ignoreAnnotated: ['Composable', 'HiltViewModel']
+  ComplexCondition:
+    # 좌표 유효성처럼 조건 4~5개가 자연스러운 곳이 있다. 그 이상이면 이름을 붙여야 한다.
+    active: true
+    threshold: 6
+  TooManyFunctions:
+    # DAO 는 쿼리 하나가 함수 하나라 개수 자체가 문제되지 않는다.
+    active: true
+    thresholdInClasses: 60
+    thresholdInInterfaces: 50
+    thresholdInFiles: 80
+    ignorePrivate: true
+    ignoreAnnotatedFunctions: ['Composable']
+  NestedBlockDepth:
+    active: true
+    threshold: 6
+  LargeClass:
+    active: true
+    threshold: 800
+
+style:
+  MagicNumber:
+    # UI 코드의 dp·알파값까지 상수로 빼면 오히려 읽기 어렵다.
+    active: false
+  MaxLineLength:
+    # 줄 길이는 ktlint 가 .editorconfig 로 관리한다.
+    active: false
+  ReturnCount:
+    # 음성 규칙 해석처럼 "조건에 걸리면 즉시 결론"이 반복되는 곳은 early return 이 가장 읽기 쉽다.
+    active: true
+    max: 16
+    excludeGuardClauses: true
+  LoopWithTooManyJumpStatements:
+    active: true
+    maxJumpCount: 4
+  DestructuringDeclarationWithTooManyEntries:
+    active: true
+    maxDestructuringEntries: 4
+  UnusedPrivateMember:
+    active: true
+    # @Preview 함수는 아무도 호출하지 않는 게 정상이다.
+    ignoreAnnotated: ['Preview']
+  UnusedImports:
+    active: true
+  WildcardImport:
+    active: true
+  ForbiddenComment:
+    # 남겨 둔 표시는 실제로 남은 일이라는 뜻이어야 한다.
+    active: true
+    comments:
+      - reason: '아직 손대지 않은 일이 커밋에 섞여 들어왔다.'
+        value: 'FIXME:'
+      - reason: '디버깅 흔적으로 보인다.'
+        value: 'XXX:'
+  UnnecessaryAbstractClass:
+    active: false
+  FunctionOnlyReturningConstant:
+    active: false
+
+potential-bugs:
+  UnusedUnaryOperator:
+    # Compose keyframes DSL(`-2f at 400 using ...`)을 미사용으로 오판한다.
+    active: false
+
+empty-blocks:
+  EmptyFunctionBlock:
+    # 리스너 인터페이스는 안 쓰는 콜백도 반드시 구현해야 한다.
+    active: true
+    ignoreOverridden: true
+
+naming:
+  FunctionNaming:
+    active: true
+    ignoreAnnotated: ['Composable']
+  TopLevelPropertyNaming:
+    active: true
+    constantPattern: '[A-Z][_A-Z0-9]*'
+    privatePropertyPattern: '_?[A-Za-z][_A-Za-z0-9]*'
+  MatchingDeclarationName:
+    # 한 파일에 화면과 그 부속 컴포저블을 함께 두는 편이 찾기 쉽다.
+    active: false
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: true
+    exceptionNames:
+      - 'Error'
+      - 'Throwable'
+  SwallowedException:
+    # 카메라·지도·파일 SDK 는 실패해도 앱이 계속 굴러가야 해서 의도적으로 삼키는 지점이 많다.
+    active: false
+  TooGenericExceptionThrown:
+    active: true
+
+performance:
+  SpreadOperator:
+    active: false
+
+coroutines:
+  InjectDispatcher:
+    # 단일 모듈 앱이라 디스패처를 주입해도 갈아 끼울 곳이 없다. 테스트는 Robolectric 과
+    # 인메모리 Room 으로 실제 동작을 돌린다.
+    active: false
+  GlobalCoroutineUsage:
+    active: true
+  SuspendFunWithFlowReturnType:
+    active: true

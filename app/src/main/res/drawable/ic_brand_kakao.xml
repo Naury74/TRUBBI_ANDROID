@@ -1,0 +1,11 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="48" android:viewportHeight="48">
+    <path android:fillColor="#FEE500"
+        android:pathData="M24,24m-24,0a24,24 0 1,0 48,0a24,24 0 1,0 -48,0" />
+    <!-- KakaoTalk bubble, shrunk toward the centre so it sits inside the disc -->
+    <group android:pivotX="24" android:pivotY="26" android:scaleX="0.64" android:scaleY="0.64">
+        <path android:fillColor="#3C1E1E"
+            android:pathData="M24,12C15.2,12 8,17.6 8,24.5C8,28.9 10.9,32.7 15.3,34.9L13.5,41.4C13.3,42 13.9,42.5 14.4,42.2L22,37.1C22.6,37.2 23.3,37.2 24,37.2C32.8,37.2 40,31.6 40,24.5C40,17.6 32.8,12 24,12Z" />
+    </group>
+</vector>

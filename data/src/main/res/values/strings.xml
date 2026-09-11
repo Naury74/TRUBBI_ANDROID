@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ─────────────────────────── 여정 · 정차지 표시 ─────────────────────────── -->
+    <string name="stop_default_name">%1$s지</string>
+    <string name="journey_untitled">새 여정</string>
+    <string name="journey_route">%1$s → %2$s</string>
+    <string name="journey_route_more">%1$s → %2$s 외 %3$d곳</string>
+    <!-- ─────────────────────────── 사진 품질 · 워터마크 · 편집 도구 ─────────────────────────── -->
+    <string name="quality_original">원본</string>
+    <string name="quality_normal">일반 압축</string>
+    <string name="quality_small">저용량</string>
+    <!-- ─────────────────────────── 백업 · 복원 ─────────────────────────── -->
+    <string name="backup_cannot_open_target">저장 위치를 열 수 없습니다</string>
+    <string name="backup_cannot_open_file">백업 파일을 열 수 없습니다</string>
+    <string name="backup_empty">백업 데이터가 없습니다</string>
+    <string name="default_title_document">%1$s 문서</string>
+    <string name="page_index">%1$d페이지</string>
+    <string name="auth_not_signed_in">로그인 상태가 아닙니다</string>
+    <string name="auth_sign_in_required">로그인이 필요합니다</string>
+    <!-- ─────────────────────────── 기본 용도 목록 ─────────────────────────── -->
+    <!-- 설정에서 사용자가 추가·삭제하는 용도의 초기값. 첫 실행 때 이 목록이 저장된다. -->
+    <string-array name="default_purposes">
+        <item>운송장</item>
+        <item>상차</item>
+        <item>하차</item>
+        <item>입고</item>
+        <item>출고</item>
+        <item>정비</item>
+        <item>타이어</item>
+        <item>파손증빙</item>
+        <item>기타</item>
+    </string-array>
+    <!-- 여정의 도착·작업 증빙과 직접 연결돼 있어 지울 수 없는 용도. -->
+    <string-array name="protected_purposes">
+        <item>상차</item>
+        <item>하차</item>
+    </string-array>
+</resources>

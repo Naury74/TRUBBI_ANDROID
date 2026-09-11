@@ -1,0 +1,979 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- English strings. Korean (the default) lives in values/strings.xml. -->
+<resources>
+
+    <!-- ─────────────────────────── App / widgets ─────────────────────────── -->
+    <string name="widget_quick_capture_desc">Opens the camera straight away to save a work photo.</string>
+    <string name="widget_barcode_label">TRUBBI Barcode Scan</string>
+    <string name="widget_barcode_desc">Opens the barcode / waybill scanner.</string>
+    <string name="widget_barcode_view_desc">Shows a recently saved barcode so it can be scanned from the home screen.</string>
+    <string name="widget_journey_desc">Follow the running journey from the home screen, advance a step or take a photo.</string>
+    <string name="widget_journey_map_desc">Shows the driven route and current position of the running journey on a home-screen map.</string>
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- ─────────────────────────── Journey report (PDF) ─────────────────────────── -->
+    <string name="report_subtitle">TRUBBI trip report · generated %1$s</string>
+    <string name="report_period">Period</string>
+    <string name="report_distance">Distance</string>
+    <string name="report_cargo">Cargo</string>
+    <string name="report_records">Records</string>
+    <string name="report_records_value">%1$d total (%2$d with photos)</string>
+    <string name="report_total_expense">Total cost</string>
+    <string name="report_freight">Freight</string>
+    <string name="report_net_profit">Est. net</string>
+    <string name="report_section_stops">Stops</string>
+    <string name="report_section_expenses">Expenses</string>
+    <string name="report_section_issues">Issues (%1$d)</string>
+    <string name="report_section_timeline">Timeline</string>
+    <string name="report_section_photos">Evidence photos</string>
+    <string name="report_stop_arrived">Arrived %1$s</string>
+    <string name="report_stop_waited">Waited %1$d min</string>
+    <string name="report_stop_completed">Done %1$s</string>
+    <string name="report_expense_line">%1$s ₩%2$s</string>
+    <string name="report_file_name">TRUBBI_report_%1$s.pdf</string>
+    <string name="amount_krw">₩%1$s</string>
+
+    <!-- ─────────────────────────── Journey tracking notifications / voice ─────────────────────────── -->
+    <string name="notif_channel_journey_name">Journey in progress</string>
+    <string name="notif_channel_journey_desc">Shows the journey tracking status</string>
+    <string name="notif_channel_arrival_name">Arrival alerts</string>
+    <string name="notif_channel_arrival_desc">Alerts you when you get near a stop</string>
+    <string name="notif_journey_title">Journey in progress</string>
+    <string name="notif_journey_recording">Recording your journey</string>
+    <string name="notif_journey_all_done">All stops done — wrap up the journey</string>
+    <string name="notif_journey_next">Next: %1$s</string>
+    <string name="notif_action_arrive">Arrive</string>
+    <string name="notif_action_capture">Capture</string>
+    <string name="notif_action_log_arrival">Log arrival</string>
+    <string name="notif_arrival_title">Almost at %1$s</string>
+    <string name="notif_arrival_text">Have you arrived at the %1$s point?</string>
+    <string name="voice_arrival_logged">Arrival logged. Nice work.</string>
+    <string name="voice_work_started">%1$s start logged.</string>
+    <string name="voice_work_done">%1$s done. Nice work.</string>
+    <string name="voice_near_stop">You are near %1$s. Tap Arrive when you get there.</string>
+    <string name="voice_approaching">About %2$s left to %1$s. Almost there.</string>
+
+    <!-- ─────────────────────────── Share body / tabs ─────────────────────────── -->
+    <string name="share_field_purpose">Purpose: %1$s</string>
+    <string name="share_field_barcode">Barcode: %1$s</string>
+    <string name="share_field_location">Location: %1$s</string>
+    <string name="share_field_memo">Memo: %1$s</string>
+    <string name="share_field_tags">Tags: %1$s</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_settings">Settings</string>
+
+    <!-- ─────────────────────────── Common UI ─────────────────────────── -->
+    <string name="photo_count">%1$d photos</string>
+    <string name="camera_permission_title">Camera permission needed</string>
+    <string name="camera_permission_body">Allow camera access to take work photos and scan barcodes.</string>
+    <string name="camera_permission_allow">Allow</string>
+    <string name="cd_profile">Profile</string>
+    <string name="cd_barcode">Barcode %1$s</string>
+    <string name="barcode_render_failed">This barcode could not be rendered</string>
+    <string name="barcode_share_image">Share barcode image</string>
+
+    <!-- ─────────────────────────── Feed / memo ─────────────────────────── -->
+    <string name="feed_pdf_pages">PDF · %1$d p</string>
+    <string name="feed_batch_fallback_title">Batch</string>
+    <string name="feed_batch_panel_title">%1$s · %2$d photos (pick individually)</string>
+    <string name="memo_empty">No content</string>
+
+    <string name="weather_current_location">Current location</string>
+    <string name="weather_no_location">No location</string>
+
+    <!-- ─────────────────────────── Calendar ─────────────────────────── -->
+    <string name="calendar_month_pattern">MMMM yyyy</string>
+    <string name="calendar_reset">Reset</string>
+    <string name="weekday_sun">S</string>
+    <string name="weekday_mon">M</string>
+    <string name="weekday_tue">T</string>
+    <string name="weekday_wed">W</string>
+    <string name="weekday_thu">T</string>
+    <string name="weekday_fri">F</string>
+    <string name="weekday_sat">S</string>
+
+    <!-- ─────────────────────────── Profile / account ─────────────────────────── -->
+    <string name="membership_google">Signed in with Google</string>
+    <string name="membership_kakao">Signed in with Kakao</string>
+    <string name="membership_naver">Signed in with Naver</string>
+    <string name="membership_email">Email account</string>
+    <string name="membership_default">TRUBBI member</string>
+    <string name="profile_no_name">No name</string>
+    <string name="profile_account_type">Account type</string>
+    <string name="profile_type_sns">Social account</string>
+    <string name="profile_type_email">Email account</string>
+    <string name="profile_verified_email">Verified email</string>
+    <string name="profile_verified">Verified</string>
+    <string name="profile_unverified">Not verified</string>
+    <string name="profile_change_photo">Change profile photo</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- ─────────────────────────── Map ─────────────────────────── -->
+    <string name="map_load_failed">Could not load the map</string>
+    <string name="map_location_fallback">Location</string>
+    <string name="map_open_external">Open in a maps app</string>
+
+    <!-- ─────────────────────────── Widgets / common actions ─────────────────────────── -->
+    <string name="widget_no_active_journey">No journey running</string>
+    <string name="widget_start_journey">Start a journey</string>
+    <string name="widget_tap_to_open">Tap to open the app</string>
+    <string name="widget_all_stops_done">All stops done</string>
+    <string name="widget_finish_prompt">Wrap up the journey</string>
+    <string name="action_complete_journey">Finish journey</string>
+    <string name="action_start_work">Start work</string>
+    <string name="action_finish_work">Finish work</string>
+    <string name="action_next">Next</string>
+
+    <!-- ─────────────────────────── Floating quick launcher ─────────────────────────── -->
+    <string name="floating_menu_title">Quick actions</string>
+    <string name="floating_next_step">Next step</string>
+    <string name="floating_capture">Capture now</string>
+    <string name="floating_scan_document">Scan document</string>
+    <string name="floating_barcode">Barcode</string>
+    <string name="floating_memo">Memo</string>
+    <string name="floating_open_app">Open app</string>
+    <string name="floating_turn_off">Turn off</string>
+    <string name="floating_journey_running">Journey in progress</string>
+    <string name="floating_current_stage">Now · %1$s</string>
+    <string name="floating_in_progress">In progress</string>
+    <string name="floating_view_journey">Open journey</string>
+    <string name="floating_arrive_at">Arrive at %1$s</string>
+    <string name="floating_channel_name">Quick-action bubble</string>
+    <string name="floating_notif_title">Quick-action bubble is on</string>
+    <string name="floating_notif_text">Start a photo, scan, barcode or memo from anywhere</string>
+
+    <!-- ─────────────────────────── Stop reorder sheet ─────────────────────────── -->
+    <string name="reorder_title">Stop order</string>
+    <string name="reorder_listening">Listening… say “X first”</string>
+    <string name="reorder_hint">Drag the handle to reorder, or say “X first” with the mic.</string>
+    <string name="reorder_empty">No stops left to reorder.</string>
+    <string name="reorder_voice_prompt">Say which stop should come first, like “X first”.</string>
+    <string name="reorder_moved_first">Moved %1$s to the front.</string>
+    <string name="reorder_already_first">%1$s is already first.</string>
+    <string name="reorder_not_found">Could not find “%1$s”. Drag it instead, or say it again.</string>
+    <string name="cd_reorder_handle">Reorder</string>
+
+    <!-- ─────────────────────────── Common actions ─────────────────────────── -->
+    <string name="action_close">Close</string>
+    <string name="action_done">Done</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_add_stop">Add stop</string>
+    <string name="action_by_voice">By voice</string>
+    <string name="action_listening">Listening…</string>
+
+    <!-- ─────────────────────────── Expense / issue entry ─────────────────────────── -->
+    <string name="expense_add_title">Add expense</string>
+    <string name="expense_receipt_detected">Receipt read</string>
+    <string name="expense_amount_hint">Amount</string>
+    <string name="expense_vendor_hint">Where (optional) — station, diner, …</string>
+    <string name="expense_memo_hint">Note (optional)</string>
+    <string name="expense_capture_receipt">Fill in from a receipt photo</string>
+    <string name="expense_save_amount">Save ₩%1$s</string>
+    <string name="issue_add_title">Log an issue</string>
+    <string name="issue_auto_note">The time and your location are recorded automatically</string>
+    <string name="issue_description_hint">Describe what happened (required)</string>
+
+    <!-- ─────────────────────────── Album filters / sorting / search ─────────────────────────── -->
+    <string name="album_filter_all">All</string>
+    <string name="album_filter_favorite">Favorites</string>
+    <string name="sort_newest">Newest</string>
+    <string name="sort_oldest">Oldest</string>
+    <string name="sort_purpose">By purpose</string>
+    <string name="search_field_name">Name</string>
+    <string name="search_field_purpose">Purpose</string>
+    <string name="search_field_memo">Memo</string>
+    <string name="search_field_tag">Tag</string>
+    <string name="search_field_date">Date</string>
+    <string name="search_field_type">Type</string>
+    <string name="search_field_barcode">Barcode</string>
+    <string name="search_field_content">Content</string>
+
+    <!-- ─────────────────────────── Album screen ─────────────────────────── -->
+    <string name="album_title">Album</string>
+    <string name="album_pick_hint">Pick a record on the left</string>
+    <string name="album_empty">No records saved yet</string>
+    <string name="search_no_results">No results</string>
+    <string name="search_result_count">%1$d results</string>
+    <string name="album_search_hint">Search purpose, date, type, memo, name</string>
+    <string name="selected_count">%1$d selected</string>
+    <string name="count_items">%1$d items</string>
+    <string name="filter_section_type">Type</string>
+    <string name="filter_section_purpose">Purpose</string>
+    <string name="filter_section_sort">Sort</string>
+    <string name="filter_section_grid">Grid</string>
+    <string name="grid_auto">Auto</string>
+    <string name="grid_columns">%1$d cols</string>
+    <string name="action_share">Share</string>
+    <string name="action_clear">Clear</string>
+
+    <!-- ─────────────────────────── Record detail ─────────────────────────── -->
+    <string name="detail_tap_to_enlarge">Tap to enlarge</string>
+    <string name="detail_enlarge">Enlarge</string>
+    <string name="detail_copy_value">Copy value</string>
+    <string name="detail_edit_image">Edit image</string>
+    <string name="detail_info_job_date">Work date</string>
+    <string name="detail_info_saved_at">Saved at</string>
+    <string name="detail_info_size">Size</string>
+    <string name="detail_info_location">Location</string>
+    <string name="detail_no_content">Nothing here yet</string>
+    <string name="detail_edit_memo">Edit memo</string>
+    <string name="detail_memo_hint">Write a memo</string>
+    <string name="detail_tags_label">Tags (comma separated)</string>
+    <string name="detail_tags_hint">e.g. tire, check, Yongin</string>
+    <string name="detail_save_changes">Save changes</string>
+    <string name="toast_saved">Saved</string>
+    <string name="toast_copied">Copied</string>
+    <string name="action_share_long">Share</string>
+
+    <!-- ─────────────────────────── Home greeting / journey announcements ─────────────────────────── -->
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_afternoon">Drive safe today</string>
+    <string name="greeting_evening">Thanks for the hard work today</string>
+    <string name="greeting_with_name">%1$s, %2$s 👋</string>
+    <string name="greeting_plain">%1$s 👋</string>
+    <string name="name_prefix">%1$s, </string>
+    <string name="safety_rain"> Watch out for wet roads!</string>
+    <string name="safety_snow"> Keep extra distance on snow!</string>
+    <string name="safety_fog"> Fog ahead — headlights on!</string>
+    <string name="safety_late_night"> Pull over if you get drowsy!</string>
+    <string name="safety_night"> Night driving — safety first!</string>
+    <string name="start_message">%1$sdrive safe out there!%2$s</string>
+    <string name="announce_route_from_to">Heading from %1$s to %2$s. </string>
+    <string name="announce_route_to">Heading to %1$s. </string>
+    <string name="announce_route_from">Starting from %1$s. </string>
+    <string name="announce_via">Via %1$s. </string>
+    <string name="announce_location">You are at %1$s. </string>
+    <string name="announce_weather">Weather: %1$s, %2$d degrees. </string>
+    <string name="announce_start">Journey started. %1$s%2$s%3$s%4$sdrive safe!</string>
+    <string name="journey_start_title">Journey started!</string>
+    <string name="journey_all_stops_done_sub">Every stop is done — you can finish the journey</string>
+    <string name="voice_all_stops_done">%1$s done. That was the last stop.</string>
+    <string name="confirm_work_started">Started %1$s</string>
+    <string name="confirm_work_done">%1$s done!</string>
+    <string name="journey_complete_title">Journey complete 👏</string>
+    <string name="voice_journey_complete">Journey complete. Great work today.</string>
+    <string name="voice_stops_added">Added stops: %1$s.</string>
+    <string name="voice_stops_added_plain">Stops added.</string>
+    <string name="imported_photo_title">Imported photo</string>
+
+    <!-- ─────────────────────────── Journey map / history / place search ─────────────────────────── -->
+    <string name="action_fullscreen">Full screen</string>
+    <string name="marker_barcode_short">B</string>
+    <string name="marker_memo_short">M</string>
+    <string name="marker_document_short">D</string>
+    <string name="marker_etc_short">·</string>
+    <string name="journey_history_title">Past journeys</string>
+    <string name="journey_history_empty">No completed journeys yet</string>
+    <string name="journey_stop_count">%1$d stops</string>
+    <string name="place_search_hint">Search a place, building or address</string>
+    <string name="place_search_voice">Voice search</string>
+    <string name="map_legend_route">Route</string>
+    <string name="map_legend_current_stop">Current stop</string>
+    <string name="map_legend_stops">Stops</string>
+    <string name="map_legend_here">You</string>
+    <string name="place_search_empty">No matches</string>
+    <string name="place_search_count">%1$d results · tap for actions</string>
+    <string name="place_searching">Looking for “%1$s”…</string>
+    <string name="place_add_to_journey">Add to the running journey</string>
+    <string name="place_add_pickup">Add as pickup</string>
+    <string name="place_add_dropoff">Add as dropoff</string>
+    <string name="place_or_start_new">Or start a new journey</string>
+    <string name="place_start_journey_here">Start a journey here</string>
+    <string name="place_depart_here">Depart from here</string>
+    <string name="place_arrive_here">Arrive here</string>
+    <string name="missing_evidence_title">Some evidence is missing</string>
+    <string name="missing_evidence_message">%1$s
+
+Finish the journey anyway?</string>
+    <string name="action_complete_anyway">Finish anyway</string>
+    <string name="action_add_later">Add later</string>
+    <string name="action_cancel_journey">Cancel journey</string>
+    <string name="journey_cancel_message">Cancel this journey? Saved records stay as they are.</string>
+    <string name="stop_delete_title">Delete stop</string>
+    <string name="stop_delete_message">Delete the stop “%1$s”?</string>
+    <string name="stop_name_placeholder">e.g. Busan New Port Berth 3</string>
+    <string name="action_next_stop">Next</string>
+    <string name="action_arrive_at">Arrive at %1$s</string>
+
+    <!-- ─────────────────────────── Home journey card / arrival prompt ─────────────────────────── -->
+    <string name="arrival_voice_hint">Say “start” or “wait”.</string>
+    <string name="arrival_voice_prompt">You have arrived at %1$s. Start %2$s now? Say “start” or “wait”.</string>
+    <string name="arrival_title">Arrived at %1$s!</string>
+    <string name="arrival_question">Start %1$s now?</string>
+    <string name="arrival_hint">Say “start” or “wait”, or tap a button below</string>
+    <string name="action_wait">Wait a bit</string>
+    <string name="journey_stop_auto_note">Stops are logged automatically from your position when you arrive</string>
+    <string name="action_reorder_stops">Reorder stops</string>
+    <string name="action_arrive_pickup">Arrived at pickup</string>
+    <string name="action_arrive_dropoff">Arrived at dropoff</string>
+    <string name="action_go_next_stop">On to the next stop</string>
+    <string name="action_stops">Stops</string>
+    <string name="action_detail">Details</string>
+    <string name="action_add">Add</string>
+    <string name="record_count">%1$d records</string>
+    <string name="stop_waiting_since">Waiting %1$s · arrived %2$s</string>
+    <string name="stop_working_for">%1$s for %2$s</string>
+    <string name="stop_waited_suffix"> · waited %1$s</string>
+    <string name="duration_hour_minute">%1$dh %2$dm</string>
+    <string name="duration_minute">%1$dm</string>
+    <string name="badge_in_progress">Running</string>
+    <string name="journey_start_cta">Start a journey</string>
+    <string name="journey_start_cta_sub">One tap to start — every arrival is logged for you</string>
+    <string name="date_month_day_pattern">MMM d</string>
+    <string name="journey_completed_at">Finished %1$s</string>
+    <string name="wizard_pickup_prompt">Say the pickup place</string>
+    <string name="wizard_dropoff_prompt">Say the dropoff place</string>
+    <string name="journey_sheet_note">You can start with nothing filled in — arrivals are logged from your position</string>
+    <string name="field_pickup_optional">Pickup (optional)</string>
+    <string name="field_dropoff_optional">Dropoff (optional)</string>
+    <string name="frequent_recent_stops">Frequent · recent stops</string>
+    <string name="action_start_journey">Start journey</string>
+    <string name="action_voice_input">Voice input</string>
+
+    <!-- ─────────────────────────── Voice answering ─────────────────────────── -->
+    <string name="arrival_listening">🎤 Listening — say “start” or “wait”</string>
+    <string name="action_speak_again">🎤 Say it again</string>
+
+    <string name="crop_free">Free</string>
+    <string name="crop_receipt">Receipt</string>
+    <string name="editor_tool_adjust">Adjust</string>
+    <string name="editor_tool_crop">Crop</string>
+    <string name="editor_tool_redact">Redact</string>
+    <string name="redact_mosaic">Mosaic</string>
+    <string name="redact_blur">Blur</string>
+    <string name="video_tool_trim">Trim</string>
+    <string name="video_tool_crop">Aspect</string>
+    <string name="video_tool_rotate">Rotate</string>
+    <string name="video_tool_speed">Speed</string>
+    <string name="video_tool_audio">Audio</string>
+    <string name="video_tool_quality">Quality</string>
+    <string name="video_export_failed">Export failed</string>
+
+    <string name="backup_done">Backed up %1$d records and %2$d files</string>
+    <string name="backup_failed">Backup failed: %1$s</string>
+    <string name="restore_done">Restored %1$d records</string>
+    <string name="restore_failed">Restore failed: %1$s</string>
+    <string name="backup_in_progress">Backing up…</string>
+    <string name="restore_in_progress">Restoring…</string>
+
+    <!-- ─────────────────────────── Quick capture notification / widgets ─────────────────────────── -->
+    <string name="quick_notif_channel">Quick capture</string>
+    <string name="quick_notif_channel_desc">Start a photo, scan, barcode or memo from the notification shade</string>
+    <string name="quick_notif_text">Photo · document · barcode · memo</string>
+    <string name="barcode_widget_none">No saved barcode</string>
+    <string name="barcode_widget_tap_scan">Tap to scan</string>
+
+    <!-- ─────────────────────────── Default names / notices ─────────────────────────── -->
+    <string name="default_title_photo">%1$s photo</string>
+    <string name="default_title_batch">%1$s batch (%2$d)</string>
+    <string name="default_title_video">%1$s video</string>
+    <string name="record_not_found">Record not found</string>
+    <string name="viewer_no_image">No image</string>
+    <string name="pdf_cannot_open">Could not open this document</string>
+    <string name="press_back_again">Press back again to exit</string>
+    <string name="default_driver_name">Driver</string>
+    <string name="quickdock_title">Quick actions</string>
+    <string name="action_place_search">Place search</string>
+    <string name="action_search">Search</string>
+    <string name="search_hint">Search title, memo, tag, barcode, location</string>
+    <string name="action_confirm">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="field_name">Name</string>
+
+
+
+    <!-- ─────────────────────────── 비율 · 화질 표기 ─────────────────────────── -->
+    <string name="crop_square">1:1</string>
+    <string name="crop_4_3">4:3</string>
+    <string name="crop_16_9">16:9</string>
+    <string name="crop_9_16">9:16</string>
+    <string name="video_quality_hd">HD 720p</string>
+    <string name="video_quality_sd">SD 480p</string>
+
+    <!-- ─────────────────────────── Settings screen ─────────────────────────── -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_account">Account · cloud backup</string>
+    <string name="settings_sign_in">Sign in / backup</string>
+    <string name="settings_sign_in_sub">Signing in turns on cloud backup (optional)</string>
+    <string name="settings_section_profile">Profile</string>
+    <string name="settings_section_theme">Theme</string>
+    <string name="settings_theme_row">App theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="settings_section_capture">Capture / saving</string>
+    <string name="settings_default_purpose">Default purpose</string>
+    <string name="settings_save_location">Save location</string>
+    <string name="settings_autosave">Save right after capture</string>
+    <string name="settings_edit_after_capture">Edit right after capture</string>
+    <string name="settings_section_watermark">Share watermark defaults</string>
+    <string name="watermark_field_date">Date</string>
+    <string name="watermark_field_purpose">Purpose</string>
+    <string name="watermark_field_location">Location</string>
+    <string name="watermark_field_name">Saved name</string>
+    <string name="watermark_field_custom">Custom text</string>
+    <string name="settings_section_journey">Journey</string>
+    <string name="settings_arrival_radius">Arrival alert radius</string>
+    <string name="settings_arrival_radius_sub">Alerts you when you get near a stop</string>
+    <string name="settings_voice_guide">Voice guidance</string>
+    <string name="settings_cloud_voice">High-quality voice (online)</string>
+    <string name="settings_floating_bubble">Floating bubble (anywhere)</string>
+    <string name="settings_floating_bubble_sub">Start a photo, scan, barcode or memo outside the app</string>
+    <string name="settings_journey_control">Show journey control</string>
+    <string name="settings_journey_control_sub">Adds the next-step and finish actions to the bubble</string>
+    <string name="settings_quick_notification">Quick capture notification</string>
+    <string name="settings_quick_notification_sub">Start a photo, scan, barcode or memo from the shade (no permission needed)</string>
+    <string name="settings_section_purposes">Purposes (tags)</string>
+    <string name="settings_manage_purposes">Manage purposes</string>
+    <string name="settings_manage_purposes_sub">Add, remove, reorder (%1$d)</string>
+    <string name="settings_section_photo_quality">Photo quality</string>
+    <string name="settings_save_quality">Saved quality</string>
+    <string name="settings_section_backup">Backup / restore</string>
+    <string name="settings_export_backup">Export backup (ZIP)</string>
+    <string name="settings_export_backup_sub">Save records, photos and contacts as a ZIP</string>
+    <string name="settings_import_backup">Import backup (restore)</string>
+    <string name="settings_import_backup_sub">Restore records from a ZIP backup</string>
+    <string name="settings_section_manage">Manage</string>
+    <string name="settings_contacts">Contacts</string>
+    <string name="settings_contacts_sub">Import and manage work contacts</string>
+    <string name="settings_widgets">Widgets</string>
+    <string name="settings_widgets_sub">Add the capture / barcode widgets to your home screen</string>
+    <string name="settings_footer">TRUBBI v1.0 · a trucker\'s record keeper</string>
+
+    <!-- ─────────────────────────── Purpose management ─────────────────────────── -->
+    <string name="purposes_intro_1">Manage the purposes used when saving. Drag the handle to reorder. </string>
+    <string name="purposes_intro_2">Loading and Unloading are tied to journeys and cannot be removed. Removing a purpose does not change records you already saved.</string>
+    <string name="purposes_cannot_delete">Cannot delete</string>
+    <string name="purposes_add_new">Add a purpose</string>
+    <string name="purposes_reset">Reset to defaults</string>
+
+    <!-- ─────────────────────────── Calendar screen ─────────────────────────── -->
+    <string name="calendar_title">Calendar</string>
+    <string name="calendar_day_records">Records for %1$d/%2$d</string>
+    <string name="calendar_day_empty">Nothing saved on this date</string>
+    <string name="calendar_empty">No records</string>
+
+    <!-- ─────────────────────────── Barcode screen ─────────────────────────── -->
+    <string name="barcode_default_title">%1$s barcode %2$s</string>
+    <string name="barcode_recognized">Scanned code</string>
+    <string name="barcode_name_hint">e.g. Seongnam depot waybill</string>
+    <string name="barcode_rescan">Scan again</string>
+    <string name="barcode_manual_entry">Enter a barcode</string>
+    <string name="barcode_value_label">Code value</string>
+    <string name="barcode_name_optional">Name (optional)</string>
+
+    <!-- ─────────────────────────── Memo editor ─────────────────────────── -->
+    <string name="memo_edit_title">Edit memo</string>
+    <string name="memo_new_title">New memo</string>
+    <string name="memo_format_char">A</string>
+    <string name="memo_group_text">Text</string>
+    <string name="memo_group_highlight">Highlight</string>
+    <string name="memo_group_paragraph">Paragraph</string>
+    <string name="memo_insert_image">Image</string>
+    <string name="memo_insert_table">Table</string>
+    <string name="memo_table_add_row">Row+</string>
+    <string name="memo_table_add_column">Col+</string>
+    <string name="memo_body_hint">Write something</string>
+
+    <!-- ─────────────────────────── Image editor ─────────────────────────── -->
+    <string name="editor_title_apply">Edit and apply</string>
+    <string name="editor_title_photo">Edit photo</string>
+    <string name="editor_processing">Working…</string>
+    <string name="action_apply">Apply</string>
+    <string name="editor_load_failed">Could not load this image</string>
+    <string name="editor_save_title">Save edit</string>
+    <string name="editor_save_message">Save the changes as a new image? The original is kept as it is.</string>
+    <string name="editor_brightness">Brightness</string>
+    <string name="editor_contrast">Contrast</string>
+    <string name="editor_crop_hint">Pick a ratio, or drag the corner handles to set the area</string>
+    <string name="editor_redact_hint">Drag over what you want hidden (personal data, plate numbers…)</string>
+
+    <!-- ─────────────────────────── Video editor ─────────────────────────── -->
+    <string name="video_editor_title">Edit video</string>
+    <string name="video_saving">Saving…</string>
+    <string name="video_exporting">Exporting %1$d%%</string>
+    <string name="video_trim_hint">Drag the ends to set the range, drag the middle to move it</string>
+    <string name="video_length">Length %1$s</string>
+    <string name="video_crop_hint">Pick a ratio, or drag the corners in Free</string>
+    <string name="video_speed_hint">Pick a playback speed (audio follows)</string>
+    <string name="video_muted">Muted — saved without sound</string>
+    <string name="video_unmuted">Sound on — tap to mute</string>
+    <string name="video_quality_hint">Pick the export quality (lower means a smaller file)</string>
+
+    <!-- ─────────────────────────── Welcome / onboarding ─────────────────────────── -->
+    <string name="welcome_start">Get started</string>
+    <string name="welcome_tagline">A trucker\'s record keeper</string>
+    <string name="welcome_sub">Keep every moment of a job together in TRUBBI</string>
+    <string name="welcome_point1_title">Journey log</string>
+    <string name="welcome_point1_sub">From departure to arrival, logged for you</string>
+    <string name="welcome_point2_title">Evidence · cost · report</string>
+    <string name="welcome_point2_sub">Photos and receipts collected into one PDF</string>
+    <string name="welcome_point3_title">Cloud backup</string>
+    <string name="welcome_point3_sub">Carry it over when you change phones</string>
+    <string name="welcome_sign_in_hint">Sign in or create an account to begin</string>
+    <string name="onboarding_page1_title">Departure to arrival, in one flow</string>
+    <string name="onboarding_page1_body">Start a journey and the steps, places and times are logged for you. Your voice works too.</string>
+    <string name="onboarding_page2_title">Evidence by itself, settlement made simple</string>
+    <string name="onboarding_page2_body">Pickup and dropoff photos, receipts and costs collected into a PDF report. Cloud backup carries it across phones.</string>
+    <string name="action_next_step">Next</string>
+    <string name="onboarding_open_settings">Grant in Settings</string>
+    <string name="onboarding_grant_and_continue">Grant and continue</string>
+    <string name="onboarding_permission_note">Location and notification access make this work smoothly</string>
+    <string name="action_skip">Skip</string>
+    <string name="onboarding_permission_title">A few permissions are needed</string>
+    <string name="onboarding_permission_sub">Allow these so journeys and alerts can be recorded</string>
+    <string name="permission_location">Location (required)</string>
+    <string name="permission_location_sub">Used to log arrivals and the driven route</string>
+    <string name="permission_notification">Notifications (required)</string>
+    <string name="permission_notification_sub">Used for arrival alerts and backup notices</string>
+    <string name="permission_camera">Camera</string>
+    <string name="permission_camera_sub">Used for work photos and receipts (asked when you shoot)</string>
+    <string name="onboarding_almost_done">Almost there</string>
+    <string name="onboarding_set_profile">Set your name and profile</string>
+
+    <!-- ─────────────────────────── Contacts ─────────────────────────── -->
+    <string name="contacts_title">Contacts</string>
+    <string name="contacts_add_manual">Add manually</string>
+    <string name="contacts_import_device">Import from phone</string>
+    <string name="contacts_empty">No contacts saved yet</string>
+    <string name="contacts_call">Call</string>
+    <string name="contacts_message">Send a message</string>
+    <string name="contacts_export_device">Save to phone</string>
+    <string name="contacts_add_title">Add a contact</string>
+    <string name="contacts_field_company">Company / client</string>
+    <string name="contacts_field_type">Type (dispatch, shipper, site, service…)</string>
+    <string name="contacts_field_phones">Phone numbers (comma separated)</string>
+    <string name="contacts_share_title">Share contact</string>
+
+    <!-- ─────────────────────────── Share composer ─────────────────────────── -->
+    <string name="share_composer_title">Share · %1$d photos</string>
+    <string name="share_label_video">Video</string>
+    <string name="share_preview_note">Preview · this is what gets sent</string>
+    <string name="share_batch_index">%1$d / %2$d</string>
+    <string name="share_video_original_note">Videos are sent as-is, without a watermark.</string>
+    <string name="share_watermark_section">Watermark (per item)</string>
+    <string name="share_purpose_none">None</string>
+    <string name="share_field_text">Text</string>
+    <string name="share_style_section">Style</string>
+    <string name="share_apply_all">Apply this to every photo</string>
+    <string name="share_enter_text">Type here</string>
+    <string name="share_no_info">No data</string>
+
+    <!-- ─────────────────────────── Camera ─────────────────────────── -->
+    <string name="camera_mode_burst">Burst</string>
+    <string name="camera_capture_failed">Capture failed: %1$s</string>
+    <string name="camera_record_failed">Recording failed</string>
+    <string name="camera_edit_after_on">Edit after capture: ON</string>
+    <string name="camera_edit_after_off">Edit after capture: OFF</string>
+    <string name="camera_save_batch">Save batch</string>
+    <string name="camera_start_doc_scan">Start document scan</string>
+    <string name="camera_batch_with_location">%1$s %2$s batch</string>
+    <string name="camera_batch_default">%1$s batch %2$s</string>
+    <string name="camera_video_name">Video name</string>
+    <string name="camera_photo_name">Photo name</string>
+    <string name="camera_save_batch_count">Save batch (%1$d)</string>
+    <string name="camera_batch_name">Batch name</string>
+    <string name="camera_photo_names">Individual photo names</string>
+    <string name="camera_save_document">Save document</string>
+    <string name="camera_page_count">%1$d pages</string>
+    <string name="camera_document_name">Document name</string>
+    <string name="camera_keep_page_images">Keep the page images too</string>
+    <string name="camera_keep_page_images_sub">Stores the PDF together with each page photo</string>
+
+    <!-- ─────────────────────────── Document save note ─────────────────────────── -->
+    <string name="camera_doc_save_note">Saved as a cleaned-up PDF.
+You can keep the original scan images too.</string>
+
+    <!-- ─────────────────────────── Account / auth notices ─────────────────────────── -->
+    <string name="auth_checking_account">Checking your account</string>
+    <string name="auth_no_account_title">No account for this email</string>
+    <string name="auth_no_account_body">There is no account with this email. Would you like to sign up?</string>
+    <string name="auth_sign_up">Sign up</string>
+    <string name="auth_signing_in">Signing in</string>
+    <string name="auth_signing_up">Creating your account</string>
+    <string name="auth_checking_email">Checking that email</string>
+    <string name="auth_email_taken_title">This email is already registered</string>
+    <string name="auth_email_taken_body">An account already uses this email. Would you like to sign in?</string>
+    <string name="auth_go_sign_in">Sign in</string>
+    <string name="auth_email_login_off_title">Email sign-in is turned off</string>
+    <string name="auth_email_login_off_body">Enable Email/Password sign-in under Authentication in the Firebase console.</string>
+    <string name="auth_cannot_sign_in_title">Could not sign in</string>
+    <string name="auth_cannot_sign_in_body">The email or password is not correct. Please check and try again.</string>
+    <string name="auth_retry_later_title">Please try again shortly</string>
+    <string name="auth_retry_later_body">Too many attempts for now. Give it a moment and try again.</string>
+    <string name="auth_network_title">Check your connection</string>
+    <string name="auth_network_body">Make sure you are online, then try again.</string>
+    <string name="auth_weak_password_title">That password is too weak</string>
+    <string name="auth_weak_password_body">Use at least 8 characters with letters and numbers.</string>
+    <string name="auth_generic_error_title">Something went wrong</string>
+    <string name="auth_generic_error_body">Please try again in a moment.</string>
+    <string name="auth_verify_sent_title">Verification email sent</string>
+    <string name="auth_verify_sent_body">Check your inbox (and spam), then tap the link.</string>
+    <string name="auth_not_verified_title">Not verified yet</string>
+    <string name="auth_not_verified_body">Tap the link in the verification email, then try again. Check your spam folder if you cannot find it.</string>
+    <string name="auth_check_email_title">Check the email address</string>
+    <string name="auth_check_email_body">Enter the email address you want the reset link sent to.</string>
+    <string name="auth_reset_sent_title">Reset email sent</string>
+    <string name="auth_reset_sent_body">Follow the link in the email to set a new password.</string>
+    <string name="auth_google_not_ready_title">Google sign-in not ready</string>
+    <string name="auth_google_not_ready_body">Enable Google sign-in in the Firebase console to use it.</string>
+    <string name="auth_google_signing_in">Signing in with Google</string>
+    <string name="auth_name_required_title">Please enter a name</string>
+    <string name="auth_name_required_body">Enter the name you want shown.</string>
+    <string name="auth_name_changed">Name updated</string>
+    <string name="auth_uploading_photo">Uploading your photo</string>
+    <string name="auth_cannot_delete_title">Cannot delete the account</string>
+    <string name="auth_cannot_delete_body">For security, sign in again and then try deleting the account.</string>
+    <string name="cloud_backup_done">Cloud backup complete</string>
+    <string name="cloud_restore_done">Restored — reopen the app to see it</string>
+
+    <!-- ─────────────────────────── Sign in / sign up screen ─────────────────────────── -->
+    <string name="account_verify_email_title">Check your email</string>
+    <string name="account_signup_email_label">Registered email</string>
+    <string name="account_verified_continue">Verified, continue</string>
+    <string name="account_resend_verification">Send the verification email again</string>
+    <string name="account_use_other_account">Use another account</string>
+    <string name="account_agree_title">Please accept the terms</string>
+    <string name="account_agree_sub">We need your agreement to continue</string>
+    <string name="account_agree_and_start">Accept and start</string>
+    <string name="account_title_sign_in">Sign in</string>
+    <string name="account_title_signed_in">Account · backup</string>
+    <string name="account_hint_go_sign_in">Already registered → sign in</string>
+    <string name="account_hint_go_sign_up">Not registered → sign up</string>
+    <string name="account_start_sub">Sign in with your TRUBBI account, or use a social login</string>
+    <string name="account_sign_in_with_trubbi">Sign in with TRUBBI</string>
+    <string name="account_kakao_soon_title">Kakao sign-in is on the way</string>
+    <string name="account_kakao_soon_body">Kakao sign-in is coming soon. For now, use email or Google.</string>
+    <string name="account_naver_soon_title">Naver sign-in is on the way</string>
+    <string name="account_naver_soon_body">Naver sign-in is coming soon. For now, use email or Google.</string>
+    <string name="account_no_account_yet">No account yet?</string>
+    <string name="account_err_email_required">Please enter your email</string>
+    <string name="account_err_email_format">That email address is not valid</string>
+    <string name="account_err_password_required">Please enter your password</string>
+    <string name="account_step_email_sub">Sign in with your registered email</string>
+    <string name="account_welcome_back">Welcome back, %1$s!</string>
+    <string name="account_step_password_sub_named">Enter your password to sign in</string>
+    <string name="account_step_password_sub">Sign in with your password</string>
+    <string name="account_field_email">Email</string>
+    <string name="account_field_password">Password</string>
+    <string name="account_forgot_password">Forgot your password?</string>
+    <string name="account_err_name_required">Please enter a name</string>
+    <string name="account_err_password_rules">Your password does not meet every rule</string>
+    <string name="account_err_password_confirm">Please enter the password once more</string>
+    <string name="account_err_password_mismatch">The passwords do not match</string>
+    <string name="account_signup_agree_sub">We need your agreement before you begin</string>
+    <string name="account_agree_and_continue">Accept and continue</string>
+    <string name="account_signup_name_title">What should we call you?</string>
+    <string name="account_signup_name_sub">This is the name shown in the app</string>
+    <string name="account_signup_email_sub">Used for signing in and verification</string>
+    <string name="account_signup_password_title">Create a password</string>
+    <string name="account_signup_password_sub">At least 8 characters</string>
+    <string name="account_signup_confirm_title">Enter the password again</string>
+    <string name="account_signup_confirm_sub">Just to make sure it matches</string>
+    <string name="account_do_sign_up">Create account</string>
+    <string name="account_field_password_confirm">Confirm password</string>
+    <string name="account_password_match">The passwords match</string>
+    <string name="account_agree_all">Accept all (including optional)</string>
+    <string name="account_terms_service">[Required] Terms of service</string>
+    <string name="account_terms_service_short">Terms of service</string>
+    <string name="account_terms_privacy">[Required] Personal data collection and use</string>
+    <string name="account_terms_privacy_short">Personal data</string>
+    <string name="account_terms_location">[Required] Location-based service terms</string>
+    <string name="account_terms_location_short">Location-based services</string>
+    <string name="account_terms_age">[Required] I am 14 or older</string>
+    <string name="account_terms_marketing">[Optional] Marketing messages</string>
+    <string name="account_terms_marketing_short">Marketing messages</string>
+    <string name="account_terms_required_note">All required terms must be accepted to sign up.</string>
+    <string name="action_view">View</string>
+    <string name="action_back">Back</string>
+    <string name="account_social_sign_in">Social sign-in</string>
+    <string name="account_kakao_login">Sign in with Kakao</string>
+    <string name="account_naver_login">Sign in with Naver</string>
+    <string name="account_google_login">Sign in with Google</string>
+    <string name="account_hide_password">Hide password</string>
+    <string name="account_show_password">Show password</string>
+    <string name="password_rule_length">8+ characters</string>
+    <string name="password_rule_upper">An uppercase letter</string>
+    <string name="password_rule_digit">A number</string>
+    <string name="password_rule_symbol">A symbol</string>
+    <string name="account_please_wait">One moment please</string>
+    <string name="account_providers">Linked: %1$s</string>
+    <string name="account_rename">Change name</string>
+    <string name="account_cloud_backup">Cloud backup</string>
+    <string name="account_last_backup">Last backup: %1$s · %2$dKB</string>
+    <string name="account_no_backup_yet">No cloud backup yet</string>
+    <string name="account_backup_now">Back up now</string>
+    <string name="account_restore">Restore</string>
+    <string name="account_auto_backup">Automatic backup</string>
+    <string name="account_auto_backup_sub">Backs up periodically in the background</string>
+    <string name="account_wifi_only">Wi-Fi only</string>
+    <string name="account_wifi_only_sub">Saves mobile data</string>
+    <string name="account_sign_out">Sign out</string>
+    <string name="account_delete">Delete account</string>
+    <string name="account_sign_out_message">Signing out keeps the records on this phone.</string>
+    <string name="account_delete_message">Your account and cloud data are deleted. Local records on this phone stay.</string>
+    <string name="account_delete_confirm">Delete</string>
+    <string name="provider_google">Google</string>
+    <string name="provider_email">Email</string>
+    <string name="provider_kakao">Kakao</string>
+    <string name="provider_naver">Naver</string>
+
+    <!-- ─────────────────────────── Journey detail screen ─────────────────────────── -->
+    <string name="journey_completed_badge">Completed</string>
+    <string name="journey_tab_timeline">Timeline</string>
+    <string name="journey_tab_records">Records</string>
+    <string name="journey_tab_expenses">Costs</string>
+    <string name="journey_tab_map">Map</string>
+    <string name="journey_tab_report">Report</string>
+    <string name="journey_report_title">Journey report</string>
+    <string name="journey_report_desc">Bundles stops, waiting times, the timeline and watermarked evidence photos into one PDF. Your original photos are untouched.</string>
+    <string name="journey_report_building">Building…</string>
+    <string name="journey_report_make">Build the PDF report · share</string>
+    <string name="journey_report_share">Share the report</string>
+    <string name="journey_photos_share">Share watermarked photos</string>
+    <string name="journey_photos_share_title">Share photos</string>
+    <string name="journey_share_note">From the share sheet you can send it by message or email, or save it to Files.</string>
+    <string name="journey_map_empty">Once positions are recorded, the route and records show up here</string>
+    <string name="journey_distance">Distance</string>
+    <string name="journey_freight">Freight</string>
+    <string name="journey_tap_to_enter">Tap to enter</string>
+    <string name="journey_total_expense">Total cost</string>
+    <string name="journey_net_profit">Est. net</string>
+    <string name="journey_no_receipt_count">%1$d costs without a receipt</string>
+    <string name="journey_add_expense">Add cost</string>
+    <string name="journey_capture_receipt">Photograph a receipt</string>
+    <string name="journey_receipt_pending">Receipt → waiting to be logged</string>
+    <string name="journey_receipt_reading">Reading…</string>
+    <string name="journey_receipt_read">Read — tap Add to confirm</string>
+    <string name="action_register">Add</string>
+    <string name="journey_no_expense">No costs logged yet</string>
+    <string name="journey_no_events">Nothing on the timeline yet</string>
+    <string name="journey_timeline_date_pattern">MMM d (E)</string>
+    <string name="journey_add_issue">Log an issue (damage, delay, dispute)</string>
+    <string name="journey_no_records">Records saved during this journey collect here</string>
+    <string name="action_capture_now">Take a photo</string>
+    <string name="journey_stop_name">Stop name</string>
+    <string name="journey_complete_message">Every stop is done. Finish the journey?</string>
+    <string name="journey_freight_amount">Amount</string>
+    <string name="journey_freight_hint">e.g. 450000</string>
+    <string name="journey_view_receipt">View receipt</string>
+    <string name="journey_group_photos">%1$s · %2$d photos</string>
+
+    <!-- ─────────────────────────── Home screen ─────────────────────────── -->
+    <string name="home_action_start_journey">Start journey</string>
+    <string name="home_action_account">Account · backup</string>
+    <string name="home_action_sign_in">Sign in · backup</string>
+    <string name="home_action_scan_barcode">Scan a barcode</string>
+    <string name="home_action_import_photo">Import a photo</string>
+    <string name="home_action_quick_memo">Quick memo</string>
+    <string name="home_clear_filters">Clear filters</string>
+    <string name="home_sign_in_cta">Sign in and turn on cloud backup</string>
+    <string name="home_sign_in_cta_sub">Email or Google · restore your records on a new phone</string>
+    <string name="home_today">Today</string>
+    <string name="home_favorites">Favorites</string>
+    <string name="home_see_all">See all</string>
+    <string name="home_recent">Recently saved</string>
+    <string name="home_no_results">Nothing matched</string>
+    <string name="home_cancel_journey_message">Cancel the running journey? Saved records stay as they are.</string>
+    <string name="home_favorite_places">Favorite places</string>
+    <string name="home_shared_add_to_journey">Added as a stop on the running journey</string>
+    <string name="home_shared_start_journey">Starts a new journey at this place</string>
+    <string name="home_as_pickup">Pickup</string>
+    <string name="home_as_dropoff">Dropoff</string>
+    <string name="home_include_in_journey_q">Add it to the running journey?</string>
+    <string name="home_include">Add to journey</string>
+    <string name="home_keep_standalone">Keep standalone</string>
+    <string name="home_search_hint">Search name, purpose, content</string>
+    <string name="home_close_search">Close search</string>
+    <string name="home_month_year">%1$d · %2$d</string>
+    <string name="home_day_of_month">%1$d</string>
+    <string name="home_record_count">%1$d records</string>
+    <string name="weekday_mon_full">Monday</string>
+    <string name="weekday_tue_full">Tuesday</string>
+    <string name="weekday_wed_full">Wednesday</string>
+    <string name="weekday_thu_full">Thursday</string>
+    <string name="weekday_fri_full">Friday</string>
+    <string name="weekday_sat_full">Saturday</string>
+    <string name="weekday_sun_full">Sunday</string>
+
+    <!-- ─────────────────────────── Immersive detail ─────────────────────────── -->
+    <string name="detail_no_records">No records</string>
+    <string name="detail_cannot_play">Cannot play this</string>
+    <string name="detail_write_memo">Write a memo</string>
+    <string name="detail_view_pdf">View PDF</string>
+    <string name="detail_edit_video">Edit video</string>
+    <string name="detail_rename">Rename</string>
+    <string name="detail_renamed">Renamed</string>
+    <string name="detail_delete_title">Delete this?</string>
+    <string name="detail_delete_message">This record goes to the trash. You can restore it from there.</string>
+    <string name="detail_share_options">Share options</string>
+    <string name="detail_share_current">This photo</string>
+    <string name="detail_share_all">All</string>
+    <string name="detail_include_address">Include the address</string>
+    <string name="detail_watermark_toggle">Burn the details into the photo</string>
+    <string name="detail_watermark_sub">Time and place drawn on the image — the info survives even if the text is dropped</string>
+    <string name="detail_message">Message</string>
+    <string name="detail_share_document">Share document</string>
+    <string name="detail_share_as_pdf">Share as PDF</string>
+    <string name="detail_or_share_image">Or share as an image</string>
+    <string name="detail_share_as_image">Share as an image</string>
+    <string name="detail_play">Play</string>
+    <string name="detail_change_purpose">Change purpose</string>
+    <string name="detail_media_count"> · %1$d</string>
+    <string name="detail_location_line">Location: %1$s</string>
+
+    <!-- ─────────────────────────── Widget setup ─────────────────────────── -->
+    <string name="widget_pick_barcode_title">Pick a barcode</string>
+    <string name="widget_pick_barcode_sub">Choose the barcode the widget shows</string>
+    <string name="widget_no_barcode">No barcodes saved yet. Scan one first.</string>
+
+    <!-- ─────────────────────────── Remaining screen copy ─────────────────────────── -->
+    <string name="onboarding_welcome_body">TRUBBI is a trucker\'s work-record mate.\nIt files away every record of a haul for you.</string>
+    <string name="editor_rotation_state">Rotated %1$d°</string>
+    <string name="editor_rotation_flipped"> · flipped</string>
+    <string name="camera_document_hint">Scan a waybill or receipt and it is saved\nas an auto-corrected PDF.</string>
+    <string name="account_verify_sent_body">We sent a verification link to that address.\nOpen the link in the mail, then tap the button below.</string>
+
+
+    <string-array name="search_suggestions">
+        <item>Waybill</item>
+        <item>Tire</item>
+        <item>Lock</item>
+        <item>Pallet</item>
+        <item>Dashboard</item>
+        <item>Loading</item>
+        <item>Unloading</item>
+        <item>Maintenance</item>
+    </string-array>
+    <!-- ─────────────────────────── Journey start wizard — voice prompts ─────────────────────────── -->
+    <string name="wizard_default_destination">Destination</string>
+    <string name="wizard_current_location">Current location</string>
+    <string name="wizard_say_move_first">Moved %1$s to the front.</string>
+    <string name="wizard_say_already_first">%1$s is already first.</string>
+    <string name="wizard_say_which_one_retry">Tell me the number, or say the place again.</string>
+    <string name="wizard_say_no_such_number">There is no number %1$d. Pick one between 1 and %2$d, or say it again.</string>
+    <string name="wizard_say_use_current_q">Start from your current location? Say yes, or tell me the pickup point.</string>
+    <string name="wizard_say_origin_missed">I did not catch the pickup point. I will start from your current location. Tap Say again for another one.</string>
+    <string name="wizard_summary_from_to">the run from %1$s to %2$s</string>
+    <string name="wizard_summary_to">the run to %1$s</string>
+    <string name="wizard_summary_this">this journey</string>
+    <string name="wizard_say_start_with">Starting %1$s.</string>
+    <string name="wizard_prompt_dest">Where are you headed? Tell me the destination.</string>
+    <string name="wizard_prompt_origin_after_dest">%1$s, got it. Where do you start from?</string>
+    <string name="wizard_prompt_origin">Where do you start from?</string>
+    <string name="wizard_word_done">“done”</string>
+    <string name="wizard_word_none">“no more”</string>
+    <string name="wizard_prompt_extra_added">Added %1$s. Any other stop? If not, say %2$s.</string>
+    <string name="wizard_prompt_extra_add_mode">Where else do you stop? Say “done” when you are finished.</string>
+    <string name="wizard_prompt_extra">Any other stop? If not, say %1$s.</string>
+    <string name="wizard_say_one_found">Found one place. Say yes if that is it.</string>
+    <string name="wizard_say_n_found">Found %1$d places. Which one?</string>
+    <string name="wizard_say_no_results">Nothing found. Say it again, please.</string>
+    <string name="wizard_reask_dest">Where are you headed?</string>
+    <string name="wizard_reask_extra_pickup">Where do you pick up?</string>
+    <string name="wizard_reask_extra_dropoff">Where do you drop off?</string>
+
+    <!-- ─────────────────────────── Journey start wizard — screen ─────────────────────────── -->
+    <string name="wizard_role_origin">Pickup</string>
+    <string name="wizard_role_extra">Stop</string>
+    <string name="wizard_role_dest">Destination</string>
+    <string name="wizard_head_dest">Where are you headed?</string>
+    <string name="wizard_head_origin">Where do you start from?</string>
+    <string name="wizard_head_extra">Any other stop?</string>
+    <string name="wizard_head_extra_say">Tell me where you stop</string>
+    <string name="wizard_kind_pickup_stop">Pickup stop</string>
+    <string name="wizard_kind_dropoff_stop">Dropoff stop</string>
+    <string name="wizard_hint_dest">e.g. Seongnam DC, Busan New Port</string>
+    <string name="wizard_hint_origin">Pickup name or address</string>
+    <string name="wizard_hint_extra">Stop name or address</string>
+    <string name="wizard_retry_banner">I did not catch that. Say it again, please.</string>
+    <string name="wizard_searching">Searching “%1$s”…</string>
+    <string name="wizard_place_search">Search a place</string>
+    <string name="wizard_no_results_for">No results for “%1$s”</string>
+    <string name="wizard_results_count">%1$d results</string>
+    <string name="wizard_use_typed_hint">If none of these fit, you can keep the name you typed</string>
+    <string name="wizard_tap_to_confirm">Tap to check it on the map, then add it as the %1$s</string>
+    <string name="wizard_use_typed">Use “%1$s” as typed</string>
+    <string name="wizard_locating">Locating…</string>
+    <string name="wizard_start_from_here">Start from here</string>
+    <string name="wizard_start_from_here_sub">Use where you are now as the pickup</string>
+    <string name="wizard_recent_stops">Recent stops</string>
+    <string name="wizard_later_dest">Set the dropoff later · start now</string>
+    <string name="wizard_later_origin">Enter the pickup later</string>
+    <string name="wizard_add_done">Added</string>
+    <string name="wizard_start_journey_bang">Start the journey</string>
+    <string name="wizard_countdown_start">Starting in %1$d s</string>
+    <string name="wizard_start_now">Start now</string>
+    <string name="wizard_add_more">Add more</string>
+    <string name="wizard_no_location">No position yet</string>
+    <string name="wizard_pick_here">Pick this spot</string>
+    <string name="wizard_unfavorite">Remove from favorites</string>
+    <string name="wizard_favorite">Add to favorites</string>
+    <string name="wizard_search_again">Search again</string>
+    <string name="wizard_confirm_here">This is the one</string>
+    <string name="wizard_countdown_depart">Leaving from here in %1$d s</string>
+    <string name="wizard_depart_from_here">Leaving from your current location</string>
+    <string name="wizard_depart_now">Leave now</string>
+    <string name="wizard_say_again">Say again</string>
+    <string name="wizard_heard">Here is what I heard</string>
+    <string name="wizard_maybe_this">Did you mean one of these?</string>
+    <string name="wizard_heard_hint">If that is off, fix it in the box above or say it again</string>
+    <string name="wizard_reorder">Reorder</string>
+    <string name="wizard_view_on_map">See on the map</string>
+    <string name="wizard_map">Map</string>
+    <string name="wizard_rank_nth">No. %1$d</string>
+    <string name="wizard_step_dropoff">Dropoff</string>
+    <string name="wizard_step_pickup">Pickup</string>
+    <string name="wizard_step_via">Stops</string>
+    <string name="wizard_listening_hint">It searches as soon as you stop talking · tap to cancel</string>
+
+    <!-- ─────────────────────────── Widgets ─────────────────────────── -->
+    <string name="widget_scan_barcode">Scan a barcode</string>
+    <string name="widget_barcode">Barcode</string>
+    <string name="widget_active_journey">Journey in progress</string>
+    <string name="widget_journey_info">Journey</string>
+    <string name="widget_next_step">Next step</string>
+    <string name="widget_capture">Capture</string>
+    <string name="widget_open">Open</string>
+    <string name="widget_route_map">Journey route map</string>
+    <string name="widget_scan_document">Scan a document</string>
+    <string name="widget_document">Document</string>
+    <string name="widget_memo">Memo</string>
+
+    <!-- ─────────────────────────── Accessibility labels ─────────────────────────── -->
+    <string name="action_refresh">Refresh</string>
+    <string name="action_remove">Remove</string>
+    <string name="action_undo">Undo</string>
+    <string name="action_rotate_left">Rotate left</string>
+    <string name="action_rotate_right">Rotate right</string>
+    <string name="action_flip">Flip</string>
+    <string name="action_prev">Previous</string>
+    <string name="action_filter">Filters</string>
+    <string name="action_my_location">Current location</string>
+    <string name="action_keyboard">Keyboard input</string>
+    <string name="action_favorite">Favorite</string>
+
+    <!-- ─────────────────────────── Accessibility labels ─────────────────────────── -->
+    <string name="camera_flash_on">Turn the flash on</string>
+    <string name="camera_flash_off">Turn the flash off</string>
+    <string name="action_pause">Pause</string>
+    <string name="map_zoom_in">Zoom in</string>
+    <string name="map_zoom_out">Zoom out</string>
+    <string name="map_my_location">Go to current location</string>
+
+    <!-- 편집기의 '원본' — 사진 저장 품질(quality_original)과는 다른 개념이라 따로 둔다. -->
+    <string name="option_original">Original</string>
+    <!-- 여정 시작 시트의 제목. 이름 없는 여정을 가리키는 journey_untitled(:data) 와는 쓰임이 다르다. -->
+    <string name="journey_new_title">New journey</string>
+</resources>

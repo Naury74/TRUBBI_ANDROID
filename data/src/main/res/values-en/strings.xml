@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ─────────────────────────── Journey / stop display ─────────────────────────── -->
+    <string name="stop_default_name">%1$s point</string>
+    <string name="journey_untitled">New journey</string>
+    <string name="journey_route">%1$s → %2$s</string>
+    <string name="journey_route_more">%1$s → %2$s +%3$d more</string>
+    <!-- ─────────────────────────── Photo quality / watermark / editing tools ─────────────────────────── -->
+    <string name="quality_original">Original</string>
+    <string name="quality_normal">Compressed</string>
+    <string name="quality_small">Small</string>
+    <!-- ─────────────────────────── Backup / restore ─────────────────────────── -->
+    <string name="backup_cannot_open_target">Could not open that location</string>
+    <string name="backup_cannot_open_file">Could not open the backup file</string>
+    <string name="backup_empty">The backup has no data</string>
+    <string name="default_title_document">%1$s document</string>
+    <string name="page_index">Page %1$d</string>
+    <string name="auth_not_signed_in">You are not signed in</string>
+    <string name="auth_sign_in_required">Sign in required</string>
+    <!-- ─────────────────────────── Default purposes ─────────────────────────── -->
+    <string-array name="default_purposes">
+        <item>Waybill</item>
+        <item>Loading</item>
+        <item>Unloading</item>
+        <item>Inbound</item>
+        <item>Outbound</item>
+        <item>Maintenance</item>
+        <item>Tire</item>
+        <item>Damage proof</item>
+        <item>Other</item>
+    </string-array>
+    <string-array name="protected_purposes">
+        <item>Loading</item>
+        <item>Unloading</item>
+    </string-array>
+</resources>

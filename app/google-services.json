@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "415913721439",
+    "project_id": "trubbi-f533f",
+    "storage_bucket": "trubbi-f533f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:415913721439:android:42832d073b44b5677c65ea",
+        "android_client_info": {
+          "package_name": "com.naury.trubbi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "415913721439-05ffips6jotbv4fbne30k7tvrim8trti.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.naury.trubbi",
+            "certificate_hash": "b29ffe265b4253c78a6cc5ae6e3586e76b4e646c"
+          }
+        },
+        {
+          "client_id": "415913721439-1tqei03ljd23il4kcl9j42j25r57ij0i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDH8JMXGiB0U7by1Dzh3A0m0h2JzCfDtl8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "415913721439-1tqei03ljd23il4kcl9j42j25r57ij0i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

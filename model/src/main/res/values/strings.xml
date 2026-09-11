@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ─────────────────────────── 기록 종류 ─────────────────────────── -->
+    <string name="record_type_photo">사진</string>
+    <string name="record_type_video">동영상</string>
+    <string name="record_type_document">문서</string>
+    <string name="record_type_barcode">바코드</string>
+    <string name="record_type_memo">메모</string>
+    <string name="record_type_file">파일</string>
+    <!-- ─────────────────────────── 업무 용도 ─────────────────────────── -->
+    <string name="purpose_waybill">운송장</string>
+    <string name="purpose_loading">상차</string>
+    <string name="purpose_unloading">하차</string>
+    <string name="purpose_inbound">입고</string>
+    <string name="purpose_outbound">출고</string>
+    <string name="purpose_maintenance">정비</string>
+    <string name="purpose_tire">타이어</string>
+    <string name="purpose_damage">파손증빙</string>
+    <string name="purpose_etc">기타</string>
+    <!-- ─────────────────────────── 정차지 ─────────────────────────── -->
+    <string name="stop_kind_origin">출발</string>
+    <string name="stop_kind_origin_short">출</string>
+    <string name="stop_kind_pickup">상차</string>
+    <string name="stop_kind_pickup_short">상</string>
+    <string name="stop_kind_dropoff">하차</string>
+    <string name="stop_kind_dropoff_short">하</string>
+    <string name="stop_phase_moving">이동중</string>
+    <string name="stop_phase_waiting">대기중</string>
+    <string name="stop_phase_working">작업중</string>
+    <string name="stop_phase_done">완료</string>
+    <!-- ─────────────────────────── 증빙 분류 ─────────────────────────── -->
+    <string name="evidence_pickup_before">상차 전</string>
+    <string name="evidence_pickup_in_progress">상차 중</string>
+    <string name="evidence_pickup_completed">상차 완료</string>
+    <string name="evidence_dropoff_before">하차 전</string>
+    <string name="evidence_dropoff_in_progress">하차 중</string>
+    <string name="evidence_dropoff_completed">하차 완료</string>
+    <string name="evidence_damage">파손/오염</string>
+    <string name="evidence_document">송장/인수증</string>
+    <string name="evidence_weighbridge">계근표</string>
+    <string name="evidence_receipt">비용 영수증</string>
+    <string name="evidence_etc">기타</string>
+    <!-- ─────────────────────────── 비용 ─────────────────────────── -->
+    <string name="expense_fuel">주유비</string>
+    <string name="expense_urea">요소수</string>
+    <string name="expense_toll">톨비</string>
+    <string name="expense_parking">주차비</string>
+    <string name="expense_meal">식비</string>
+    <string name="expense_lodging_shower">숙박/샤워</string>
+    <string name="expense_maintenance">정비비</string>
+    <string name="expense_car_wash">세차비</string>
+    <string name="expense_loading_extra">상하차 부대비</string>
+    <string name="expense_etc">기타</string>
+    <!-- ─────────────────────────── 이슈 ─────────────────────────── -->
+    <string name="issue_type_damage">파손</string>
+    <string name="issue_type_contamination">오염</string>
+    <string name="issue_type_quantity_mismatch">수량 불일치</string>
+    <string name="issue_type_rejection">인수 거부</string>
+    <string name="issue_type_delay">지연</string>
+    <string name="issue_type_site_problem">현장 문제</string>
+    <string name="issue_type_cost_problem">비용 문제</string>
+    <string name="issue_type_etc">기타</string>
+    <string name="issue_status_open">미처리</string>
+    <string name="issue_status_in_progress">처리중</string>
+    <string name="issue_status_resolved">완료</string>
+    <!-- ─────────────────────────── 여정 타임라인 ─────────────────────────── -->
+    <string name="event_journey_started">여정 시작</string>
+    <string name="event_stop_added">정차지 추가</string>
+    <string name="event_arrived">도착</string>
+    <string name="event_work_started">작업 시작</string>
+    <string name="event_stop_completed">작업 완료</string>
+    <string name="event_record_linked">기록 저장</string>
+    <string name="event_expense_added">비용 등록</string>
+    <string name="event_issue_added">이슈 등록</string>
+    <string name="event_journey_completed">여정 완료</string>
+    <string name="event_note">메모</string>
+    <!-- ─────────────────────────── 여정 이벤트 · 완료 전 체크 ─────────────────────────── -->
+    <string name="missing_evidence_pickup">상차 사진</string>
+    <string name="missing_evidence_dropoff">하차 사진</string>
+    <string name="missing_evidence_issue">이슈 증빙 사진</string>
+    <string name="journey_event_stop_added">%1$s지 추가</string>
+    <string name="journey_event_arrived">%1$s지 도착</string>
+    <string name="journey_event_work_started">%1$s 시작</string>
+    <string name="journey_event_work_done">%1$s 완료</string>
+    <string name="journey_event_expense">%1$s %2$s원</string>
+    <string name="journey_event_issue">이슈 — %1$s</string>
+</resources>

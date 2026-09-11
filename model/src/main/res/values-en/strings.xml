@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ─────────────────────────── Record types ─────────────────────────── -->
+    <string name="record_type_photo">Photo</string>
+    <string name="record_type_video">Video</string>
+    <string name="record_type_document">Document</string>
+    <string name="record_type_barcode">Barcode</string>
+    <string name="record_type_memo">Memo</string>
+    <string name="record_type_file">File</string>
+    <!-- ─────────────────────────── Work purposes ─────────────────────────── -->
+    <string name="purpose_waybill">Waybill</string>
+    <string name="purpose_loading">Loading</string>
+    <string name="purpose_unloading">Unloading</string>
+    <string name="purpose_inbound">Inbound</string>
+    <string name="purpose_outbound">Outbound</string>
+    <string name="purpose_maintenance">Maintenance</string>
+    <string name="purpose_tire">Tire</string>
+    <string name="purpose_damage">Damage proof</string>
+    <string name="purpose_etc">Other</string>
+    <!-- ─────────────────────────── Stops ─────────────────────────── -->
+    <string name="stop_kind_origin">Start</string>
+    <string name="stop_kind_origin_short">S</string>
+    <string name="stop_kind_pickup">Pickup</string>
+    <string name="stop_kind_pickup_short">P</string>
+    <string name="stop_kind_dropoff">Dropoff</string>
+    <string name="stop_kind_dropoff_short">D</string>
+    <string name="stop_phase_moving">On the way</string>
+    <string name="stop_phase_waiting">Waiting</string>
+    <string name="stop_phase_working">Working</string>
+    <string name="stop_phase_done">Done</string>
+    <!-- ─────────────────────────── Evidence categories ─────────────────────────── -->
+    <string name="evidence_pickup_before">Before pickup</string>
+    <string name="evidence_pickup_in_progress">During pickup</string>
+    <string name="evidence_pickup_completed">Pickup done</string>
+    <string name="evidence_dropoff_before">Before dropoff</string>
+    <string name="evidence_dropoff_in_progress">During dropoff</string>
+    <string name="evidence_dropoff_completed">Dropoff done</string>
+    <string name="evidence_damage">Damage / contamination</string>
+    <string name="evidence_document">Waybill / receipt note</string>
+    <string name="evidence_weighbridge">Weighbridge slip</string>
+    <string name="evidence_receipt">Expense receipt</string>
+    <string name="evidence_etc">Other</string>
+    <!-- ─────────────────────────── Expenses ─────────────────────────── -->
+    <string name="expense_fuel">Fuel</string>
+    <string name="expense_urea">DEF (urea)</string>
+    <string name="expense_toll">Toll</string>
+    <string name="expense_parking">Parking</string>
+    <string name="expense_meal">Meal</string>
+    <string name="expense_lodging_shower">Lodging / shower</string>
+    <string name="expense_maintenance">Maintenance</string>
+    <string name="expense_car_wash">Car wash</string>
+    <string name="expense_loading_extra">Handling fee</string>
+    <string name="expense_etc">Other</string>
+    <!-- ─────────────────────────── Issues ─────────────────────────── -->
+    <string name="issue_type_damage">Damage</string>
+    <string name="issue_type_contamination">Contamination</string>
+    <string name="issue_type_quantity_mismatch">Quantity mismatch</string>
+    <string name="issue_type_rejection">Delivery refused</string>
+    <string name="issue_type_delay">Delay</string>
+    <string name="issue_type_site_problem">Site problem</string>
+    <string name="issue_type_cost_problem">Cost problem</string>
+    <string name="issue_type_etc">Other</string>
+    <string name="issue_status_open">Open</string>
+    <string name="issue_status_in_progress">In progress</string>
+    <string name="issue_status_resolved">Resolved</string>
+    <!-- ─────────────────────────── Journey timeline ─────────────────────────── -->
+    <string name="event_journey_started">Journey started</string>
+    <string name="event_stop_added">Stop added</string>
+    <string name="event_arrived">Arrived</string>
+    <string name="event_work_started">Work started</string>
+    <string name="event_stop_completed">Work finished</string>
+    <string name="event_record_linked">Record saved</string>
+    <string name="event_expense_added">Expense added</string>
+    <string name="event_issue_added">Issue added</string>
+    <string name="event_journey_completed">Journey completed</string>
+    <string name="event_note">Note</string>
+    <!-- ─────────────────────────── Journey events / pre-completion check ─────────────────────────── -->
+    <string name="missing_evidence_pickup">Pickup photo</string>
+    <string name="missing_evidence_dropoff">Dropoff photo</string>
+    <string name="missing_evidence_issue">Issue evidence photo</string>
+    <string name="journey_event_stop_added">%1$s stop added</string>
+    <string name="journey_event_arrived">Arrived at %1$s point</string>
+    <string name="journey_event_work_started">%1$s started</string>
+    <string name="journey_event_work_done">%1$s finished</string>
+    <string name="journey_event_expense">%1$s ₩%2$s</string>
+    <string name="journey_event_issue">Issue — %1$s</string>
+</resources>

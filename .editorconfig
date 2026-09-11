@@ -1,0 +1,37 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.{kt,kts}]
+max_line_length = 160
+ktlint_code_style = android_studio
+
+# 컴포저블은 PascalCase 가 관례라 함수 이름 규칙에서 뺀다.
+ktlint_function_naming_ignore_when_annotated_with = Composable
+
+# 트레일링 콤마를 허용하면 인자를 추가·삭제할 때 diff 가 한 줄로 끝난다.
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+
+# Compose 코드에 걸면 오히려 읽기 나빠지는 줄바꿈 규칙들. 형식보다 화면 구조가 눈에 들어와야 한다.
+ktlint_standard_multiline-expression-wrapping = disabled
+ktlint_standard_string-template-indent = disabled
+ktlint_standard_function-signature = disabled
+ktlint_standard_class-signature = disabled
+ktlint_standard_function-expression-body = disabled
+ktlint_standard_blank-line-before-declaration = disabled
+
+[*.{xml,yml,yaml,json}]
+indent_size = 2
+
+[gradle/libs.versions.toml]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false

@@ -1,0 +1,88 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4g -Dfile.encoding=UTF-8
+
+jobs:
+  check:
+    name: 정적 분석 · 단위 테스트 · Debug 빌드
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JDK 17 설치
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Gradle 설정 (의존성 캐시 포함)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: local.properties 생성
+        # 키는 저장소 Secrets 에서 주입한다. 없으면 빈 값으로 두고 빌드는 그대로 통과한다.
+        # (앱은 카카오 키가 없어도 Geocoder 폴백으로 동작한다.)
+        run: |
+          {
+            echo "KAKAO_REST_KEY=${{ secrets.KAKAO_REST_KEY }}"
+            echo "KAKAO_NATIVE_KEY=${{ secrets.KAKAO_NATIVE_KEY }}"
+          } > local.properties
+
+      - name: gradlew 실행 권한
+        run: chmod +x ./gradlew
+
+      # 아래 네 단계는 실패해도 나머지를 계속 돌린다. 한 번에 전체 상태를 보기 위해서다.
+      - name: 코드 스타일 (ktlint)
+        run: ./gradlew ktlintCheck --stacktrace
+
+      - name: 정적 분석 (detekt)
+        if: success() || failure()
+        run: ./gradlew detektDebug --stacktrace
+
+      - name: Android Lint
+        if: success() || failure()
+        run: ./gradlew :app:lintDebug --stacktrace
+
+      # 모든 모듈(:app, :core)의 단위 테스트를 함께 돌린다.
+      - name: 단위 테스트
+        if: success() || failure()
+        run: ./gradlew test --stacktrace
+
+      - name: Debug APK 빌드
+        if: success() || failure()
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: 리포트 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            */build/reports/tests/
+            */build/reports/detekt/
+            */build/reports/ktlint/
+            app/build/reports/lint-results-debug.html
+            */build/test-results/
+          retention-days: 14
+
+      - name: 테스트 결과 요약
+        if: always()
+        uses: mikepenz/action-junit-report@v5
+        with:
+          report_paths: '*/build/test-results/testDebugUnitTest/TEST-*.xml'
+          check_name: 단위 테스트 결과
+          fail_on_failure: true
+          require_tests: false

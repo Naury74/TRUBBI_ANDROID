@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ─────────────────────────── 날씨 ─────────────────────────── -->
+    <string name="weather_clear">맑음</string>
+    <string name="weather_clear_night">맑은 밤</string>
+    <string name="weather_partly_cloudy">구름 조금</string>
+    <string name="weather_cloudy">흐림</string>
+    <string name="weather_fog">안개</string>
+    <string name="weather_drizzle">이슬비</string>
+    <string name="weather_rain">비</string>
+    <string name="weather_snow">눈</string>
+    <string name="weather_showers">소나기</string>
+    <string name="weather_thunder">뇌우</string>
+    <string name="watermark_style_bar">하단 바</string>
+    <string name="watermark_style_minimal">미니멀</string>
+    <string name="watermark_style_card">카드</string>
+    <string name="file_name_document">Trubbi_문서_%1$s_%2$s%3$s.pdf</string>
+</resources>

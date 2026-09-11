@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 어댑티브 아이콘 안전영역(중앙 원) 안에 마스코트가 들어오도록 여백을 키운다.
+     (여백이 작으면 알림/런처의 원형 마스크에서 마스코트 모서리가 잘려 '확대되어 잘려보임') -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:inset="30dp">
+    <bitmap
+        android:src="@drawable/trubbi_mascot"
+        android:gravity="fill" />
+</inset>

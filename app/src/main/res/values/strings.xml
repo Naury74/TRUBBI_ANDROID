@@ -1,0 +1,981 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 기본(한국어) 문자열. 영어는 values-en/strings.xml 참고. -->
+<resources>
+
+    <!-- ─────────────────────────── 앱 · 위젯 ─────────────────────────── -->
+    <string name="app_name" translatable="false">TRUBBI</string>
+    <string name="widget_quick_capture_desc">카메라를 바로 열어 업무 사진을 저장합니다.</string>
+    <string name="widget_barcode_label">TRUBBI 바코드 스캔</string>
+    <string name="widget_barcode_desc">바코드/운송장 스캔 화면을 바로 엽니다.</string>
+    <string name="widget_barcode_view_desc">최근 저장한 바코드를 홈 화면에서 바로 스캔할 수 있게 표시합니다.</string>
+    <string name="widget_journey_desc">진행 중인 여정을 홈 화면에서 실시간으로 확인하고 단계 넘기기·촬영을 바로 합니다.</string>
+    <string name="widget_journey_map_desc">진행 중인 여정의 주행 경로와 현재 위치를 홈 화면 지도로 실시간 표시합니다.</string>
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- ─────────────────────────── 여정 리포트(PDF) ─────────────────────────── -->
+    <string name="report_subtitle">TRUBBI 운송 기록 리포트 · 생성 %1$s</string>
+    <string name="report_period">기간</string>
+    <string name="report_distance">주행 거리</string>
+    <string name="report_cargo">화물</string>
+    <string name="report_records">기록</string>
+    <string name="report_records_value">%1$d건 (사진 %2$d건)</string>
+    <string name="report_total_expense">총 비용</string>
+    <string name="report_freight">운송료</string>
+    <string name="report_net_profit">예상 순수익</string>
+    <string name="report_section_stops">정차지</string>
+    <string name="report_section_expenses">비용</string>
+    <string name="report_section_issues">이슈 (%1$d건)</string>
+    <string name="report_section_timeline">타임라인</string>
+    <string name="report_section_photos">증빙 사진</string>
+    <string name="report_stop_arrived">도착 %1$s</string>
+    <string name="report_stop_waited">대기 %1$d분</string>
+    <string name="report_stop_completed">완료 %1$s</string>
+    <string name="report_expense_line">%1$s %2$s원</string>
+    <string name="report_file_name">TRUBBI_리포트_%1$s.pdf</string>
+    <string name="amount_krw">%1$s원</string>
+
+    <!-- ─────────────────────────── 여정 추적 알림 · 음성 ─────────────────────────── -->
+    <string name="notif_channel_journey_name">여정 진행</string>
+    <string name="notif_channel_journey_desc">여정 추적 상태 표시</string>
+    <string name="notif_channel_arrival_name">도착 알림</string>
+    <string name="notif_channel_arrival_desc">정차지 근처 도착 알림</string>
+    <string name="notif_journey_title">여정 진행 중</string>
+    <string name="notif_journey_recording">여정을 기록하고 있어요</string>
+    <string name="notif_journey_all_done">모든 정차지 완료 — 여정을 마무리해 주세요</string>
+    <string name="notif_journey_next">다음: %1$s</string>
+    <string name="notif_action_arrive">도착</string>
+    <string name="notif_action_capture">촬영</string>
+    <string name="notif_action_log_arrival">도착 기록</string>
+    <string name="notif_arrival_title">%1$s 근처예요</string>
+    <string name="notif_arrival_text">%1$s지에 도착하셨나요?</string>
+    <string name="voice_arrival_logged">도착을 기록했어요. 수고하셨습니다.</string>
+    <string name="voice_work_started">%1$s 시작을 기록했어요.</string>
+    <string name="voice_work_done">%1$s 완료! 수고하셨어요.</string>
+    <string name="voice_near_stop">%1$s 근처입니다. 도착하면 도착 버튼을 눌러주세요.</string>
+    <string name="voice_approaching">%1$s까지 약 %2$s 남았어요. 곧 도착해요.</string>
+
+    <!-- ─────────────────────────── 공유 본문 · 탭 ─────────────────────────── -->
+    <string name="share_field_purpose">용도: %1$s</string>
+    <string name="share_field_barcode">바코드: %1$s</string>
+    <string name="share_field_location">위치: %1$s</string>
+    <string name="share_field_memo">메모: %1$s</string>
+    <string name="share_field_tags">태그: %1$s</string>
+    <string name="tab_home">홈</string>
+    <string name="tab_settings">설정</string>
+
+    <!-- ─────────────────────────── 공통 UI ─────────────────────────── -->
+    <string name="photo_count">%1$d장</string>
+    <string name="camera_permission_title">카메라 권한이 필요합니다</string>
+    <string name="camera_permission_body">업무 사진 촬영과 바코드 스캔을 위해 카메라 접근을 허용해 주세요.</string>
+    <string name="camera_permission_allow">권한 허용</string>
+    <string name="cd_profile">프로필</string>
+    <string name="cd_barcode">바코드 %1$s</string>
+    <string name="barcode_render_failed">바코드를 생성할 수 없습니다</string>
+    <string name="barcode_share_image">바코드 이미지 공유</string>
+
+    <!-- ─────────────────────────── 피드 · 메모 ─────────────────────────── -->
+    <string name="feed_pdf_pages">PDF·%1$d쪽</string>
+    <string name="feed_batch_fallback_title">묶음</string>
+    <string name="feed_batch_panel_title">%1$s · %2$d장 (개별 선택)</string>
+    <string name="memo_empty">내용 없음</string>
+
+    <string name="weather_current_location">현재 위치</string>
+    <string name="weather_no_location">위치정보 없음</string>
+
+    <!-- ─────────────────────────── 달력 ─────────────────────────── -->
+    <string name="calendar_month_pattern">yyyy년 M월</string>
+    <string name="calendar_reset">초기화</string>
+    <string name="weekday_sun">일</string>
+    <string name="weekday_mon">월</string>
+    <string name="weekday_tue">화</string>
+    <string name="weekday_wed">수</string>
+    <string name="weekday_thu">목</string>
+    <string name="weekday_fri">금</string>
+    <string name="weekday_sat">토</string>
+
+    <!-- ─────────────────────────── 프로필 · 계정 ─────────────────────────── -->
+    <string name="membership_google">Google 계정으로 로그인</string>
+    <string name="membership_kakao">카카오 계정으로 로그인</string>
+    <string name="membership_naver">네이버 계정으로 로그인</string>
+    <string name="membership_email">이메일로 가입한 회원</string>
+    <string name="membership_default">트러비 회원</string>
+    <string name="profile_no_name">이름 없음</string>
+    <string name="profile_account_type">가입 유형</string>
+    <string name="profile_type_sns">SNS 연동 회원</string>
+    <string name="profile_type_email">이메일 자체 회원</string>
+    <string name="profile_verified_email">인증 이메일</string>
+    <string name="profile_verified">인증됨</string>
+    <string name="profile_unverified">미인증</string>
+    <string name="profile_change_photo">프로필 사진 변경</string>
+    <string name="action_settings">설정</string>
+
+    <!-- ─────────────────────────── 지도 ─────────────────────────── -->
+    <string name="map_load_failed">지도를 불러오지 못했어요</string>
+    <string name="map_location_fallback">위치</string>
+    <string name="map_open_external">지도 앱에서 열기</string>
+
+    <!-- ─────────────────────────── 위젯 · 공통 동작 ─────────────────────────── -->
+    <string name="widget_no_active_journey">진행 중인 여정 없음</string>
+    <string name="widget_start_journey">여정 시작하기</string>
+    <string name="widget_tap_to_open">탭하여 앱 열기</string>
+    <string name="widget_all_stops_done">모든 정차지 완료</string>
+    <string name="widget_finish_prompt">여정을 완료하세요</string>
+    <string name="action_complete_journey">여정 완료</string>
+    <string name="action_start_work">작업 시작</string>
+    <string name="action_finish_work">작업 완료</string>
+    <string name="action_next">다음</string>
+
+    <!-- ─────────────────────────── 플로팅 빠른 실행 ─────────────────────────── -->
+    <string name="floating_menu_title">빠른 실행</string>
+    <string name="floating_next_step">다음 단계</string>
+    <string name="floating_capture">즉시 촬영</string>
+    <string name="floating_scan_document">문서 스캔</string>
+    <string name="floating_barcode">바코드</string>
+    <string name="floating_memo">메모</string>
+    <string name="floating_open_app">앱 열기</string>
+    <string name="floating_turn_off">끄기</string>
+    <string name="floating_journey_running">진행 중인 여정</string>
+    <string name="floating_current_stage">현재 · %1$s</string>
+    <string name="floating_in_progress">진행 중</string>
+    <string name="floating_view_journey">여정 보기</string>
+    <string name="floating_arrive_at">%1$s 도착</string>
+    <string name="floating_channel_name">빠른 실행 플로팅</string>
+    <string name="floating_notif_title">빠른 실행 버블 사용 중</string>
+    <string name="floating_notif_text">어디서나 촬영·문서·바코드·메모를 바로 시작</string>
+
+    <!-- ─────────────────────────── 정차지 순서 시트 ─────────────────────────── -->
+    <string name="reorder_title">정차지 순서</string>
+    <string name="reorder_listening">듣고 있어요… ‘○○ 먼저’</string>
+    <string name="reorder_hint">손잡이를 끌어 순서를 바꾸거나, 마이크로 ‘○○ 먼저’라고 말해보세요.</string>
+    <string name="reorder_empty">순서를 바꿀 정차지가 없어요.</string>
+    <string name="reorder_voice_prompt">순서를 바꿀 정차지를 ‘○○ 먼저’처럼 말씀해 주세요.</string>
+    <string name="reorder_moved_first">%1$s 먼저 가도록 옮겼어요.</string>
+    <string name="reorder_already_first">%1$s이 이미 먼저예요.</string>
+    <string name="reorder_not_found">‘%1$s’ 정차지를 못 찾았어요. 손잡이로 옮기거나 다시 말씀해 주세요.</string>
+    <string name="cd_reorder_handle">순서 이동</string>
+
+    <!-- ─────────────────────────── 공통 버튼 ─────────────────────────── -->
+    <string name="action_close">닫기</string>
+    <string name="action_done">완료</string>
+    <string name="action_save">저장</string>
+    <string name="action_delete">삭제</string>
+    <string name="action_add_stop">정차지 추가</string>
+    <string name="action_by_voice">음성으로</string>
+    <string name="action_listening">듣는 중…</string>
+
+    <!-- ─────────────────────────── 비용 · 이슈 입력 ─────────────────────────── -->
+    <string name="expense_add_title">비용 추가</string>
+    <string name="expense_receipt_detected">영수증 인식됨</string>
+    <string name="expense_amount_hint">금액 (원)</string>
+    <string name="expense_vendor_hint">사용처 (선택) — 주유소·식당 이름 등</string>
+    <string name="expense_memo_hint">메모 (선택)</string>
+    <string name="expense_capture_receipt">영수증 촬영으로 입력</string>
+    <string name="expense_save_amount">%1$s원 저장</string>
+    <string name="issue_add_title">이슈 등록</string>
+    <string name="issue_auto_note">발생 시각과 현재 위치는 자동으로 기록돼요</string>
+    <string name="issue_description_hint">상황을 설명해주세요 (필수)</string>
+
+    <!-- ─────────────────────────── 앨범 필터 · 정렬 · 검색 ─────────────────────────── -->
+    <string name="album_filter_all">전체</string>
+    <string name="album_filter_favorite">즐겨찾기</string>
+    <string name="sort_newest">최신순</string>
+    <string name="sort_oldest">오래된순</string>
+    <string name="sort_purpose">용도순</string>
+    <string name="search_field_name">이름</string>
+    <string name="search_field_purpose">용도</string>
+    <string name="search_field_memo">메모</string>
+    <string name="search_field_tag">태그</string>
+    <string name="search_field_date">날짜</string>
+    <string name="search_field_type">종류</string>
+    <string name="search_field_barcode">바코드</string>
+    <string name="search_field_content">내용</string>
+
+    <!-- ─────────────────────────── 앨범 화면 ─────────────────────────── -->
+    <string name="album_title">앨범</string>
+    <string name="album_pick_hint">좌측에서 기록을 선택하세요</string>
+    <string name="album_empty">저장된 기록이 없습니다</string>
+    <string name="search_no_results">검색 결과가 없습니다</string>
+    <string name="search_result_count">검색 결과 %1$d건</string>
+    <string name="album_search_hint">용도·날짜·종류·메모·이름 검색</string>
+    <string name="selected_count">%1$d개 선택</string>
+    <string name="count_items">%1$d건</string>
+    <string name="filter_section_type">종류</string>
+    <string name="filter_section_purpose">용도</string>
+    <string name="filter_section_sort">정렬</string>
+    <string name="filter_section_grid">그리드</string>
+    <string name="grid_auto">자동</string>
+    <string name="grid_columns">%1$d열</string>
+    <string name="action_share">공유</string>
+    <string name="action_clear">지우기</string>
+
+    <!-- ─────────────────────────── 기록 상세 ─────────────────────────── -->
+    <string name="detail_tap_to_enlarge">탭하여 크게 보기</string>
+    <string name="detail_enlarge">크게 보기</string>
+    <string name="detail_copy_value">값 복사</string>
+    <string name="detail_edit_image">이미지 편집</string>
+    <string name="detail_info_job_date">업무 일자</string>
+    <string name="detail_info_saved_at">저장 일시</string>
+    <string name="detail_info_size">용량</string>
+    <string name="detail_info_location">위치</string>
+    <string name="detail_no_content">내용이 없습니다</string>
+    <string name="detail_edit_memo">메모 편집</string>
+    <string name="detail_memo_hint">메모를 입력하세요</string>
+    <string name="detail_tags_label">태그 (쉼표로 구분)</string>
+    <string name="detail_tags_hint">예: 타이어, 점검, 용인</string>
+    <string name="detail_save_changes">변경사항 저장</string>
+    <string name="toast_saved">저장되었습니다</string>
+    <string name="toast_copied">복사했습니다</string>
+    <string name="action_share_long">공유하기</string>
+
+    <!-- ─────────────────────────── 홈 인사말 · 여정 안내 ─────────────────────────── -->
+    <string name="greeting_morning">좋은 아침이에요</string>
+    <string name="greeting_afternoon">오늘도 안전 운행하세요</string>
+    <string name="greeting_evening">오늘도 고생 많으셨어요</string>
+    <string name="greeting_with_name">%1$s 님, %2$s 👋</string>
+    <string name="greeting_plain">%1$s 👋</string>
+    <string name="name_prefix">%1$s님, </string>
+    <string name="safety_rain"> 빗길 조심하세요!</string>
+    <string name="safety_snow"> 눈길 안전거리 충분히요!</string>
+    <string name="safety_fog"> 안개 조심, 전조등 켜세요!</string>
+    <string name="safety_late_night"> 졸리면 꼭 쉬어가세요!</string>
+    <string name="safety_night"> 야간 운행 안전이 최고예요!</string>
+    <string name="start_message">%1$s오늘도 안전 운행 하세요!%2$s</string>
+    <string name="announce_route_from_to">%1$s에서 %2$s로 가는 여정이에요. </string>
+    <string name="announce_route_to">%1$s로 가는 여정이에요. </string>
+    <string name="announce_route_from">%1$s에서 출발하는 여정이에요. </string>
+    <string name="announce_via">%1$s를 거쳐 갑니다. </string>
+    <string name="announce_location">현재 위치는 %1$s, </string>
+    <string name="announce_weather">날씨는 %1$s, %2$d도예요. </string>
+    <string name="announce_start">여정을 시작했어요. %1$s%2$s%3$s%4$s안전 운전 하세요!</string>
+    <string name="journey_start_title">여정 시작!</string>
+    <string name="journey_all_stops_done_sub">모든 정차지를 마쳤어요 — 여정을 완료할 수 있어요</string>
+    <string name="voice_all_stops_done">%1$s 완료! 마지막 정차지까지 끝났어요.</string>
+    <string name="confirm_work_started">%1$s 작업을 시작했어요</string>
+    <string name="confirm_work_done">%1$s 완료!</string>
+    <string name="journey_complete_title">여정 완료 👏</string>
+    <string name="voice_journey_complete">여정 완료! 오늘도 정말 고생 많으셨습니다.</string>
+    <string name="voice_stops_added">%1$s 정차지를 추가했어요.</string>
+    <string name="voice_stops_added_plain">정차지를 추가했어요.</string>
+    <string name="imported_photo_title">가져온 사진</string>
+
+    <!-- ─────────────────────────── 여정 지도 · 지난 여정 · 장소 검색 ─────────────────────────── -->
+    <string name="action_fullscreen">전체화면</string>
+    <string name="marker_barcode_short">바</string>
+    <string name="marker_memo_short">메</string>
+    <string name="marker_document_short">문</string>
+    <string name="marker_etc_short">기</string>
+    <string name="journey_history_title">지난 여정</string>
+    <string name="journey_history_empty">완료된 여정이 아직 없어요</string>
+    <string name="journey_stop_count">정차지 %1$d곳</string>
+    <string name="place_search_hint">장소·건물·주소 검색</string>
+    <string name="place_search_voice">음성 검색</string>
+    <string name="map_legend_route">여정 경로</string>
+    <string name="map_legend_current_stop">현재 정차지</string>
+    <string name="map_legend_stops">상·하차지</string>
+    <string name="map_legend_here">현위치</string>
+    <string name="place_search_empty">검색 결과가 없어요</string>
+    <string name="place_search_count">검색 결과 %1$d곳 · 누르면 메뉴</string>
+    <string name="place_searching">‘%1$s’ 찾는 중…</string>
+    <string name="place_add_to_journey">진행 중인 여정에 추가</string>
+    <string name="place_add_pickup">상차지 추가</string>
+    <string name="place_add_dropoff">하차지 추가</string>
+    <string name="place_or_start_new">또는 새 여정 시작</string>
+    <string name="place_start_journey_here">이 곳으로 여정 시작</string>
+    <string name="place_depart_here">여기서 출발</string>
+    <string name="place_arrive_here">여기로 도착</string>
+    <string name="missing_evidence_title">증빙이 누락됐어요</string>
+    <string name="missing_evidence_message">%1$s
+
+그래도 여정을 완료할까요?</string>
+    <string name="action_complete_anyway">그래도 완료</string>
+    <string name="action_add_later">나중에 추가</string>
+    <string name="action_cancel_journey">여정 취소</string>
+    <string name="journey_cancel_message">이 여정을 취소할까요? 저장된 기록은 그대로 남아요.</string>
+    <string name="stop_delete_title">정차지 삭제</string>
+    <string name="stop_delete_message">‘%1$s’ 정차지를 삭제할까요?</string>
+    <string name="stop_name_placeholder">예: 부산 신항 3부두</string>
+    <string name="action_next_stop">다음으로</string>
+    <string name="action_arrive_at">%1$s 도착</string>
+
+    <!-- ─────────────────────────── 홈 여정 카드 · 도착 물음 ─────────────────────────── -->
+    <string name="arrival_voice_hint">‘시작’ 또는 ‘대기’ 중에 말씀해 주세요.</string>
+    <string name="arrival_voice_prompt">%1$s 에 도착했어요. %2$s 작업을 바로 시작할까요? ‘시작’ 또는 ‘대기’ 라고 말씀해 주세요.</string>
+    <string name="arrival_title">%1$s 도착!</string>
+    <string name="arrival_question">%1$s 작업을 바로 시작할까요?</string>
+    <string name="arrival_hint">“시작” / “대기” 라고 말하거나, 아래 버튼을 눌러주세요</string>
+    <string name="action_wait">잠시 대기</string>
+    <string name="journey_stop_auto_note">정차지는 도착할 때 현재 위치로 자동 기록돼요</string>
+    <string name="action_reorder_stops">정차지 순서 변경</string>
+    <string name="action_arrive_pickup">상차지 도착</string>
+    <string name="action_arrive_dropoff">하차지 도착</string>
+    <string name="action_go_next_stop">다음 정차지로</string>
+    <string name="action_stops">정차지</string>
+    <string name="action_detail">상세</string>
+    <string name="action_add">추가</string>
+    <string name="record_count">기록 %1$d건</string>
+    <string name="stop_waiting_since">대기 %1$s · 도착 %2$s</string>
+    <string name="stop_working_for">%1$s 작업 %2$s</string>
+    <string name="stop_waited_suffix"> · 대기 %1$s</string>
+    <string name="duration_hour_minute">%1$d시간 %2$d분</string>
+    <string name="duration_minute">%1$d분</string>
+    <string name="badge_in_progress">진행중</string>
+    <string name="journey_start_cta">여정 시작하기</string>
+    <string name="journey_start_cta_sub">한 번 탭하면 시작 — 도착할 때마다 자동 기록돼요</string>
+    <string name="date_month_day_pattern">M월 d일</string>
+    <string name="journey_completed_at">%1$s 완료</string>
+    <string name="wizard_pickup_prompt">상차지 이름을 말씀해주세요</string>
+    <string name="wizard_dropoff_prompt">하차지 이름을 말씀해주세요</string>
+    <string name="journey_sheet_note">입력 없이 시작해도 돼요 — 도착하면 현재 위치로 자동 기록됩니다</string>
+    <string name="field_pickup_optional">상차지 (선택)</string>
+    <string name="field_dropoff_optional">하차지 (선택)</string>
+    <string name="frequent_recent_stops">자주 · 최근 정차지</string>
+    <string name="action_start_journey">여정 시작</string>
+    <string name="action_voice_input">음성 입력</string>
+
+    <!-- ─────────────────────────── 음성 응답 ─────────────────────────── -->
+    <string name="arrival_listening">🎤 듣고 있어요 — “시작” 또는 “대기”라고 말씀하세요</string>
+    <string name="action_speak_again">🎤 다시 말하기</string>
+
+    <string name="crop_free">자유</string>
+    <string name="crop_receipt">영수증</string>
+    <string name="editor_tool_adjust">보정</string>
+    <string name="editor_tool_crop">자르기</string>
+    <string name="editor_tool_redact">가림</string>
+    <string name="redact_mosaic">모자이크</string>
+    <string name="redact_blur">블러</string>
+    <string name="video_tool_trim">자르기</string>
+    <string name="video_tool_crop">비율변경</string>
+    <string name="video_tool_rotate">회전</string>
+    <string name="video_tool_speed">속도</string>
+    <string name="video_tool_audio">오디오</string>
+    <string name="video_tool_quality">화질</string>
+    <string name="video_export_failed">내보내기에 실패했습니다</string>
+
+    <string name="backup_done">백업 완료: 기록 %1$d건, 사진 %2$d개</string>
+    <string name="backup_failed">백업 실패: %1$s</string>
+    <string name="restore_done">복원 완료: 기록 %1$d건</string>
+    <string name="restore_failed">복원 실패: %1$s</string>
+    <string name="backup_in_progress">백업 중…</string>
+    <string name="restore_in_progress">복원 중…</string>
+
+    <!-- ─────────────────────────── 빠른 기록 알림 · 위젯 ─────────────────────────── -->
+    <string name="quick_notif_channel">빠른 기록</string>
+    <string name="quick_notif_channel_desc">알림창에서 촬영·문서·바코드·메모를 바로 시작</string>
+    <string name="quick_notif_text">촬영 · 문서 · 바코드 · 메모를 바로 시작</string>
+    <string name="barcode_widget_none">저장된 바코드 없음</string>
+    <string name="barcode_widget_tap_scan">탭하여 스캔</string>
+
+    <!-- ─────────────────────────── 기본 저장 이름 · 안내 ─────────────────────────── -->
+    <string name="default_title_photo">%1$s 사진</string>
+    <string name="default_title_batch">%1$s 묶음 (%2$d)</string>
+    <string name="default_title_video">%1$s 동영상</string>
+    <string name="record_not_found">기록을 찾을 수 없습니다</string>
+    <string name="viewer_no_image">이미지가 없습니다</string>
+    <string name="pdf_cannot_open">문서를 열 수 없습니다</string>
+    <string name="press_back_again">한 번 더 누르면 종료돼요</string>
+    <string name="default_driver_name">기사님</string>
+    <string name="quickdock_title">빠른 작업</string>
+    <string name="action_place_search">장소 검색</string>
+    <string name="action_search">검색</string>
+    <string name="search_hint">제목, 메모, 태그, 바코드, 위치 검색</string>
+    <string name="action_confirm">확인</string>
+    <string name="action_cancel">취소</string>
+    <string name="field_name">이름</string>
+
+
+
+    <!-- ─────────────────────────── 비율 · 화질 표기 ─────────────────────────── -->
+    <string name="crop_square">1:1</string>
+    <string name="crop_4_3">4:3</string>
+    <string name="crop_16_9">16:9</string>
+    <string name="crop_9_16">9:16</string>
+    <string name="video_quality_hd">HD 720p</string>
+    <string name="video_quality_sd">SD 480p</string>
+
+    <!-- ─────────────────────────── 설정 화면 ─────────────────────────── -->
+    <string name="settings_title">설정</string>
+    <string name="settings_section_account">계정 · 클라우드 백업</string>
+    <string name="settings_sign_in">로그인 / 백업</string>
+    <string name="settings_sign_in_sub">로그인하면 클라우드 백업이 켜져요 (선택)</string>
+    <string name="settings_section_profile">내 정보</string>
+    <string name="settings_section_theme">테마</string>
+    <string name="settings_theme_row">화면 테마</string>
+    <string name="theme_system">시스템</string>
+    <string name="theme_light">라이트</string>
+    <string name="theme_dark">다크</string>
+    <string name="settings_section_capture">촬영 / 저장</string>
+    <string name="settings_default_purpose">기본 용도</string>
+    <string name="settings_save_location">위치 정보 저장</string>
+    <string name="settings_autosave">촬영 후 자동 저장</string>
+    <string name="settings_edit_after_capture">촬영 후 바로 편집</string>
+    <string name="settings_section_watermark">공유 워터마크 기본값</string>
+    <string name="watermark_field_date">날짜</string>
+    <string name="watermark_field_purpose">용도</string>
+    <string name="watermark_field_location">위치</string>
+    <string name="watermark_field_name">저장된 이름</string>
+    <string name="watermark_field_custom">커스텀 문구</string>
+    <string name="settings_section_journey">여정</string>
+    <string name="settings_arrival_radius">도착 알림 반경</string>
+    <string name="settings_arrival_radius_sub">정차지 근처 진입 시 알림</string>
+    <string name="settings_voice_guide">음성 안내</string>
+    <string name="settings_cloud_voice">고품질 음성 (온라인)</string>
+    <string name="settings_floating_bubble">플로팅 버블 (어디서나)</string>
+    <string name="settings_floating_bubble_sub">앱 밖에서도 촬영·문서·바코드·메모를 바로</string>
+    <string name="settings_journey_control">여정 컨트롤 표시</string>
+    <string name="settings_journey_control_sub">버블에 여정 ‘다음 단계’·완료를 함께 표시</string>
+    <string name="settings_quick_notification">빠른 기록 알림</string>
+    <string name="settings_quick_notification_sub">알림창에서 촬영·문서·바코드·메모를 바로 시작 (권한 불필요)</string>
+    <string name="settings_section_purposes">용도(태그) 관리</string>
+    <string name="settings_manage_purposes">용도 관리</string>
+    <string name="settings_manage_purposes_sub">추가·삭제·순서 변경 (%1$d개)</string>
+    <string name="settings_section_photo_quality">사진 품질</string>
+    <string name="settings_save_quality">저장 품질</string>
+    <string name="settings_section_backup">백업 / 복원</string>
+    <string name="settings_export_backup">백업 내보내기 (ZIP)</string>
+    <string name="settings_export_backup_sub">기록·사진·연락처를 ZIP 파일로 저장</string>
+    <string name="settings_import_backup">백업 가져오기 (복원)</string>
+    <string name="settings_import_backup_sub">ZIP 백업에서 기록을 복원</string>
+    <string name="settings_section_manage">관리</string>
+    <string name="settings_contacts">연락처</string>
+    <string name="settings_contacts_sub">업무 연락처 가져오기 / 관리</string>
+    <string name="settings_widgets">위젯 안내</string>
+    <string name="settings_widgets_sub">홈 화면에 즉시 촬영 / 바코드 위젯을 추가하세요</string>
+    <string name="settings_footer">TRUBBI v1.0 · 트러커의 스마트 기록 메이트</string>
+
+    <!-- ─────────────────────────── 용도 관리 화면 ─────────────────────────── -->
+    <string name="purposes_intro_1">촬영·저장 시 사용할 용도를 관리합니다. 손잡이를 눌러 끌어서 순서를 바꿀 수 있어요. </string>
+    <string name="purposes_intro_2">‘상차·하차’는 여정과 연동되어 삭제할 수 없어요. 용도를 삭제해도 이미 저장된 기록 표시에는 영향을 주지 않습니다.</string>
+    <string name="purposes_cannot_delete">삭제 불가</string>
+    <string name="purposes_add_new">새 용도 추가</string>
+    <string name="purposes_reset">기본값으로 초기화</string>
+
+    <!-- ─────────────────────────── 달력 화면 ─────────────────────────── -->
+    <string name="calendar_title">캘린더</string>
+    <string name="calendar_day_records">%1$d월 %2$d일 기록</string>
+    <string name="calendar_day_empty">이 날짜에 저장된 기록이 없습니다</string>
+    <string name="calendar_empty">기록이 없습니다</string>
+
+    <!-- ─────────────────────────── 바코드 화면 ─────────────────────────── -->
+    <string name="barcode_default_title">%1$s 바코드 %2$s</string>
+    <string name="barcode_recognized">인식된 코드</string>
+    <string name="barcode_name_hint">예: 성남창고 운송장</string>
+    <string name="barcode_rescan">다시 스캔</string>
+    <string name="barcode_manual_entry">바코드 직접 입력</string>
+    <string name="barcode_value_label">코드 값</string>
+    <string name="barcode_name_optional">이름 (선택)</string>
+
+    <!-- ─────────────────────────── 메모 편집기 ─────────────────────────── -->
+    <string name="memo_edit_title">메모 편집</string>
+    <string name="memo_new_title">새 메모</string>
+    <string name="memo_format_char">가</string>
+    <string name="memo_group_text">글자</string>
+    <string name="memo_group_highlight">형광</string>
+    <string name="memo_group_paragraph">문단</string>
+    <string name="memo_insert_image">이미지</string>
+    <string name="memo_insert_table">표</string>
+    <string name="memo_table_add_row">행+</string>
+    <string name="memo_table_add_column">열+</string>
+    <string name="memo_body_hint">내용을 입력하세요</string>
+
+    <!-- ─────────────────────────── 이미지 편집기 ─────────────────────────── -->
+    <string name="editor_title_apply">편집 후 적용</string>
+    <string name="editor_title_photo">사진 편집</string>
+    <string name="editor_processing">처리 중…</string>
+    <string name="action_apply">적용</string>
+    <string name="editor_load_failed">이미지를 불러올 수 없습니다</string>
+    <string name="editor_save_title">편집 저장</string>
+    <string name="editor_save_message">변경한 내용으로 새 이미지를 저장할까요? 원본은 그대로 보관됩니다.</string>
+    <string name="editor_brightness">밝기</string>
+    <string name="editor_contrast">대비</string>
+    <string name="editor_crop_hint">비율을 선택하거나, 모서리 핸들을 드래그해 영역을 맞추세요</string>
+    <string name="editor_redact_hint">가릴 영역을 드래그해 추가하세요 (개인정보·차량번호 등)</string>
+
+    <!-- ─────────────────────────── 영상 편집기 ─────────────────────────── -->
+    <string name="video_editor_title">영상 편집</string>
+    <string name="video_saving">저장 중…</string>
+    <string name="video_exporting">내보내는 중 %1$d%%</string>
+    <string name="video_trim_hint">양끝을 끌어 구간을 정하고, 가운데를 끌어 구간을 통째로 옮기세요</string>
+    <string name="video_length">길이 %1$s</string>
+    <string name="video_crop_hint">비율을 선택하거나 ‘자유’에서 모서리를 드래그하세요</string>
+    <string name="video_speed_hint">재생 속도를 선택하세요 (소리도 함께 맞춰집니다)</string>
+    <string name="video_muted">음소거 — 소리 없이 저장됩니다</string>
+    <string name="video_unmuted">소리 포함 — 탭하여 음소거</string>
+    <string name="video_quality_hint">내보낼 화질을 선택하세요 (낮을수록 용량 작음)</string>
+
+    <!-- ─────────────────────────── 환영 · 온보딩 ─────────────────────────── -->
+    <string name="welcome_start">시작하기</string>
+    <string name="welcome_tagline">트럭커의 업무기록 메이트</string>
+    <string name="welcome_sub">운송 한 건의 모든 순간을 TRUBBI와 함께 기록해 보세요</string>
+    <string name="welcome_point1_title">여정 기록</string>
+    <string name="welcome_point1_sub">출발부터 도착까지 자동으로 기록해 보세요</string>
+    <string name="welcome_point2_title">증빙·비용·리포트</string>
+    <string name="welcome_point2_sub">사진과 영수증을 PDF로 한 번에 정리해 보세요</string>
+    <string name="welcome_point3_title">클라우드 백업</string>
+    <string name="welcome_point3_sub">기기를 바꿔도 안전하게 이어가 보세요</string>
+    <string name="welcome_sign_in_hint">로그인하거나 새 계정을 만들어 시작해 보세요</string>
+    <string name="onboarding_page1_title">출발부터 도착까지, 한 번에</string>
+    <string name="onboarding_page1_body">여정을 시작하면 단계·위치·시간이 자동으로 기록돼요. 음성으로 간편하게 진행하세요.</string>
+    <string name="onboarding_page2_title">증빙은 자동, 정산은 간단</string>
+    <string name="onboarding_page2_body">상·하차 사진, 영수증, 비용을 모아 PDF 리포트로. 클라우드 백업으로 기기를 바꿔도 안전해요.</string>
+    <string name="action_next_step">다음</string>
+    <string name="onboarding_open_settings">설정에서 권한 허용</string>
+    <string name="onboarding_grant_and_continue">권한 허용하고 계속</string>
+    <string name="onboarding_permission_note">원활한 이용을 위해 위치·알림 권한이 필요해요</string>
+    <string name="action_skip">건너뛰기</string>
+    <string name="onboarding_permission_title">권한 허용이 필요해요</string>
+    <string name="onboarding_permission_sub">여정 기록·알림을 위해 아래 권한을 허용해 주세요</string>
+    <string name="permission_location">위치 (필수)</string>
+    <string name="permission_location_sub">상·하차지 도착 기록과 경로 기록에 사용해요</string>
+    <string name="permission_notification">알림 (필수)</string>
+    <string name="permission_notification_sub">도착 안내, 백업·증빙 알림에 사용해요</string>
+    <string name="permission_camera">카메라</string>
+    <string name="permission_camera_sub">상·하차 사진과 영수증 촬영에 사용해요 (촬영 시 요청)</string>
+    <string name="onboarding_almost_done">거의 다 됐어요</string>
+    <string name="onboarding_set_profile">이름과 프로필을 설정해 주세요</string>
+
+    <!-- ─────────────────────────── 연락처 ─────────────────────────── -->
+    <string name="contacts_title">연락처</string>
+    <string name="contacts_add_manual">직접 추가</string>
+    <string name="contacts_import_device">기기에서 가져오기</string>
+    <string name="contacts_empty">저장된 연락처가 없습니다</string>
+    <string name="contacts_call">전화 걸기</string>
+    <string name="contacts_message">문자 보내기</string>
+    <string name="contacts_export_device">기기에 저장(내보내기)</string>
+    <string name="contacts_add_title">연락처 추가</string>
+    <string name="contacts_field_company">회사/거래처</string>
+    <string name="contacts_field_type">유형 (배차/화주/현장/정비 등)</string>
+    <string name="contacts_field_phones">전화번호 (쉼표로 여러 개)</string>
+    <string name="contacts_share_title">연락처 공유</string>
+
+    <!-- ─────────────────────────── 공유 갤러리 ─────────────────────────── -->
+    <string name="share_composer_title">공유 · 묶음 %1$d장</string>
+    <string name="share_label_video">영상</string>
+    <string name="share_preview_note">미리보기 · 이렇게 전송돼요</string>
+    <string name="share_batch_index">묶음 %1$d/%2$d</string>
+    <string name="share_video_original_note">영상은 워터마크 없이 원본 그대로 전송돼요.</string>
+    <string name="share_watermark_section">워터마크 (항목별로 편집)</string>
+    <string name="share_purpose_none">선택 안 함</string>
+    <string name="share_field_text">문구</string>
+    <string name="share_style_section">스타일</string>
+    <string name="share_apply_all">이 설정을 모든 사진에 적용</string>
+    <string name="share_enter_text">내용 입력</string>
+    <string name="share_no_info">정보 없음</string>
+
+    <!-- ─────────────────────────── 카메라 ─────────────────────────── -->
+    <string name="camera_mode_burst">연속</string>
+    <string name="camera_capture_failed">촬영 실패: %1$s</string>
+    <string name="camera_record_failed">녹화 실패</string>
+    <string name="camera_edit_after_on">촬영 후 편집 ON</string>
+    <string name="camera_edit_after_off">촬영 후 편집 OFF</string>
+    <string name="camera_save_batch">묶음 저장</string>
+    <string name="camera_start_doc_scan">문서 스캔 시작</string>
+    <string name="camera_batch_with_location">%1$s %2$s 묶음</string>
+    <string name="camera_batch_default">%1$s 묶음 %2$s</string>
+    <string name="camera_video_name">동영상 이름</string>
+    <string name="camera_photo_name">사진 이름</string>
+    <string name="camera_save_batch_count">묶음 저장 (%1$d장)</string>
+    <string name="camera_batch_name">묶음 이름</string>
+    <string name="camera_photo_names">개별 사진 이름</string>
+    <string name="camera_save_document">문서 저장</string>
+    <string name="camera_page_count">%1$d쪽</string>
+    <string name="camera_document_name">문서 이름</string>
+    <string name="camera_keep_page_images">원본 이미지도 함께 저장</string>
+    <string name="camera_keep_page_images_sub">PDF + 페이지별 사진을 묶어서 보관</string>
+
+    <!-- ─────────────────────────── 문서 저장 안내 ─────────────────────────── -->
+    <string name="camera_doc_save_note">보정된 PDF로 저장됩니다.
+스캔 원본 이미지도 함께 보관할 수 있어요.</string>
+
+    <!-- ─────────────────────────── 계정 · 인증 안내 ─────────────────────────── -->
+    <string name="auth_checking_account">계정을 확인하고 있어요</string>
+    <string name="auth_no_account_title">가입되지 않은 이메일이에요</string>
+    <string name="auth_no_account_body">이 이메일로 가입된 계정이 없어요. 회원가입하시겠어요?</string>
+    <string name="auth_sign_up">회원가입</string>
+    <string name="auth_signing_in">로그인 중이에요</string>
+    <string name="auth_signing_up">회원가입을 진행하고 있어요</string>
+    <string name="auth_checking_email">이메일을 확인하고 있어요</string>
+    <string name="auth_email_taken_title">이미 가입된 이메일이에요</string>
+    <string name="auth_email_taken_body">이 이메일로 이미 계정이 있어요. 로그인하시겠어요?</string>
+    <string name="auth_go_sign_in">로그인하기</string>
+    <string name="auth_email_login_off_title">이메일 로그인이 꺼져 있어요</string>
+    <string name="auth_email_login_off_body">Firebase 콘솔의 Authentication에서 ‘이메일/비밀번호’ 로그인을 켜야 가입할 수 있어요.</string>
+    <string name="auth_cannot_sign_in_title">로그인할 수 없어요</string>
+    <string name="auth_cannot_sign_in_body">이메일 또는 비밀번호가 올바르지 않아요. 다시 확인해 주세요.</string>
+    <string name="auth_retry_later_title">잠시 후 다시 시도해주세요</string>
+    <string name="auth_retry_later_body">요청이 많아 일시적으로 제한됐어요. 잠시 후 다시 시도해 주세요.</string>
+    <string name="auth_network_title">네트워크 연결을 확인해주세요</string>
+    <string name="auth_network_body">인터넷에 연결되어 있는지 확인한 뒤 다시 시도해 주세요.</string>
+    <string name="auth_weak_password_title">비밀번호가 약해요</string>
+    <string name="auth_weak_password_body">8자 이상, 영문과 숫자를 포함해 주세요.</string>
+    <string name="auth_generic_error_title">문제가 발생했어요</string>
+    <string name="auth_generic_error_body">잠시 후 다시 시도해 주세요.</string>
+    <string name="auth_verify_sent_title">인증 메일을 보냈어요</string>
+    <string name="auth_verify_sent_body">메일함(스팸함 포함)을 확인하고 링크를 눌러주세요.</string>
+    <string name="auth_not_verified_title">아직 인증 전이에요</string>
+    <string name="auth_not_verified_body">받은 인증 메일의 링크를 누른 뒤 다시 시도해 주세요. 메일이 안 보이면 스팸함도 확인해 주세요.</string>
+    <string name="auth_check_email_title">이메일을 확인해주세요</string>
+    <string name="auth_check_email_body">비밀번호를 재설정할 이메일 주소를 정확히 입력해 주세요.</string>
+    <string name="auth_reset_sent_title">재설정 메일을 보냈어요</string>
+    <string name="auth_reset_sent_body">메일의 안내에 따라 비밀번호를 다시 설정해 주세요.</string>
+    <string name="auth_google_not_ready_title">구글 로그인 준비 중</string>
+    <string name="auth_google_not_ready_body">Firebase 콘솔에서 구글 로그인을 활성화하면 사용할 수 있어요.</string>
+    <string name="auth_google_signing_in">구글 계정으로 로그인 중이에요</string>
+    <string name="auth_name_required_title">이름을 입력해 주세요</string>
+    <string name="auth_name_required_body">표시할 이름을 입력해 주세요.</string>
+    <string name="auth_name_changed">이름을 변경했어요</string>
+    <string name="auth_uploading_photo">프로필 사진을 올리는 중이에요</string>
+    <string name="auth_cannot_delete_title">탈퇴할 수 없어요</string>
+    <string name="auth_cannot_delete_body">보안을 위해 다시 로그인한 뒤 탈퇴를 시도해 주세요.</string>
+    <string name="cloud_backup_done">클라우드 백업 완료</string>
+    <string name="cloud_restore_done">복원 완료 — 앱을 다시 열면 반영돼요</string>
+
+    <!-- ─────────────────────────── 로그인 · 회원가입 화면 ─────────────────────────── -->
+    <string name="account_verify_email_title">이메일을 확인해주세요</string>
+    <string name="account_signup_email_label">가입한 이메일</string>
+    <string name="account_verified_continue">인증 완료, 계속하기</string>
+    <string name="account_resend_verification">인증 메일 다시 보내기</string>
+    <string name="account_use_other_account">다른 계정으로 로그인</string>
+    <string name="account_agree_title">약관에 동의해 주세요</string>
+    <string name="account_agree_sub">서비스 이용을 위해 동의가 필요해요</string>
+    <string name="account_agree_and_start">동의하고 시작</string>
+    <string name="account_title_sign_in">로그인</string>
+    <string name="account_title_signed_in">계정 · 백업</string>
+    <string name="account_hint_go_sign_in">이미 가입된 이메일 → 로그인하기</string>
+    <string name="account_hint_go_sign_up">가입되지 않은 이메일 → 회원가입</string>
+    <string name="account_start_sub">TRUBBI 계정으로 로그인하거나 간편 로그인을 이용하세요</string>
+    <string name="account_sign_in_with_trubbi">TRUBBI 계정으로 로그인</string>
+    <string name="account_kakao_soon_title">카카오 로그인 준비 중</string>
+    <string name="account_kakao_soon_body">카카오 로그인은 곧 제공될 예정이에요. 지금은 이메일 또는 구글로 시작해 주세요.</string>
+    <string name="account_naver_soon_title">네이버 로그인 준비 중</string>
+    <string name="account_naver_soon_body">네이버 로그인은 곧 제공될 예정이에요. 지금은 이메일 또는 구글로 시작해 주세요.</string>
+    <string name="account_no_account_yet">아직 계정이 없으신가요?</string>
+    <string name="account_err_email_required">이메일을 입력해 주세요</string>
+    <string name="account_err_email_format">이메일 형식이 올바르지 않아요</string>
+    <string name="account_err_password_required">비밀번호를 입력해 주세요</string>
+    <string name="account_step_email_sub">가입한 이메일로 로그인합니다</string>
+    <string name="account_welcome_back">%1$s님, 다시 오셨네요!</string>
+    <string name="account_step_password_sub_named">비밀번호를 입력하면 로그인돼요</string>
+    <string name="account_step_password_sub">비밀번호로 로그인합니다</string>
+    <string name="account_field_email">이메일</string>
+    <string name="account_field_password">비밀번호</string>
+    <string name="account_forgot_password">비밀번호를 잊으셨나요?</string>
+    <string name="account_err_name_required">이름을 입력해 주세요</string>
+    <string name="account_err_password_rules">비밀번호 조건을 모두 충족해 주세요</string>
+    <string name="account_err_password_confirm">비밀번호를 한 번 더 입력해 주세요</string>
+    <string name="account_err_password_mismatch">비밀번호가 일치하지 않아요</string>
+    <string name="account_signup_agree_sub">시작하기 전에 동의가 필요해요</string>
+    <string name="account_agree_and_continue">동의하고 계속</string>
+    <string name="account_signup_name_title">이름을 알려주세요</string>
+    <string name="account_signup_name_sub">앱에서 이렇게 불러드릴게요</string>
+    <string name="account_signup_email_sub">로그인과 인증에 사용할 이메일이에요</string>
+    <string name="account_signup_password_title">비밀번호를 만들어 주세요</string>
+    <string name="account_signup_password_sub">안전하게 8자 이상으로 설정해요</string>
+    <string name="account_signup_confirm_title">비밀번호를 다시 입력해 주세요</string>
+    <string name="account_signup_confirm_sub">확인을 위해 한 번 더 입력해요</string>
+    <string name="account_do_sign_up">가입하기</string>
+    <string name="account_field_password_confirm">비밀번호 확인</string>
+    <string name="account_password_match">비밀번호가 일치해요</string>
+    <string name="account_agree_all">전체 동의 (선택 포함)</string>
+    <string name="account_terms_service">[필수] 이용약관 동의</string>
+    <string name="account_terms_service_short">이용약관</string>
+    <string name="account_terms_privacy">[필수] 개인정보 수집·이용 동의</string>
+    <string name="account_terms_privacy_short">개인정보 수집·이용</string>
+    <string name="account_terms_location">[필수] 위치기반서비스 이용약관 동의</string>
+    <string name="account_terms_location_short">위치기반서비스 이용약관</string>
+    <string name="account_terms_age">[필수] 만 14세 이상입니다</string>
+    <string name="account_terms_marketing">[선택] 마케팅 정보 수신 동의</string>
+    <string name="account_terms_marketing_short">마케팅 정보 수신</string>
+    <string name="account_terms_required_note">필수 약관에 모두 동의해야 가입할 수 있어요.</string>
+    <string name="action_view">보기</string>
+    <string name="action_back">뒤로</string>
+    <string name="account_social_sign_in">간편 로그인</string>
+    <string name="account_kakao_login">카카오 로그인</string>
+    <string name="account_naver_login">네이버 로그인</string>
+    <string name="account_google_login">구글 로그인</string>
+    <string name="account_hide_password">비밀번호 숨기기</string>
+    <string name="account_show_password">비밀번호 표시</string>
+    <string name="password_rule_length">8자 이상</string>
+    <string name="password_rule_upper">대문자 포함</string>
+    <string name="password_rule_digit">숫자 포함</string>
+    <string name="password_rule_symbol">특수문자 포함</string>
+    <string name="account_please_wait">잠시만 기다려 주세요</string>
+    <string name="account_providers">연결: %1$s</string>
+    <string name="account_rename">이름 변경</string>
+    <string name="account_cloud_backup">클라우드 백업</string>
+    <string name="account_last_backup">마지막 백업: %1$s · %2$dKB</string>
+    <string name="account_no_backup_yet">아직 클라우드 백업이 없어요</string>
+    <string name="account_backup_now">지금 백업</string>
+    <string name="account_restore">복원</string>
+    <string name="account_auto_backup">자동 백업</string>
+    <string name="account_auto_backup_sub">주기적으로 백그라운드 백업</string>
+    <string name="account_wifi_only">Wi-Fi에서만</string>
+    <string name="account_wifi_only_sub">데이터 절약</string>
+    <string name="account_sign_out">로그아웃</string>
+    <string name="account_delete">회원 탈퇴</string>
+    <string name="account_sign_out_message">로그아웃해도 기기의 기록은 그대로 남아요.</string>
+    <string name="account_delete_message">계정과 클라우드 데이터가 삭제돼요. 기기의 로컬 기록은 남습니다.</string>
+    <string name="account_delete_confirm">탈퇴</string>
+    <string name="provider_google">구글</string>
+    <string name="provider_email">이메일</string>
+    <string name="provider_kakao">카카오</string>
+    <string name="provider_naver">네이버</string>
+
+    <!-- ─────────────────────────── 여정 상세 화면 ─────────────────────────── -->
+    <string name="journey_completed_badge">완료된 여정</string>
+    <string name="journey_tab_timeline">타임라인</string>
+    <string name="journey_tab_records">기록</string>
+    <string name="journey_tab_expenses">비용</string>
+    <string name="journey_tab_map">지도</string>
+    <string name="journey_tab_report">리포트</string>
+    <string name="journey_report_title">여정 리포트</string>
+    <string name="journey_report_desc">정차지·대기시간·타임라인과 시간/위치 워터마크가 적용된 증빙 사진을 묶어 PDF로 만들어요. 원본 사진은 그대로 보존됩니다.</string>
+    <string name="journey_report_building">생성 중…</string>
+    <string name="journey_report_make">PDF 리포트 만들기 · 공유</string>
+    <string name="journey_report_share">리포트 공유</string>
+    <string name="journey_photos_share">워터마크 사진 묶음 공유</string>
+    <string name="journey_photos_share_title">사진 공유</string>
+    <string name="journey_share_note">공유 시트에서 카카오톡 · 문자 · 이메일 전송이나 ‘파일에 저장’을 선택할 수 있어요.</string>
+    <string name="journey_map_empty">위치가 기록되면 지도에 경로와 기록이 표시돼요</string>
+    <string name="journey_distance">주행 거리</string>
+    <string name="journey_freight">운송료</string>
+    <string name="journey_tap_to_enter">탭해서 입력</string>
+    <string name="journey_total_expense">총 비용</string>
+    <string name="journey_net_profit">예상 순수익</string>
+    <string name="journey_no_receipt_count">영수증 없는 비용 %1$d건</string>
+    <string name="journey_add_expense">비용 추가</string>
+    <string name="journey_capture_receipt">영수증 촬영</string>
+    <string name="journey_receipt_pending">영수증 → 비용 등록 대기</string>
+    <string name="journey_receipt_reading">인식 중…</string>
+    <string name="journey_receipt_read">인식 완료 — 등록을 눌러 확인하세요</string>
+    <string name="action_register">등록</string>
+    <string name="journey_no_expense">아직 등록된 비용이 없어요</string>
+    <string name="journey_no_events">아직 기록된 이벤트가 없어요</string>
+    <string name="journey_timeline_date_pattern">M월 d일 (E)</string>
+    <string name="journey_add_issue">이슈 등록 (파손·지연·분쟁)</string>
+    <string name="journey_no_records">이 여정에서 저장한 기록이 여기에 모여요</string>
+    <string name="action_capture_now">촬영하기</string>
+    <string name="journey_stop_name">정차지 이름</string>
+    <string name="journey_complete_message">모든 정차지 작업이 끝났어요. 여정을 완료할까요?</string>
+    <string name="journey_freight_amount">금액(원)</string>
+    <string name="journey_freight_hint">예: 450000</string>
+    <string name="journey_view_receipt">영수증 보기</string>
+    <string name="journey_group_photos">%1$s · %2$d장</string>
+
+    <!-- ─────────────────────────── 홈 화면 ─────────────────────────── -->
+    <string name="home_action_start_journey">여정 시작</string>
+    <string name="home_action_account">계정 · 백업</string>
+    <string name="home_action_sign_in">로그인 · 백업</string>
+    <string name="home_action_scan_barcode">바코드 스캔</string>
+    <string name="home_action_import_photo">사진 가져오기</string>
+    <string name="home_action_quick_memo">빠른 메모</string>
+    <string name="home_clear_filters">필터 해제</string>
+    <string name="home_sign_in_cta">로그인하고 클라우드 백업 켜기</string>
+    <string name="home_sign_in_cta_sub">이메일·구글 로그인 · 기기 바꿔도 기록 복원</string>
+    <string name="home_today">오늘의 기록</string>
+    <string name="home_favorites">즐겨찾기</string>
+    <string name="home_see_all">전체 보기</string>
+    <string name="home_recent">최근 저장</string>
+    <string name="home_no_results">결과가 없어요</string>
+    <string name="home_cancel_journey_message">진행 중인 여정을 취소할까요? 저장된 기록은 그대로 남아요.</string>
+    <string name="home_favorite_places">즐겨찾는 장소</string>
+    <string name="home_shared_add_to_journey">진행 중인 여정에 정차지로 추가돼요</string>
+    <string name="home_shared_start_journey">이 장소로 새 여정을 시작해요</string>
+    <string name="home_as_pickup">상차지</string>
+    <string name="home_as_dropoff">하차지</string>
+    <string name="home_include_in_journey_q">진행 중인 여정에 포함할까요?</string>
+    <string name="home_include">여정에 포함</string>
+    <string name="home_keep_standalone">단일 기록으로</string>
+    <string name="home_search_hint">이름·용도·내용 검색</string>
+    <string name="home_close_search">검색 닫기</string>
+    <string name="home_month_year">%1$d월 · %2$d년</string>
+    <string name="home_day_of_month">%1$d일</string>
+    <string name="home_record_count">%1$d건의 기록</string>
+    <string name="weekday_mon_full">월요일</string>
+    <string name="weekday_tue_full">화요일</string>
+    <string name="weekday_wed_full">수요일</string>
+    <string name="weekday_thu_full">목요일</string>
+    <string name="weekday_fri_full">금요일</string>
+    <string name="weekday_sat_full">토요일</string>
+    <string name="weekday_sun_full">일요일</string>
+
+    <!-- ─────────────────────────── 이머시브 상세 ─────────────────────────── -->
+    <string name="detail_no_records">기록이 없습니다</string>
+    <string name="detail_cannot_play">재생할 수 없습니다</string>
+    <string name="detail_write_memo">메모 작성</string>
+    <string name="detail_view_pdf">PDF 보기</string>
+    <string name="detail_edit_video">영상 편집</string>
+    <string name="detail_rename">이름 수정</string>
+    <string name="detail_renamed">이름을 변경했습니다</string>
+    <string name="detail_delete_title">삭제할까요?</string>
+    <string name="detail_delete_message">이 기록을 휴지통으로 보냅니다. 휴지통에서 복원할 수 있어요.</string>
+    <string name="detail_share_options">공유 옵션</string>
+    <string name="detail_share_current">현재 사진</string>
+    <string name="detail_share_all">전체</string>
+    <string name="detail_include_address">위치 주소 포함</string>
+    <string name="detail_watermark_toggle">사진에 정보 새기기(워터마크)</string>
+    <string name="detail_watermark_sub">시간·위치를 이미지에 직접 표시 — 텍스트가 빠져도 정보가 남아요</string>
+    <string name="detail_message">메시지</string>
+    <string name="detail_share_document">문서 공유</string>
+    <string name="detail_share_as_pdf">PDF로 공유</string>
+    <string name="detail_or_share_image">또는 이미지로 공유</string>
+    <string name="detail_share_as_image">이미지로 공유</string>
+    <string name="detail_play">재생</string>
+    <string name="detail_change_purpose">용도 변경</string>
+    <string name="detail_media_count"> · %1$d개</string>
+    <string name="detail_location_line">위치: %1$s</string>
+
+    <!-- ─────────────────────────── 위젯 설정 ─────────────────────────── -->
+    <string name="widget_pick_barcode_title">바코드 선택</string>
+    <string name="widget_pick_barcode_sub">위젯에 표시할 바코드를 고르세요</string>
+    <string name="widget_no_barcode">저장된 바코드가 없습니다. 먼저 바코드를 스캔해 저장하세요.</string>
+
+    <!-- ─────────────────────────── 남은 화면 문구 ─────────────────────────── -->
+    <string name="onboarding_welcome_body">트럭커의 업무기록 메이트, TRUBBI예요.\n운송 한 건의 모든 기록을 자동으로 정리해 드릴게요.</string>
+    <string name="editor_rotation_state">회전 %1$d°</string>
+    <string name="editor_rotation_flipped"> · 반전</string>
+    <string name="camera_document_hint">송장·인수증 등 서류를 스캔하면\n자동 보정된 PDF로 저장됩니다.</string>
+    <string name="account_verify_sent_body">위 주소로 인증 링크를 보냈어요.\n메일의 링크를 누른 뒤 아래 버튼을 눌러주세요.</string>
+
+
+    <!-- 검색창이 비었을 때 띄우는 예시 키워드. -->
+    <string-array name="search_suggestions">
+        <item>운송장</item>
+        <item>타이어</item>
+        <item>자물쇠</item>
+        <item>파렛트</item>
+        <item>계기판</item>
+        <item>상차</item>
+        <item>하차</item>
+        <item>정비</item>
+    </string-array>
+    <!-- ─────────────────────────── 여정 시작 마법사 — 음성 안내 ─────────────────────────── -->
+    <string name="wizard_default_destination">목적지</string>
+    <string name="wizard_current_location">현재 위치</string>
+    <string name="wizard_say_move_first">%1$s 먼저 가도록 바꿨어요.</string>
+    <string name="wizard_say_already_first">%1$s이 이미 먼저예요.</string>
+    <string name="wizard_say_which_one_retry">몇 번째인지, 또는 다시 말씀해 주세요.</string>
+    <string name="wizard_say_no_such_number">%1$d번은 없어요. 1번부터 %2$d번 중에 고르거나 다시 말씀해 주세요.</string>
+    <string name="wizard_say_use_current_q">현재 위치로 시작할까요? ‘네’ 또는 출발지를 말씀해 주세요.</string>
+    <string name="wizard_say_origin_missed">출발지를 못 들었어요. 현재 위치에서 곧 출발할게요. 다른 곳이면 ‘다시 말하기’를 눌러주세요.</string>
+    <string name="wizard_summary_from_to">%1$s에서 %2$s로 가는 여정</string>
+    <string name="wizard_summary_to">%1$s로 가는 여정</string>
+    <string name="wizard_summary_this">이 여정</string>
+    <string name="wizard_say_start_with">%1$s으로 시작할게요.</string>
+    <string name="wizard_prompt_dest">어디로 가세요? 목적지를 말씀해 주세요.</string>
+    <string name="wizard_prompt_origin_after_dest">%1$s, 좋아요. 출발지는 어디세요?</string>
+    <string name="wizard_prompt_origin">출발지는 어디세요?</string>
+    <string name="wizard_word_done">‘완료’</string>
+    <string name="wizard_word_none">‘없어요’</string>
+    <string name="wizard_prompt_extra_added">%1$s 추가했어요. 더 들를 곳 있나요? 없으면 %2$s.</string>
+    <string name="wizard_prompt_extra_add_mode">어디 들르세요? 다 됐으면 ‘완료’라고 하세요.</string>
+    <string name="wizard_prompt_extra">더 들를 곳 있나요? 없으면 %1$s.</string>
+    <string name="wizard_say_one_found">한 곳 찾았어요. 맞으면 ‘네’.</string>
+    <string name="wizard_say_n_found">%1$d곳 찾았어요. 몇 번째요?</string>
+    <string name="wizard_say_no_results">결과가 없어요. 다시 말씀해 주세요.</string>
+    <string name="wizard_reask_dest">어디로 가세요?</string>
+    <string name="wizard_reask_extra_pickup">어디서 상차해요?</string>
+    <string name="wizard_reask_extra_dropoff">어디서 하차해요?</string>
+
+    <!-- ─────────────────────────── 여정 시작 마법사 — 화면 ─────────────────────────── -->
+    <string name="wizard_role_origin">출발지</string>
+    <string name="wizard_role_extra">경유지</string>
+    <string name="wizard_role_dest">도착지</string>
+    <string name="wizard_head_dest">어디로 가시나요?</string>
+    <string name="wizard_head_origin">어디서 출발하세요?</string>
+    <string name="wizard_head_extra">더 들를 곳이 있나요?</string>
+    <string name="wizard_head_extra_say">들를 곳을 말씀해주세요</string>
+    <string name="wizard_kind_pickup_stop">상차 들름</string>
+    <string name="wizard_kind_dropoff_stop">하차 들름</string>
+    <string name="wizard_hint_dest">예: 성남 물류센터, 부산 신항</string>
+    <string name="wizard_hint_origin">상차지 이름/주소</string>
+    <string name="wizard_hint_extra">들를 곳 이름/주소</string>
+    <string name="wizard_retry_banner">잘 못 알아들었어요. 다시 말씀해 주세요.</string>
+    <string name="wizard_searching">‘%1$s’ 찾는 중…</string>
+    <string name="wizard_place_search">위치 검색</string>
+    <string name="wizard_no_results_for">‘%1$s’ 검색 결과 없음</string>
+    <string name="wizard_results_count">검색 결과 %1$d곳</string>
+    <string name="wizard_use_typed_hint">원하는 곳이 없으면 입력한 이름 그대로 쓸 수 있어요</string>
+    <string name="wizard_tap_to_confirm">누르면 지도로 위치를 확인한 뒤 %1$s로 추가돼요</string>
+    <string name="wizard_use_typed">‘%1$s’ 이름 그대로 사용</string>
+    <string name="wizard_locating">위치 확인 중…</string>
+    <string name="wizard_start_from_here">현재 위치에서 출발</string>
+    <string name="wizard_start_from_here_sub">지금 있는 곳을 출발지로</string>
+    <string name="wizard_recent_stops">최근 정차지</string>
+    <string name="wizard_later_dest">하차지는 나중에 · 바로 시작</string>
+    <string name="wizard_later_origin">상차지는 나중에 입력</string>
+    <string name="wizard_add_done">추가 완료</string>
+    <string name="wizard_start_journey_bang">여정 시작!</string>
+    <string name="wizard_countdown_start">%1$d초 후 여정을 시작해요</string>
+    <string name="wizard_start_now">지금 시작</string>
+    <string name="wizard_add_more">더 추가</string>
+    <string name="wizard_no_location">위치 정보가 없어요</string>
+    <string name="wizard_pick_here">여기로 선택</string>
+    <string name="wizard_unfavorite">즐겨찾기 해제</string>
+    <string name="wizard_favorite">즐겨찾기 추가</string>
+    <string name="wizard_search_again">다시 찾기</string>
+    <string name="wizard_confirm_here">여기가 맞아요</string>
+    <string name="wizard_countdown_depart">%1$d초 후 현재 위치에서 출발해요</string>
+    <string name="wizard_depart_from_here">현재 위치에서 출발할게요</string>
+    <string name="wizard_depart_now">지금 출발</string>
+    <string name="wizard_say_again">다시 말하기</string>
+    <string name="wizard_heard">이렇게 들었어요</string>
+    <string name="wizard_maybe_this">혹시 이거였나요?</string>
+    <string name="wizard_heard_hint">맞지 않으면 위 입력칸에서 직접 고치거나 다시 말해보세요</string>
+    <string name="wizard_reorder">순서 이동</string>
+    <string name="wizard_view_on_map">지도에서 보기</string>
+    <string name="wizard_map">지도</string>
+    <string name="wizard_rank_nth">%1$d번째</string>
+    <string name="wizard_step_dropoff">하차지</string>
+    <string name="wizard_step_pickup">상차지</string>
+    <string name="wizard_step_via">경유지</string>
+    <string name="wizard_listening_hint">말씀이 끝나면 자동으로 검색돼요 · 탭하면 취소</string>
+
+    <!-- ─────────────────────────── 위젯 ─────────────────────────── -->
+    <string name="widget_scan_barcode">바코드 스캔</string>
+    <string name="widget_barcode">바코드</string>
+    <string name="widget_active_journey">진행 중인 여정</string>
+    <string name="widget_journey_info">여정 정보</string>
+    <string name="widget_next_step">다음 단계</string>
+    <string name="widget_capture">촬영</string>
+    <string name="widget_open">열기</string>
+    <string name="widget_route_map">여정 경로 지도</string>
+    <string name="widget_scan_document">문서 스캔</string>
+    <string name="widget_document">문서</string>
+    <string name="widget_memo">메모</string>
+
+    <!-- ─────────────────────────── 접근성 라벨 ─────────────────────────── -->
+    <string name="action_refresh">새로고침</string>
+    <string name="action_remove">빼기</string>
+    <string name="action_undo">되돌리기</string>
+    <string name="action_rotate_left">왼쪽으로 회전</string>
+    <string name="action_rotate_right">오른쪽으로 회전</string>
+    <string name="action_flip">좌우 반전</string>
+    <string name="action_prev">이전</string>
+    <string name="action_filter">필터</string>
+    <string name="action_my_location">현재 위치</string>
+    <string name="action_keyboard">키보드 입력</string>
+    <string name="action_favorite">즐겨찾기</string>
+
+    <!-- ─────────────────────────── 접근성 라벨 ─────────────────────────── -->
+    <string name="camera_flash_on">플래시 켜기</string>
+    <string name="camera_flash_off">플래시 끄기</string>
+    <string name="action_pause">일시정지</string>
+    <string name="map_zoom_in">확대</string>
+    <string name="map_zoom_out">축소</string>
+    <string name="map_my_location">현재 위치로</string>
+
+    <!-- 편집기의 '원본' — 사진 저장 품질(quality_original)과는 다른 개념이라 따로 둔다. -->
+    <string name="option_original">원본</string>
+    <!-- 여정 시작 시트의 제목. 이름 없는 여정을 가리키는 journey_untitled(:data) 와는 쓰임이 다르다. -->
+    <string name="journey_new_title">새 여정</string>
+</resources>

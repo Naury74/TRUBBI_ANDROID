@@ -1,0 +1,21 @@
+*.iml
+.gradle
+/local.properties
+.DS_Store
+# 모든 모듈의 빌드 산출물 (루트 /build 만 적으면 새 모듈이 추적된다)
+build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Cloud Functions 의존성 — package-lock.json 으로 복원한다 (npm ci)
+/cloud_functions/node_modules/
+
+# IDE 설정 — 기기마다 다르고, AI 플러그인 대화 기록까지 들어온다
+.idea/
+
+# 빌드 도중 생기는 것들
+.kotlin/
+*.bak
+*.log

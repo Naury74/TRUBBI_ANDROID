@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 상태바/알림 small icon: 앱 마스코트의 실루엣. 상태바 아이콘은 단색(알파)만 표시되므로
+     마스코트 모양이 흰색 실루엣으로 나온다. 컬러 앱 아이콘은 알림 왼쪽 largeIcon으로 따로 표시. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:inset="12%">
+    <bitmap
+        android:src="@drawable/trubbi_mascot"
+        android:gravity="fill"
+        android:tint="#FFFFFFFF" />
+</inset>
