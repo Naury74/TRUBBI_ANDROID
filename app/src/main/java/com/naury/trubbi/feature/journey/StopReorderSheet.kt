@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -75,6 +76,7 @@ fun StopReorderSheet(
 ) {
     val colors = LocalTrubbiColors.current
     val context = LocalContext.current
+    val resources = LocalResources.current
     val scope = rememberCoroutineScope()
     val fixed = remember(stops) { stops.filter { it.arrivedAt != null }.sortedBy { it.seq } }
     // 미방문 정차지만 스냅숏으로 복사해 로컬에서 재배치한다.
@@ -114,13 +116,13 @@ fun StopReorderSheet(
                         index > 0 -> {
                             val moved = pending.removeAt(index)
                             pending.add(0, moved)
-                            speakAwait(context.getString(R.string.reorder_moved_first, moved.displayName(context)))
+                            speakAwait(resources.getString(R.string.reorder_moved_first, moved.displayName(context)))
                         }
 
                         index == 0 ->
-                            speakAwait(context.getString(R.string.reorder_already_first, pending[0].displayName(context)))
+                            speakAwait(resources.getString(R.string.reorder_already_first, pending[0].displayName(context)))
 
-                        else -> speakAwait(context.getString(R.string.reorder_not_found, target))
+                        else -> speakAwait(resources.getString(R.string.reorder_not_found, target))
                     }
                 }
 
@@ -131,7 +133,7 @@ fun StopReorderSheet(
 
     fun listen() {
         scope.launch {
-            speakAwait(context.getString(R.string.reorder_voice_prompt))
+            speakAwait(resources.getString(R.string.reorder_voice_prompt))
             // 안내가 끝나자마자 마이크를 열면 TTS 꼬리가 그대로 인식된다.
             delay(200)
             speech.start(::onVoice)

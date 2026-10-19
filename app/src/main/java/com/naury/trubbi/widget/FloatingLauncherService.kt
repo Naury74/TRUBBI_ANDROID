@@ -497,7 +497,7 @@ class FloatingLauncherService : Service() {
         val active = activeJourney
         val show = journeyControlOn && active != null
         journeyHeader?.visibility = if (show) View.VISIBLE else View.GONE
-        if (show && active != null) {
+        if (show) {
             journeyRouteView?.text = active.routeLabel(this)
                 .ifBlank { getString(R.string.floating_journey_running) }
             journeyStageView?.text = getString(

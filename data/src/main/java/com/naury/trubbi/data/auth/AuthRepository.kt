@@ -170,7 +170,6 @@ class AuthRepository @Inject constructor(
                 }
             }
         }
-        Unit
     }
 
     /** 이메일·비밀번호로 로그인한다. */

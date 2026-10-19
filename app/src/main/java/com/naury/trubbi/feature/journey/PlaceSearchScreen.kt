@@ -54,7 +54,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naury.trubbi.R
@@ -195,6 +195,7 @@ fun PlaceSearchScreen(
     // 인앱 음성
     val speech = com.naury.trubbi.core.voice.rememberSpeechInput()
     val context = androidx.compose.ui.platform.LocalContext.current
+    val resources = androidx.compose.ui.platform.LocalResources.current
     val audioPermission = androidx.activity.compose.rememberLauncherForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.RequestPermission(),
     ) { granted ->
@@ -237,7 +238,7 @@ fun PlaceSearchScreen(
                     "s$i",
                     point,
                     stopPin(
-                        context.getString(stop.kindEnum.shortRes),
+                        resources.getString(stop.kindEnum.shortRes),
                         stop.completedAt != null,
                         stop.stopId == active?.currentStop?.stopId,
                     ),

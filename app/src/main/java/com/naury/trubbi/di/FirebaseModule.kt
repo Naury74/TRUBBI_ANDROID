@@ -3,6 +3,7 @@ package com.naury.trubbi.di
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.PersistentCacheSettings
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
@@ -27,7 +28,7 @@ object FirebaseModule {
     fun provideFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance().apply {
         // 연결이 없어도 읽기가 되도록 오프라인 캐시를 켠다.
         firestoreSettings = FirebaseFirestoreSettings.Builder()
-            .setPersistenceEnabled(true)
+            .setLocalCacheSettings(PersistentCacheSettings.newBuilder().build())
             .build()
     }
 

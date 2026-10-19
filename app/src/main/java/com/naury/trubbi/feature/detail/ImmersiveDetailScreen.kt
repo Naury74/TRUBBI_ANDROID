@@ -218,12 +218,13 @@ fun ImmersiveDetailScreen(
         ) { page ->
             val mp = list[page]
             val isCurrent = page == pagerState.currentPage
-            val off = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
             BoxWithConstraints(
                 Modifier.fillMaxSize().padding(start = sideReserve, end = sideReserve + rightPanelWidth, top = topReserve, bottom = bottomReserve),
                 contentAlignment = Alignment.Center,
             ) {
                 val scaleMod = Modifier.graphicsLayer {
+                    // 넘기는 동안 매 프레임 바뀌는 값이라 그리기 단계에서만 읽는다(재구성 없이 크기만 바뀐다).
+                    val off = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
                     val a = off.absoluteValue.coerceIn(0f, 1f)
                     val s = lerp(0.92f, 1f, 1f - a)
                     scaleX = s

@@ -30,7 +30,7 @@ object DatabaseModule {
             // 스키마를 내보내기 시작한 버전 이전에는 마이그레이션 근거가 없어 재생성만 가능하다.
             // 그 범위만 파괴적 폴백을 열어 두고, 그 뒤 버전 업은 반드시 Migration 을 추가해야 한다
             // (누락 시 IllegalStateException 으로 즉시 드러난다).
-            .fallbackToDestructiveMigrationFrom(*TrubbiMigrations.PRE_EXPORT_VERSIONS)
+            .fallbackToDestructiveMigrationFrom(dropAllTables = false, *TrubbiMigrations.PRE_EXPORT_VERSIONS)
             .addMigrations(*TrubbiMigrations.ALL)
             .build()
 

@@ -33,7 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.core.util.Consumer
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.naury.trubbi.data.settings.ThemeMode
@@ -106,6 +106,7 @@ private fun TrubbiAppRoot(expanded: Boolean, initialIntent: Intent?) {
 
     // 뒤로가기로 즉시 종료되지 않게 — 스택 맨 아래(더 돌아갈 곳 없음)에서만 '한 번 더' 확인.
     val backCtx = androidx.compose.ui.platform.LocalContext.current
+    val backRes = androidx.compose.ui.platform.LocalResources.current
     var lastBackAt by remember { mutableStateOf(0L) }
     androidx.activity.compose.BackHandler(enabled = navController.previousBackStackEntry == null) {
         val now = System.currentTimeMillis()
@@ -114,7 +115,7 @@ private fun TrubbiAppRoot(expanded: Boolean, initialIntent: Intent?) {
         } else {
             lastBackAt = now
             android.widget.Toast
-                .makeText(backCtx, backCtx.getString(R.string.press_back_again), android.widget.Toast.LENGTH_SHORT)
+                .makeText(backCtx, backRes.getString(R.string.press_back_again), android.widget.Toast.LENGTH_SHORT)
                 .show()
         }
     }

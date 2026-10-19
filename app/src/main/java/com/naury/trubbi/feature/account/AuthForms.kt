@@ -35,6 +35,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +57,7 @@ import com.naury.trubbi.ui.theme.LocalTrubbiColors
 @Composable
 internal fun EntryContent(viewModel: AccountViewModel, onLogin: () -> Unit, onSignup: () -> Unit) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 28.dp)) {
         Text(stringResource(R.string.welcome_start), style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold), color = OnDark)
         Spacer(Modifier.height(6.dp))
@@ -81,11 +83,11 @@ internal fun EntryContent(viewModel: AccountViewModel, onLogin: () -> Unit, onSi
             onGoogle = { viewModel.signInGoogle(context) {} },
             onKakao = {
                 viewModel.dialog.value =
-                    AuthDialog(context.getString(R.string.account_kakao_soon_title), context.getString(R.string.account_kakao_soon_body), isError = false)
+                    AuthDialog(resources.getString(R.string.account_kakao_soon_title), resources.getString(R.string.account_kakao_soon_body), isError = false)
             },
             onNaver = {
                 viewModel.dialog.value =
-                    AuthDialog(context.getString(R.string.account_naver_soon_title), context.getString(R.string.account_naver_soon_body), isError = false)
+                    AuthDialog(resources.getString(R.string.account_naver_soon_title), resources.getString(R.string.account_naver_soon_body), isError = false)
             },
         )
 

@@ -23,11 +23,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naury.trubbi.R
@@ -79,11 +79,11 @@ fun JourneyHistoryScreen(
 ) {
     val c = LocalTrubbiColors.current
     val journeys by viewModel.journeys.collectAsState()
-    val context = LocalContext.current
+    val resources = LocalResources.current
     // 날짜 형식은 기기 언어를 따른다.
     val dayFmt = remember { SimpleDateFormat("M.d (E)", Locale.getDefault()) }
     val timeFmt = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
-    val stopCountLabel: (Int) -> String = { count -> context.getString(R.string.journey_stop_count, count) }
+    val stopCountLabel: (Int) -> String = { count -> resources.getString(R.string.journey_stop_count, count) }
 
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         GlassTopBar(title = stringResource(R.string.journey_history_title), onBack = onBack)

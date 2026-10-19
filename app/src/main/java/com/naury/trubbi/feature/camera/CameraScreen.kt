@@ -57,12 +57,13 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -133,6 +134,7 @@ private fun CameraContent(
     viewModel: CameraViewModel,
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val editDefault by viewModel.editAfterDefault.collectAsStateWithLifecycle()
     val saveLocation by viewModel.saveLocation.collectAsStateWithLifecycle()
@@ -277,7 +279,7 @@ private fun CameraContent(
                 }
                 override fun onError(exception: ImageCaptureException) {
                     capturing = false
-                    toast.show(context.getString(R.string.camera_capture_failed, exception.message.orEmpty()))
+                    toast.show(resources.getString(R.string.camera_capture_failed, exception.message.orEmpty()))
                 }
             },
         )
@@ -302,7 +304,7 @@ private fun CameraContent(
                     isRecording = false
                     recording = null
                     if (event.hasError()) {
-                        toast.show(context.getString(R.string.camera_record_failed))
+                        toast.show(resources.getString(R.string.camera_record_failed))
                     } else {
                         pendingVideo = file
                     }
@@ -598,9 +600,9 @@ private fun CameraContent(
     if (showBurstNaming) {
         val groupSuggested = remember(locLabel, purpose) {
             if (!locLabel.isNullOrBlank()) {
-                context.getString(R.string.camera_batch_with_location, locLabel, purpose)
+                resources.getString(R.string.camera_batch_with_location, locLabel, purpose)
             } else {
-                context.getString(R.string.camera_batch_default, purpose, DateUtils.shortStamp())
+                resources.getString(R.string.camera_batch_default, purpose, DateUtils.shortStamp())
             }
         }
         BurstNamingSheet(

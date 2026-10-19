@@ -28,10 +28,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.naury.trubbi.R
 import com.naury.trubbi.core.i18n.label
 import com.naury.trubbi.core.ml.ReceiptParser
@@ -53,7 +54,6 @@ import com.naury.trubbi.ui.designsystem.glass
 import com.naury.trubbi.ui.designsystem.pressable
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
 import java.text.SimpleDateFormat
-import java.util.Locale
 /**
  * 여정 상세 화면.
  *
@@ -109,7 +109,10 @@ fun JourneyDetailScreen(
             },
         )
 
-        val timelineDayFmt = SimpleDateFormat(stringResource(R.string.journey_timeline_date_pattern), Locale.getDefault())
+        // 앱 안에서 언어를 바꾸면 날짜 형식도 따라 바뀌도록 구성(Configuration)의 언어를 읽는다.
+        val timelinePattern = stringResource(R.string.journey_timeline_date_pattern)
+        val locale = LocalConfiguration.current.locales[0]
+        val timelineDayFmt = remember(timelinePattern, locale) { SimpleDateFormat(timelinePattern, locale) }
 
         LazyColumn(
             Modifier.fillMaxSize(),

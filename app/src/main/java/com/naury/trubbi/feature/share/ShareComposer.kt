@@ -160,7 +160,7 @@ fun ShareComposerScreen(
     val curWm = wmOf(current)
 
     // 1회성 편집 — 편집본 uri를 항목별로 보관(원본 미변경). 편집 시 이 uri로 미리보기/공유.
-    val editVm: com.naury.trubbi.feature.editor.EditorViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+    val editVm: com.naury.trubbi.feature.editor.EditorViewModel = androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel()
     var editId by remember { mutableStateOf<String?>(null) }
     val editedUris = remember { mutableStateMapOf<String, String>() }
     // 편집본의 실제 가로/세로 — 크롭 후 미리보기 비율이 맞도록.
