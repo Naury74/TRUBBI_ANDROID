@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.naury.trubbi.R
 import com.naury.trubbi.core.i18n.purposeLabel
 import com.naury.trubbi.domain.model.RecordType
+import com.naury.trubbi.domain.record.HomeTimelineBuilder
 import com.naury.trubbi.ui.designsystem.AppIcons
 import com.naury.trubbi.ui.designsystem.GlassIconButton
 import com.naury.trubbi.ui.designsystem.glass
@@ -57,7 +58,7 @@ internal fun FilterStickyRow(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(listOf("PHOTO", "VIDEO", "DOCUMENT", "BARCODE", "MEMO", "FAVORITE")) { t ->
+            items(listOf(HomeTimelineBuilder.ALL_FILTER, "PHOTO", "VIDEO", "DOCUMENT", "BARCODE", "MEMO", HomeTimelineBuilder.FAVORITE_FILTER)) { t ->
                 CategoryChip(label = typeFilterLabel(t), selected = typeFilter == t) { onType(t) }
             }
         }
@@ -95,6 +96,7 @@ internal fun typeFilterLabel(t: String): String = when (t) {
     "DOCUMENT" -> stringResource(RecordType.DOCUMENT.labelRes)
     "BARCODE" -> stringResource(RecordType.BARCODE.labelRes)
     "MEMO" -> stringResource(RecordType.MEMO.labelRes)
+    HomeTimelineBuilder.ALL_FILTER -> stringResource(R.string.album_filter_all)
     "FAVORITE" -> stringResource(R.string.album_filter_favorite)
     else -> t
 }

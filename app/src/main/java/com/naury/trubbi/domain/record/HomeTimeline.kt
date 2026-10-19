@@ -125,6 +125,7 @@ class HomeTimelineBuilder @Inject constructor(
      * 조건 자체를 걸지 않은 것으로 보고 통과시킨다.
      */
     fun matchesType(rec: RecordWithMedia, type: String): Boolean = when {
+        type == ALL_FILTER -> true
         type == FAVORITE_FILTER -> rec.record.isFavorite
         RecordType.entries.any { it.name == type } -> rec.record.type == type
         else -> true
@@ -140,8 +141,11 @@ class HomeTimelineBuilder @Inject constructor(
     )
 
     companion object {
-        /** 종류 칩 중 유일하게 [RecordType] 이 아닌 값. */
+        /** 종류 칩 중 [RecordType] 이 아닌 값. 별표한 기록만. */
         const val FAVORITE_FILTER = "FAVORITE"
+
+        /** 종류를 가리지 않고 전체 기록을 격자로 본다("최근 저장 → 전체 보기"). */
+        const val ALL_FILTER = "ALL"
         private const val RECENT_LIMIT = 10
         private const val FAVORITE_LIMIT = 12
     }

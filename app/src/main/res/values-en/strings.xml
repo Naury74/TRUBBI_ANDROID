@@ -190,41 +190,15 @@
     <!-- ─────────────────────────── Album filters / sorting / search ─────────────────────────── -->
     <string name="album_filter_all">All</string>
     <string name="album_filter_favorite">Favorites</string>
-    <string name="sort_newest">Newest</string>
-    <string name="sort_oldest">Oldest</string>
-    <string name="sort_purpose">By purpose</string>
-    <string name="search_field_name">Name</string>
     <string name="search_field_purpose">Purpose</string>
-    <string name="search_field_memo">Memo</string>
-    <string name="search_field_tag">Tag</string>
-    <string name="search_field_date">Date</string>
-    <string name="search_field_type">Type</string>
-    <string name="search_field_barcode">Barcode</string>
-    <string name="search_field_content">Content</string>
 
     <!-- ─────────────────────────── Album screen ─────────────────────────── -->
-    <string name="album_title">Album</string>
-    <string name="album_pick_hint">Pick a record on the left</string>
-    <string name="album_empty">No records saved yet</string>
-    <string name="search_no_results">No results</string>
-    <plurals name="search_result_count">
-        <item quantity="one">%1$d result</item>
-        <item quantity="other">%1$d results</item>
-    </plurals>
-    <string name="album_search_hint">Search purpose, date, type, memo, name</string>
     <string name="selected_count">%1$d selected</string>
     <plurals name="count_items">
         <item quantity="one">%1$d item</item>
         <item quantity="other">%1$d items</item>
     </plurals>
-    <string name="filter_section_type">Type</string>
-    <string name="filter_section_purpose">Purpose</string>
-    <string name="filter_section_sort">Sort</string>
-    <string name="filter_section_grid">Grid</string>
-    <string name="grid_auto">Auto</string>
-    <string name="grid_columns">%1$d cols</string>
     <string name="action_share">Share</string>
-    <string name="action_clear">Clear</string>
 
     <!-- ─────────────────────────── Record detail ─────────────────────────── -->
     <string name="detail_tap_to_enlarge">Tap to enlarge</string>
@@ -383,14 +357,12 @@ Finish the journey anyway?</string>
     <string name="default_title_batch">%1$s batch (%2$d)</string>
     <string name="default_title_video">%1$s video</string>
     <string name="record_not_found">Record not found</string>
-    <string name="viewer_no_image">No image</string>
     <string name="pdf_cannot_open">Could not open this document</string>
     <string name="press_back_again">Press back again to exit</string>
     <string name="default_driver_name">Driver</string>
     <string name="quickdock_title">Quick actions</string>
     <string name="action_place_search">Place search</string>
     <string name="action_search">Search</string>
-    <string name="search_hint">Search title, memo, tag, barcode, location</string>
     <string name="action_confirm">OK</string>
     <string name="action_cancel">Cancel</string>
     <string name="field_name">Name</string>
@@ -457,10 +429,6 @@ Finish the journey anyway?</string>
     <string name="purposes_reset">Reset to defaults</string>
 
     <!-- ─────────────────────────── Calendar screen ─────────────────────────── -->
-    <string name="calendar_title">Calendar</string>
-    <string name="calendar_day_records">Records for %1$d/%2$d</string>
-    <string name="calendar_day_empty">Nothing saved on this date</string>
-    <string name="calendar_empty">No records</string>
 
     <!-- ─────────────────────────── Barcode screen ─────────────────────────── -->
     <string name="barcode_default_title">%1$s barcode %2$s</string>
@@ -952,7 +920,6 @@ You can keep the original scan images too.</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_remove">Remove</string>
     <string name="action_prev">Previous</string>
-    <string name="action_filter">Filters</string>
     <string name="action_keyboard">Keyboard input</string>
     <string name="action_favorite">Favorite</string>
 

@@ -190,39 +190,14 @@
     <!-- ─────────────────────────── 앨범 필터 · 정렬 · 검색 ─────────────────────────── -->
     <string name="album_filter_all">전체</string>
     <string name="album_filter_favorite">즐겨찾기</string>
-    <string name="sort_newest">최신순</string>
-    <string name="sort_oldest">오래된순</string>
-    <string name="sort_purpose">용도순</string>
-    <string name="search_field_name">이름</string>
     <string name="search_field_purpose">용도</string>
-    <string name="search_field_memo">메모</string>
-    <string name="search_field_tag">태그</string>
-    <string name="search_field_date">날짜</string>
-    <string name="search_field_type">종류</string>
-    <string name="search_field_barcode">바코드</string>
-    <string name="search_field_content">내용</string>
 
     <!-- ─────────────────────────── 앨범 화면 ─────────────────────────── -->
-    <string name="album_title">앨범</string>
-    <string name="album_pick_hint">좌측에서 기록을 선택하세요</string>
-    <string name="album_empty">저장된 기록이 없습니다</string>
-    <string name="search_no_results">검색 결과가 없습니다</string>
-    <plurals name="search_result_count">
-        <item quantity="other">검색 결과 %1$d건</item>
-    </plurals>
-    <string name="album_search_hint">용도·날짜·종류·메모·이름 검색</string>
     <string name="selected_count">%1$d개 선택</string>
     <plurals name="count_items">
         <item quantity="other">%1$d건</item>
     </plurals>
-    <string name="filter_section_type">종류</string>
-    <string name="filter_section_purpose">용도</string>
-    <string name="filter_section_sort">정렬</string>
-    <string name="filter_section_grid">그리드</string>
-    <string name="grid_auto">자동</string>
-    <string name="grid_columns">%1$d열</string>
     <string name="action_share">공유</string>
-    <string name="action_clear">지우기</string>
 
     <!-- ─────────────────────────── 기록 상세 ─────────────────────────── -->
     <string name="detail_tap_to_enlarge">탭하여 크게 보기</string>
@@ -378,14 +353,12 @@
     <string name="default_title_batch">%1$s 묶음 (%2$d)</string>
     <string name="default_title_video">%1$s 동영상</string>
     <string name="record_not_found">기록을 찾을 수 없습니다</string>
-    <string name="viewer_no_image">이미지가 없습니다</string>
     <string name="pdf_cannot_open">문서를 열 수 없습니다</string>
     <string name="press_back_again">한 번 더 누르면 종료돼요</string>
     <string name="default_driver_name">기사님</string>
     <string name="quickdock_title">빠른 작업</string>
     <string name="action_place_search">장소 검색</string>
     <string name="action_search">검색</string>
-    <string name="search_hint">제목, 메모, 태그, 바코드, 위치 검색</string>
     <string name="action_confirm">확인</string>
     <string name="action_cancel">취소</string>
     <string name="field_name">이름</string>
@@ -452,10 +425,6 @@
     <string name="purposes_reset">기본값으로 초기화</string>
 
     <!-- ─────────────────────────── 달력 화면 ─────────────────────────── -->
-    <string name="calendar_title">캘린더</string>
-    <string name="calendar_day_records">%1$d월 %2$d일 기록</string>
-    <string name="calendar_day_empty">이 날짜에 저장된 기록이 없습니다</string>
-    <string name="calendar_empty">기록이 없습니다</string>
 
     <!-- ─────────────────────────── 바코드 화면 ─────────────────────────── -->
     <string name="barcode_default_title">%1$s 바코드 %2$s</string>
@@ -941,7 +910,6 @@
     <string name="action_refresh">새로고침</string>
     <string name="action_remove">빼기</string>
     <string name="action_prev">이전</string>
-    <string name="action_filter">필터</string>
     <string name="action_keyboard">키보드 입력</string>
     <string name="action_favorite">즐겨찾기</string>
 

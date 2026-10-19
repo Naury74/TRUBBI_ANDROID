@@ -380,7 +380,11 @@ internal fun HomeFeed(
 
         // 2) 최근 저장
         if (!filtering && state.recents.isNotEmpty()) {
-            item { SectionHeader(stringResource(R.string.home_recent), "") {} }
+            item {
+                SectionHeader(stringResource(R.string.home_recent), stringResource(R.string.home_see_all)) {
+                    viewModel.library.setTypeFilter(com.naury.trubbi.domain.record.HomeTimelineBuilder.ALL_FILTER)
+                }
+            }
             item {
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp),

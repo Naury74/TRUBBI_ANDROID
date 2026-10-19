@@ -18,9 +18,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -58,7 +55,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 시스템 바를 완전히 투명하게 — 내용이 내비게이션 바 아래까지 이어져 보이도록.
@@ -87,11 +83,7 @@ class MainActivity : ComponentActivity() {
             }
 
             TrubbiTheme(darkTheme = darkTheme) {
-                val windowSizeClass = calculateWindowSizeClass(this)
-                val widthClass = windowSizeClass.widthSizeClass
-                val expanded = widthClass == WindowWidthSizeClass.Expanded
-
-                TrubbiAppRoot(expanded = expanded, initialIntent = intent)
+                TrubbiAppRoot(initialIntent = intent)
             }
         }
     }
@@ -101,11 +93,10 @@ class MainActivity : ComponentActivity() {
  * 앱 최상단 컴포저블. 관문(환영 → 로그인 → 인증 → 약관 → 사용 안내)을 순서대로 통과시키고,
  * 다 지나면 본 화면을 띄운다.
  *
- * @param expanded 폴더블 펼침·태블릿처럼 넓은 화면인지. 하위 화면이 2단 배치를 고를 때 쓴다
  * @param initialIntent 앱을 띄운 인텐트. 딥링크와 공유 텍스트를 여기서 꺼낸다
  */
 @Composable
-private fun TrubbiAppRoot(expanded: Boolean, initialIntent: Intent?) {
+private fun TrubbiAppRoot(initialIntent: Intent?) {
     val navController = rememberNavController()
 
     // 뒤로가기로 즉시 종료되지 않게 — 스택 맨 아래(더 돌아갈 곳 없음)에서만 '한 번 더' 확인.
@@ -244,7 +235,6 @@ private fun TrubbiAppRoot(expanded: Boolean, initialIntent: Intent?) {
                     ) { innerPadding ->
                         TrubbiNavHost(
                             navController = navController,
-                            expanded = expanded,
                             contentPadding = innerPadding,
                         )
                     }

@@ -16,7 +16,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.naury.trubbi.feature.barcode.BarcodeScreen
-import com.naury.trubbi.feature.calendar.CalendarScreen
 import com.naury.trubbi.feature.camera.CameraScreen
 import com.naury.trubbi.feature.contact.ContactsScreen
 import com.naury.trubbi.feature.detail.DetailScreen
@@ -28,10 +27,8 @@ import com.naury.trubbi.feature.journey.JourneyHistoryScreen
 import com.naury.trubbi.feature.journey.JourneyMapScreen
 import com.naury.trubbi.feature.journey.PlaceSearchScreen
 import com.naury.trubbi.feature.memo.MemoScreen
-import com.naury.trubbi.feature.search.SearchScreen
 import com.naury.trubbi.feature.settings.PurposeSettingsScreen
 import com.naury.trubbi.feature.settings.SettingsScreen
-import com.naury.trubbi.feature.viewer.ImageViewerScreen
 import com.naury.trubbi.ui.designsystem.LocalNavAnimatedScope
 import com.naury.trubbi.ui.designsystem.LocalSharedTransitionScope
 
@@ -43,14 +40,12 @@ import com.naury.trubbi.ui.designsystem.LocalSharedTransitionScope
  * 으로 감쌌다. 전환은 좌우 슬라이드로 통일해 어느 화면에서 왔는지가 움직임으로 드러난다.
  *
  * @param navController 내비게이션 컨트롤러
- * @param expanded 넓은 화면인지. 각 화면이 2단 배치를 고를 때 넘겨준다
  * @param contentPadding 시스템 바를 피하기 위한 여백
  * @param startDestination 첫 화면 경로
  */
 @Composable
 fun TrubbiNavHost(
     navController: NavHostController,
-    expanded: Boolean,
     contentPadding: PaddingValues,
     startDestination: String = Routes.HOME,
 ) {
@@ -114,21 +109,6 @@ fun TrubbiNavHost(
                 PlaceSearchScreen(
                     onBack = { navController.popBackStack() },
                     onJourneyStarted = { id -> navController.navigate(Routes.journey(id)) { popUpTo(Routes.PLACE_SEARCH) { inclusive = true } } },
-                )
-            }
-
-            composable(Routes.CALENDAR) {
-                CalendarScreen(
-                    expanded = expanded,
-                    onRecordClick = { id -> navController.navigate(Routes.detail(id)) },
-                    contentPadding = contentPadding,
-                )
-            }
-
-            composable(Routes.SEARCH) {
-                SearchScreen(
-                    onRecordClick = { id -> navController.navigate(Routes.detail(id)) },
-                    contentPadding = contentPadding,
                 )
             }
 
@@ -256,13 +236,6 @@ fun TrubbiNavHost(
                 ),
             ) {
                 MediaEditRoute(EditKind.VIDEO, onClose = { navController.popBackStack() })
-            }
-
-            composable(
-                route = Routes.VIEWER,
-                arguments = listOf(navArgument("recordId") { type = NavType.StringType }),
-            ) {
-                ImageViewerScreen(onClose = { navController.popBackStack() })
             }
         }
     }

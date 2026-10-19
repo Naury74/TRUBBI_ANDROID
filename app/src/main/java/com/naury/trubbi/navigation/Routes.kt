@@ -10,9 +10,6 @@ import android.net.Uri
  */
 object Routes {
     const val HOME = "home"
-    const val CALENDAR = "calendar"
-    const val ALBUM = "album"
-    const val SEARCH = "search"
     const val SETTINGS = "settings"
 
     const val MEMO = "memo?recordId={recordId}"
@@ -48,9 +45,6 @@ object Routes {
     const val VIDEO_EDITOR = "videoEditor/{recordId}/{mediaUri}"
     fun videoEditor(recordId: String, mediaUri: String) =
         "videoEditor/$recordId/${Uri.encode(mediaUri)}"
-
-    const val VIEWER = "viewer/{recordId}"
-    fun viewer(recordId: String) = "viewer/$recordId"
 
     val topLevel = setOf(HOME, SETTINGS)
 }
