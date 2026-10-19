@@ -26,9 +26,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
-import coil.imageLoader
-import coil.request.ImageRequest
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.request.allowHardware
+import coil3.toBitmap
 import com.naury.trubbi.R
 import com.naury.trubbi.data.local.JourneyStopEntity
 import com.naury.trubbi.data.local.RecordWithMedia
@@ -173,7 +174,7 @@ private suspend fun buildMarkers(
             runCatching {
                 context.imageLoader.execute(
                     ImageRequest.Builder(context).data(thumbUri).size(140).allowHardware(false).build(),
-                ).drawable?.toBitmap()
+                ).image?.toBitmap()
             }.getOrNull()
         } else {
             null

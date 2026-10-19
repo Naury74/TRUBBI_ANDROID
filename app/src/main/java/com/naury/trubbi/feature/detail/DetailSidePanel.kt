@@ -49,8 +49,10 @@ import com.naury.trubbi.ui.designsystem.PillButton
 import com.naury.trubbi.ui.designsystem.glass
 import com.naury.trubbi.ui.designsystem.pressable
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
+import dev.chrisbanes.haze.HazeInput
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.blur.HazeBlurStyle
+import dev.chrisbanes.haze.blur.hazeBlur
 
 /**
  * 사진 위에 겹쳐 뜨는 정보 패널과 그 안의 칩·태그.
@@ -83,10 +85,13 @@ internal fun DetailSidePanel(
         Modifier
             .width(panelWidth)
             .fillMaxHeight()
-            .hazeChild(hazeState) {
-                backgroundColor = Color.Black
-                blurRadius = 24.dp
-            }
+            .hazeBlur(
+                HazeInput.Sources(hazeState),
+                HazeBlurStyle {
+                    backgroundColor(Color.Black)
+                    blurRadius(24.dp)
+                },
+            )
             .background(Color.Black.copy(alpha = 0.42f))
             .statusBarsPadding()
             .navigationBarsPadding()
@@ -200,10 +205,13 @@ internal fun ImmersiveChip(
     Row(
         modifier
             .clip(RoundedCornerShape(percent = 50))
-            .hazeChild(hazeState) {
-                backgroundColor = Color.Black
-                blurRadius = 18.dp
-            }
+            .hazeBlur(
+                HazeInput.Sources(hazeState),
+                HazeBlurStyle {
+                    backgroundColor(Color.Black)
+                    blurRadius(18.dp)
+                },
+            )
             .background(Color.Black.copy(alpha = 0.34f))
             .pressable(onClick = onClick)
             .padding(horizontal = if (large) 18.dp else 14.dp, vertical = if (large) 12.dp else 9.dp),
@@ -226,10 +234,13 @@ internal fun ImmersiveTag(hazeState: HazeState, text: String) {
     Box(
         Modifier
             .clip(RoundedCornerShape(percent = 50))
-            .hazeChild(hazeState) {
-                backgroundColor = Color.Black
-                blurRadius = 16.dp
-            }
+            .hazeBlur(
+                HazeInput.Sources(hazeState),
+                HazeBlurStyle {
+                    backgroundColor(Color.Black)
+                    blurRadius(16.dp)
+                },
+            )
             .background(Color.Black.copy(alpha = 0.30f))
             .padding(horizontal = 12.dp, vertical = 5.dp),
     ) {
@@ -251,10 +262,13 @@ internal fun ImmersiveCircle(
         modifier
             .size(size)
             .clip(RoundedCornerShape(percent = 50))
-            .hazeChild(hazeState) {
-                backgroundColor = Color.Black
-                blurRadius = 16.dp
-            }
+            .hazeBlur(
+                HazeInput.Sources(hazeState),
+                HazeBlurStyle {
+                    backgroundColor(Color.Black)
+                    blurRadius(16.dp)
+                },
+            )
             .background(Color.Black.copy(alpha = 0.34f))
             .pressable(onClick = onClick),
         contentAlignment = Alignment.Center,

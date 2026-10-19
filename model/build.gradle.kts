@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
 }
 
 /**
@@ -12,7 +11,7 @@ plugins {
 android {
     // 네임스페이스를 코틀린 패키지와 맞춰 두면 이 모듈 안에서 R 을 import 없이 쓴다.
     namespace = "com.naury.trubbi.domain.model"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig { minSdk = 30 }
 
@@ -20,7 +19,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions { jvmTarget = "17" }
+}
+
+kotlin {
+    compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
 }
 
 dependencies {

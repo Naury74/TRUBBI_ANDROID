@@ -30,7 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.request.videoFramePercent
+import coil3.video.videoFramePercent
 import com.naury.trubbi.R
 import com.naury.trubbi.core.i18n.label
 import com.naury.trubbi.data.i18n.displayName
@@ -385,7 +385,7 @@ private fun TimelineThumb(
         ) {
             val model = if (media.isVideo) {
                 // 영상은 항상 원본에서 프레임을 뽑는다(예전 .mp4 이름 썸네일도 안전하게 표시).
-                coil.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
+                coil3.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
                     .data(media.uri)
                     .videoFramePercent(0.1)
                     .size(160)
@@ -393,7 +393,7 @@ private fun TimelineThumb(
             } else {
                 media.thumbnailUri ?: media.uri
             }
-            coil.compose.AsyncImage(
+            coil3.compose.AsyncImage(
                 model = model,
                 contentDescription = null,
                 contentScale = androidx.compose.ui.layout.ContentScale.Crop,

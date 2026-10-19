@@ -62,7 +62,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.naury.trubbi.R
 import com.naury.trubbi.core.barcode.BarcodeRenderer
 import com.naury.trubbi.core.i18n.purposeLabel
@@ -80,7 +80,7 @@ import com.naury.trubbi.ui.designsystem.rememberTrubbiToastState
 import com.naury.trubbi.ui.designsystem.sharedMedia
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeSource
 import kotlin.math.absoluteValue
 import kotlinx.coroutines.launch
 /**
@@ -203,10 +203,10 @@ fun ImmersiveDetailScreen(
                 model = rememberMediaModel(curMedia),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize().blur(30.dp).haze(hazeState),
+                modifier = Modifier.fillMaxSize().blur(30.dp).hazeSource(hazeState),
             )
         } else {
-            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF202022), Color(0xFF000000)))).haze(hazeState))
+            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF202022), Color(0xFF000000)))).hazeSource(hazeState))
         }
         Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.45f)))
 

@@ -39,7 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeSource
 
 /**
  * 터치 반응과 화면 배경 수정자.
@@ -123,7 +123,7 @@ fun TrubbiBackground(modifier: Modifier = Modifier, content: @Composable () -> U
         Box(
             Modifier
                 .matchParentSize()
-                .haze(hazeState)
+                .hazeSource(hazeState)
                 .background(bg)
                 .drawBehind {
                     val r = size.maxDimension

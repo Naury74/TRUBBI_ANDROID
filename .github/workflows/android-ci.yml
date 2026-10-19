@@ -50,7 +50,7 @@ jobs:
 
       - name: 정적 분석 (detekt)
         if: success() || failure()
-        run: ./gradlew detektDebug --stacktrace
+        run: ./gradlew detekt --stacktrace
 
       - name: Android Lint
         if: success() || failure()

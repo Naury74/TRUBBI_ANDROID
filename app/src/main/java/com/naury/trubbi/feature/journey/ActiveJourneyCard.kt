@@ -39,7 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.request.videoFramePercent
+import coil3.video.videoFramePercent
 import com.naury.trubbi.R
 import com.naury.trubbi.core.i18n.label
 import com.naury.trubbi.data.i18n.displayName
@@ -270,7 +270,7 @@ private fun JourneyMiniThumb(media: com.naury.trubbi.data.local.MediaEntity, onC
     ) {
         val model = if (media.isVideo) {
             // 영상은 항상 원본 프레임에서(예전 영상 썸네일도 안전).
-            coil.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
+            coil3.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
                 .data(media.uri)
                 .videoFramePercent(0.1)
                 .size(150)
@@ -278,7 +278,7 @@ private fun JourneyMiniThumb(media: com.naury.trubbi.data.local.MediaEntity, onC
         } else {
             media.thumbnailUri ?: media.uri
         }
-        coil.compose.AsyncImage(
+        coil3.compose.AsyncImage(
             model = model,
             contentDescription = null,
             contentScale = androidx.compose.ui.layout.ContentScale.Crop,

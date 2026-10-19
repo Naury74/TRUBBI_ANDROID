@@ -282,6 +282,7 @@ class JourneyDetailViewModel @Inject constructor(
     }
 
     // ── 리포트
+
     /** 리포트나 워터마크 묶음을 만드는 중인지. 사진이 많으면 수십 초가 걸려 연타를 막아야 한다. */
     val reportBusy = MutableStateFlow(false)
 

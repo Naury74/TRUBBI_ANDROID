@@ -2,7 +2,6 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
@@ -33,7 +32,7 @@ val hasReleaseSigning =
 
 android {
     namespace = "com.naury.trubbi"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.naury.trubbi"
@@ -76,9 +75,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
     buildFeatures {
         compose = true
         buildConfig = true
@@ -116,6 +112,10 @@ android {
     packaging {
         resources.excludes += setOf("META-INF/LICENSE.md", "META-INF/LICENSE-notice.md")
     }
+}
+
+kotlin {
+    compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11) }
 }
 
 dependencies {
@@ -163,6 +163,7 @@ dependencies {
     // Image loading (+ video frame decoding so any video uri renders a poster frame)
     implementation(libs.coil.compose)
     implementation(libs.coil.video)
+    implementation(libs.coil.network.okhttp)
 
     // Barcode generation (encode value back into a scannable barcode)
     implementation(libs.zxing.core)
@@ -172,6 +173,7 @@ dependencies {
 
     // Real backdrop blur ("Liquid Glass" frosted surfaces)
     implementation(libs.haze)
+    implementation(libs.haze.blur)
 
     // Kakao Maps SDK — journey route/stop/record map + place search
     implementation(libs.kakao.maps)

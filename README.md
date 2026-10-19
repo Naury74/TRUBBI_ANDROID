@@ -64,7 +64,7 @@ echo "KAKAO_REST_KEY=..."   >> local.properties
 echo "KAKAO_NATIVE_KEY=..." >> local.properties
 
 ./gradlew ktlintFormat              # 정렬
-./gradlew ktlintCheck detektDebug   # 스타일 + 정적 분석
+./gradlew ktlintCheck detekt        # 스타일 + 정적 분석
 ./gradlew test                      # 전 모듈 단위 테스트
 ./gradlew assembleDebug
 ```

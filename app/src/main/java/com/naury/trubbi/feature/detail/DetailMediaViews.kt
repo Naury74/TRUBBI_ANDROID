@@ -49,9 +49,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import coil.request.videoFramePercent
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import coil3.video.videoFramePercent
 import com.naury.trubbi.R
 import com.naury.trubbi.core.barcode.BarcodeRenderer
 import com.naury.trubbi.data.local.MediaEntity
@@ -60,8 +61,10 @@ import com.naury.trubbi.domain.memo.MemoContent
 import com.naury.trubbi.ui.common.MemoBlocksView
 import com.naury.trubbi.ui.designsystem.AppIcons
 import com.naury.trubbi.ui.designsystem.appearOnce
+import dev.chrisbanes.haze.HazeInput
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.blur.HazeBlurStyle
+import dev.chrisbanes.haze.blur.hazeBlur
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -140,10 +143,13 @@ internal fun VideoPage(media: MediaEntity, hazeState: HazeState, onToggleChrome:
                 Row(
                     Modifier
                         .clip(RoundedCornerShape(percent = 50))
-                        .hazeChild(hazeState) {
-                            backgroundColor = Color.Black
-                            blurRadius = 14.dp
-                        }
+                        .hazeBlur(
+                            HazeInput.Sources(hazeState),
+                            HazeBlurStyle {
+                                backgroundColor(Color.Black)
+                                blurRadius(14.dp)
+                            },
+                        )
                         .background(Color.Black.copy(alpha = 0.34f))
                         .padding(horizontal = 10.dp, vertical = 5.dp),
                     verticalAlignment = Alignment.CenterVertically,

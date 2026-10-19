@@ -1,4 +1,4 @@
-﻿package com.naury.trubbi.ui.weather
+package com.naury.trubbi.ui.weather
 
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearEasing

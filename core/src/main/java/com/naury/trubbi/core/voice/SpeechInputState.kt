@@ -89,6 +89,7 @@ class SpeechInputState(
     @Volatile private var session = 0
 
     // 효과음. 사인파를 직접 합성해 `USAGE_ASSISTANCE_NAVIGATION_GUIDANCE` 스트림으로 재생한다.
+
     /** 마이크가 열렸음을 알리는 신호음. */
     private fun earconReady() = playEarcon(listOf(440.00 to 130, 587.33 to 180))
 

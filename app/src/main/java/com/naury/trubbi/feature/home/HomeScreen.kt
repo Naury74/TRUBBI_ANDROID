@@ -62,7 +62,7 @@ import com.naury.trubbi.ui.designsystem.glass
 import com.naury.trubbi.ui.weather.WeatherBackground
 import com.naury.trubbi.ui.weather.WeatherHeader
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeSource
 /**
  * 홈 화면.
  *
@@ -292,7 +292,7 @@ fun HomeScreen(
     CompositionLocalProvider(LocalHazeState provides hazeState) {
         Box(Modifier.fillMaxSize()) {
             // 시간·날씨 배경.
-            Box(Modifier.fillMaxSize().haze(hazeState)) {
+            Box(Modifier.fillMaxSize().hazeSource(hazeState)) {
                 WeatherBackground(
                     condition = weather?.condition ?: WeatherCondition.CLOUDS,
                     isDay = weather?.isDay ?: true,
