@@ -109,6 +109,11 @@ android {
         language { enableSplit = false } // 앱 내 언어 전환을 지원하므로 묶어서 배포한다.
     }
 
+    // 앱은 한국어·영어만 낸다. SDK들이 가져오는 13개 언어 문구가 섞여 보이지 않게 거른다.
+    androidResources {
+        localeFilters += setOf("ko", "en")
+    }
+
     packaging {
         resources.excludes += setOf("META-INF/LICENSE.md", "META-INF/LICENSE-notice.md")
     }
@@ -177,6 +182,10 @@ dependencies {
 
     // Kakao Maps SDK — journey route/stop/record map + place search
     implementation(libs.kakao.maps)
+
+    // 직접 만든 SDK: 사진·영상 편집기와 문서 스캐너(FrameKit), UI 키트(Kinetica)
+    implementation(libs.framekit)
+    implementation(libs.kinetica.ui)
 
     // Lottie — premium animated weather backgrounds (loaded from assets, falls back to the
     // built-in illustrated background when an animation file is missing)
