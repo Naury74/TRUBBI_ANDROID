@@ -60,7 +60,7 @@ import com.naury.trubbi.ui.theme.LocalTrubbiColors
  * @param onOpenContacts 연락처로
  * @param onOpenPurposes 용도 관리로
  * @param onOpenAccount 계정·백업으로
- * @param onBack 뒤로 갈 때
+ * @param onBack 뒤로 갈 때. 하단 탭으로 열었으면 null(뒤로 버튼 없음)
  * @param contentPadding 시스템 바를 피하기 위한 여백
  * @param viewModel 설정 상태
  */
@@ -69,7 +69,7 @@ fun SettingsScreen(
     onOpenContacts: () -> Unit,
     onOpenPurposes: () -> Unit,
     onOpenAccount: () -> Unit,
-    onBack: () -> Unit,
+    onBack: (() -> Unit)?,
     contentPadding: PaddingValues,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
@@ -112,15 +112,18 @@ fun SettingsScreen(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
             top = contentPadding.calculateTopPadding(),
-            bottom = contentPadding.calculateBottomPadding() + 24.dp,
+            // 하단 탭 바(떠 있는 캡슐)에 마지막 항목이 가리지 않게 한다.
+            bottom = contentPadding.calculateBottomPadding() + com.naury.trubbi.navigation.TAB_BAR_ROOM,
         ),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         item {
             TrubbiLargeTitle(
                 title = stringResource(R.string.settings_title),
-                leading = {
-                    com.naury.trubbi.ui.designsystem.GlassIconButton(AppIcons.ArrowBackIos, onBack, stringResource(R.string.action_back), size = 40.dp)
+                leading = onBack?.let { back ->
+                    {
+                        com.naury.trubbi.ui.designsystem.GlassIconButton(AppIcons.ArrowBackIos, back, stringResource(R.string.action_back), size = 40.dp)
+                    }
                 },
             )
         }

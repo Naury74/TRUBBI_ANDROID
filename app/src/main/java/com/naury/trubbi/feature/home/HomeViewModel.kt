@@ -99,6 +99,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    // ── 탭 바가 맡기는 일 ───────────────────────────────────────────────────────
+
+    /**
+     * 하단 탭 바의 "+" 메뉴가 홈 화면에 맡긴 일. 홈 탭이 받아 처리하고 비운다.
+     *
+     * 경로 화면과 여정 시작 오버레이가 홈 화면 안에 있어서, 다른 탭에서 고른 동작도 홈으로 넘겨 처리한다.
+     */
+    val pendingAction = MutableStateFlow<HomeAction?>(null)
+
     // ── 인사말 ────────────────────────────────────────────────────────────────
 
     /** 홈에 한 번 뜨는 인사 배너. */
@@ -166,4 +175,13 @@ class HomeViewModel @Inject constructor(
         const val WEATHER_REFRESH_MS = 30 * 60 * 1000L
         const val SUBSCRIBE_KEEP_MS = 5_000L
     }
+}
+
+/** 탭 바에서 홈 화면으로 넘기는 동작. */
+enum class HomeAction {
+    /** 경로 화면을 연다. 여정 중이면 정차지 추가로 연다. */
+    PLAN_ROUTE,
+
+    /** 갤러리에서 사진을 골라 기록으로 들여온다. */
+    IMPORT_PHOTO,
 }

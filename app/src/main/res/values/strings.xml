@@ -72,6 +72,12 @@
     <string name="share_field_tags">태그: %1$s</string>
     <string name="tab_home">홈</string>
     <string name="tab_settings">설정</string>
+    <string name="tab_records">기록</string>
+    <string name="tab_journeys">여정</string>
+    <string name="planner_title_add">정차지 추가</string>
+    <string name="tab_quick_title">무엇을 할까요?</string>
+    <string name="tab_quick_more">더 보기</string>
+    <string name="quick_document_scan">문서 스캔</string>
 
     <!-- ─────────────────────────── 공통 UI ─────────────────────────── -->
     <plurals name="photo_count">

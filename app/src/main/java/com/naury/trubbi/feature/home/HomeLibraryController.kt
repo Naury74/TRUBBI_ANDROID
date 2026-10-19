@@ -79,6 +79,9 @@ class HomeLibraryController @AssistedInject constructor(
     /** 같은 칩을 다시 누르면 해제한다. */
     fun setTypeFilter(type: String?) = update { it.copy(type = if (it.type == type) null else type) }
 
+    /** 같은 칩을 다시 눌러도 풀지 않고 그 종류로 맞춘다(홈 탭에서 기록 탭으로 넘어갈 때). */
+    fun showType(type: String?) = update { it.copy(type = type) }
+
     /** 같은 칩을 다시 누르면 해제한다. */
     fun setPurposeFilter(purpose: String?) =
         update { it.copy(purpose = if (it.purpose == purpose) null else purpose) }

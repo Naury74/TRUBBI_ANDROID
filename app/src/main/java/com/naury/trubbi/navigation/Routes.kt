@@ -11,6 +11,7 @@ import android.net.Uri
 object Routes {
     const val HOME = "home"
     const val SETTINGS = "settings"
+    const val RECORDS = "records"
 
     const val MEMO = "memo?recordId={recordId}"
     fun memo(recordId: String? = null) = if (recordId == null) "memo" else "memo?recordId=$recordId"
@@ -44,5 +45,5 @@ object Routes {
     fun videoEditor(recordId: String, mediaUri: String) =
         "videoEditor/$recordId/${Uri.encode(mediaUri)}"
 
-    val topLevel = setOf(HOME, SETTINGS)
+    val topLevel = setOf(HOME, RECORDS, JOURNEYS, SETTINGS)
 }

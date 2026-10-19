@@ -203,7 +203,10 @@ private fun TrubbiAppRoot(initialIntent: Intent?) {
         }
     }
 
-    CompositionLocalProvider(LocalAppToast provides appToast) {
+    CompositionLocalProvider(
+        LocalAppToast provides appToast,
+        com.naury.trubbi.ui.designsystem.LocalAppReady provides !(showSplash || profile == null),
+    ) {
         androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
             if (authGate == com.naury.trubbi.AuthGate.SIGNED_OUT && welcomeSeen == false) {
                 com.naury.trubbi.ui.designsystem.AuthHeroBackground {

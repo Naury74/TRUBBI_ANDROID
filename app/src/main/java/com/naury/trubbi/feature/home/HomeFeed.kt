@@ -76,6 +76,7 @@ internal fun HomeFeed(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
     selectionMode: Boolean,
+    section: HomeSection,
     filtering: Boolean,
     searchMode: Boolean,
     signedIn: Boolean,
@@ -107,20 +108,30 @@ internal fun HomeFeed(
     onOpenAccount: () -> Unit,
     onOpenJourney: (String) -> Unit,
     onOpenJourneyHistory: () -> Unit,
+    onOpenRecords: () -> Unit,
 ) {
     val c = LocalTrubbiColors.current
+    // 홈 탭은 오늘 현황과 여정만, 기록 탭은 검색·필터·날짜 타임라인만 그린다(둘이 같은 뷰모델을 나눠 쓴다).
+    val today = section == HomeSection.TODAY
+    val records = !today
+
+    // 홈 탭에서 통계 칸이나 "전체 보기"를 누르면 그 조건을 걸고 기록 탭으로 넘어간다.
+    fun openRecordsWith(type: String) {
+        viewModel.library.showType(type)
+        onOpenRecords()
+    }
     LazyColumn(
         state = listState,
         modifier = modifier.fillMaxWidth().nestedScroll(headerNestedScroll),
         contentPadding = PaddingValues(
             top = 14.dp,
-            bottom = contentPadding.calculateBottomPadding() + 110.dp,
+            bottom = contentPadding.calculateBottomPadding() + com.naury.trubbi.navigation.TAB_BAR_ROOM,
         ),
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
         if (!selectionMode) {
             // ── 여정 카드 — 필터 칩보다 위에 가장 먼저. 진행 중이면 스테퍼, 없으면 시작 진입점.
-            if (!filtering) {
+            if (today) {
                 item(key = "journey") {
                     Box(Modifier.appearOnce(30).padding(horizontal = 16.dp)) {
                         val j = activeJourney
@@ -180,7 +191,7 @@ internal fun HomeFeed(
                 }
             }
             // 지난 여정 — 여정 카드 바로 아래. 카드로 노출 + 최근 3건 바로 진입.
-            if (!filtering && completedJourneyCount > 0) {
+            if (today && completedJourneyCount > 0) {
                 item(key = "pastJourneys") {
                     Box(Modifier.appearOnce(35).padding(horizontal = 16.dp)) {
                         com.naury.trubbi.feature.journey.PastJourneysCard(
@@ -192,7 +203,7 @@ internal fun HomeFeed(
                     }
                 }
             }
-            if (searchMode) {
+            if (records && searchMode) {
                 // 검색 중에는 필터 줄을 상단에 고정한다.
                 stickyHeader(key = "filters") {
                     FilterStickyRow(
@@ -203,7 +214,7 @@ internal fun HomeFeed(
                         onPurpose = viewModel.library::setPurposeFilter,
                     )
                 }
-            } else {
+            } else if (records) {
                 item {
                     LazyRow(
                         state = purposeRowState,
@@ -221,7 +232,7 @@ internal fun HomeFeed(
                 }
             }
 
-            if (!searchMode && (typeFilter != null || purposeFilter != null)) {
+            if (records && !searchMode && (typeFilter != null || purposeFilter != null)) {
                 item {
                     Row(
                         Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -243,7 +254,7 @@ internal fun HomeFeed(
             }
 
             // 미로그인 시: 로그인/백업 안내 배너 (로그인 없이도 전 기능 사용 가능).
-            if (!filtering && !signedIn) {
+            if (today && !signedIn) {
                 item(key = "loginBanner") {
                     Row(
                         Modifier
@@ -285,7 +296,7 @@ internal fun HomeFeed(
             }
 
             val todayTotal = state.summary.photos + state.summary.videos + state.summary.barcodes + state.summary.memos
-            if (!filtering && todayTotal > 0) {
+            if (today && todayTotal > 0) {
                 item {
                     Column(
                         Modifier
@@ -314,35 +325,35 @@ internal fun HomeFeed(
                                 state.summary.photos.toString(),
                                 stringResource(RecordType.PHOTO.labelRes),
                                 MaterialTheme.colorScheme.primary,
-                                Modifier.weight(1f).pressable { viewModel.library.setTypeFilter("PHOTO") },
+                                Modifier.weight(1f).pressable { openRecordsWith("PHOTO") },
                                 active = state.summary.photos > 0,
                             )
                             StatPill(
                                 state.summary.videos.toString(),
                                 stringResource(RecordType.VIDEO.labelRes),
                                 c.accent2,
-                                Modifier.weight(1f).pressable { viewModel.library.setTypeFilter("VIDEO") },
+                                Modifier.weight(1f).pressable { openRecordsWith("VIDEO") },
                                 active = state.summary.videos > 0,
                             )
                             StatPill(
                                 state.summary.documents.toString(),
                                 stringResource(RecordType.DOCUMENT.labelRes),
                                 MaterialTheme.colorScheme.tertiary,
-                                Modifier.weight(1f).pressable { viewModel.library.setTypeFilter("DOCUMENT") },
+                                Modifier.weight(1f).pressable { openRecordsWith("DOCUMENT") },
                                 active = state.summary.documents > 0,
                             )
                             StatPill(
                                 state.summary.barcodes.toString(),
                                 stringResource(RecordType.BARCODE.labelRes),
                                 c.green,
-                                Modifier.weight(1f).pressable { viewModel.library.setTypeFilter("BARCODE") },
+                                Modifier.weight(1f).pressable { openRecordsWith("BARCODE") },
                                 active = state.summary.barcodes > 0,
                             )
                             StatPill(
                                 state.summary.memos.toString(),
                                 stringResource(RecordType.MEMO.labelRes),
                                 if (c.isDark) com.naury.trubbi.ui.theme.MonoAmberDark else com.naury.trubbi.ui.theme.MonoAmberLight,
-                                Modifier.weight(1f).pressable { viewModel.library.setTypeFilter("MEMO") },
+                                Modifier.weight(1f).pressable { openRecordsWith("MEMO") },
                                 active = state.summary.memos > 0,
                             )
                         }
@@ -352,10 +363,10 @@ internal fun HomeFeed(
         }
 
         // 1) 즐겨찾기
-        if (!filtering && state.favorites.isNotEmpty()) {
+        if (today && state.favorites.isNotEmpty()) {
             item {
                 SectionHeader(stringResource(R.string.home_favorites), stringResource(R.string.home_see_all)) {
-                    viewModel.library.setTypeFilter("FAVORITE")
+                    openRecordsWith(com.naury.trubbi.domain.record.HomeTimelineBuilder.FAVORITE_FILTER)
                 }
             }
             item {
@@ -379,10 +390,10 @@ internal fun HomeFeed(
         }
 
         // 2) 최근 저장
-        if (!filtering && state.recents.isNotEmpty()) {
+        if (today && state.recents.isNotEmpty()) {
             item {
                 SectionHeader(stringResource(R.string.home_recent), stringResource(R.string.home_see_all)) {
-                    viewModel.library.setTypeFilter(com.naury.trubbi.domain.record.HomeTimelineBuilder.ALL_FILTER)
+                    openRecordsWith(com.naury.trubbi.domain.record.HomeTimelineBuilder.ALL_FILTER)
                 }
             }
             item {
@@ -405,8 +416,8 @@ internal fun HomeFeed(
             }
         }
 
-        // 3) 날짜 타임라인
-        run {
+        // 3) 날짜 타임라인 — 기록 탭에서만
+        if (records) {
             stickyHeader(key = "calendar") {
                 Box(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp)) {
                     Box(Modifier.fillMaxWidth().glass(RoundedCornerShape(24.dp)).padding(vertical = 8.dp)) {
@@ -427,7 +438,7 @@ internal fun HomeFeed(
                 }
             }
         }
-        if (state.dateSections.isNotEmpty()) {
+        if (records && state.dateSections.isNotEmpty()) {
             state.dateSections.forEach { section ->
                 stickyHeader(key = "h_${section.dateIso}", contentType = "dateHeader") {
                     DateStickyHeader(section.dateIso, section.items)
@@ -448,7 +459,7 @@ internal fun HomeFeed(
                     )
                 }
             }
-        } else if (filtering) {
+        } else if (records && filtering) {
             item {
                 Box(Modifier.fillMaxWidth().padding(vertical = 48.dp), contentAlignment = Alignment.Center) {
                     Text(stringResource(R.string.home_no_results), style = MaterialTheme.typography.bodyMedium, color = c.secondaryLabel)
@@ -596,3 +607,6 @@ private fun FavoritePlacesRow(
         }
     }
 }
+
+/** 홈 화면이 그리는 구역. 홈 탭과 기록 탭이 같은 화면·뷰모델을 나눠 쓴다. */
+enum class HomeSection { TODAY, RECORDS }

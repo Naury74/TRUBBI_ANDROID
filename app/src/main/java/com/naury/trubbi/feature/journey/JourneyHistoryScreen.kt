@@ -67,14 +67,18 @@ class JourneyHistoryViewModel @Inject constructor(
 /**
  * 지난 여정 화면 — 누르면 그 여정의 상세(타임라인·기록·비용·지도·리포트)로 간다.
  *
- * @param onBack 뒤로 갈 때
+ * @param onBack 뒤로 갈 때. 하단 탭으로 열었으면 null(뒤로 버튼 없음)
  * @param onOpenJourney 여정 상세로 (여정 id)
+ * @param onStartJourney 주면 맨 위에 "새 여정 시작" 버튼을 둔다
+ * @param bottomPadding 하단 탭 바에 가리지 않도록 목록 끝에 더 둘 여백
  * @param viewModel 목록 상태
  */
 @Composable
 fun JourneyHistoryScreen(
-    onBack: () -> Unit,
+    onBack: (() -> Unit)?,
     onOpenJourney: (String) -> Unit,
+    onStartJourney: (() -> Unit)? = null,
+    bottomPadding: androidx.compose.ui.unit.Dp = 8.dp,
     viewModel: JourneyHistoryViewModel = hiltViewModel(),
 ) {
     val c = LocalTrubbiColors.current
@@ -87,23 +91,28 @@ fun JourneyHistoryScreen(
 
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         GlassTopBar(title = stringResource(R.string.journey_history_title), onBack = onBack)
+        if (onStartJourney != null) {
+            com.naury.kinetica.ui.KButton(
+                text = stringResource(R.string.home_action_start_journey),
+                onClick = onStartJourney,
+                icon = com.naury.trubbi.ui.designsystem.AppIcons.Navigation,
+                size = com.naury.kinetica.ui.KButtonSize.Large,
+                fullWidth = true,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            )
+        }
 
         if (journeys.isEmpty()) {
-            Column(
-                Modifier.fillMaxSize().padding(top = 80.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    stringResource(R.string.journey_history_empty),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = c.secondaryLabel,
-                )
-            }
+            com.naury.kinetica.ui.KEmptyState(
+                title = stringResource(R.string.journey_history_empty),
+                art = { com.naury.kinetica.ui.KEmptyIcon(com.naury.kinetica.ui.KEmptyIconKind.EmptyInbox) },
+                modifier = Modifier.fillMaxWidth().padding(top = 60.dp),
+            )
             return
         }
 
         LazyColumn(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = bottomPadding),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             itemsIndexed(journeys, key = { _, entry -> entry.journey.journeyId }) { i, j ->

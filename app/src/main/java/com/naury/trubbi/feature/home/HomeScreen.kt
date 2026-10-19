@@ -13,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,9 +23,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,9 +51,7 @@ import com.naury.trubbi.core.weather.WeatherCondition
 import com.naury.trubbi.data.local.RecordWithMedia
 import com.naury.trubbi.feature.journey.SendOffOverlay
 import com.naury.trubbi.ui.designsystem.AppIcons
-import com.naury.trubbi.ui.designsystem.DockAction
 import com.naury.trubbi.ui.designsystem.LocalHazeState
-import com.naury.trubbi.ui.designsystem.QuickDock
 import com.naury.trubbi.ui.weather.WeatherBackground
 import com.naury.trubbi.ui.weather.WeatherHeader
 import dev.chrisbanes.haze.HazeState
@@ -59,14 +59,13 @@ import dev.chrisbanes.haze.hazeSource
 /**
  * 홈 화면.
  *
- * 위에서부터 날씨 배경 · 진행 중 여정 카드 · 오늘 요약 · 즐겨찾기 · 최근 저장 · 날짜별 타임라인
- * 순으로 이어진다. 필터를 걸거나 검색을 시작하면 위쪽 섹션은 접히고 결과 목록만 남는다.
+ * 하단 탭의 "홈"과 "기록"이 이 화면을 나눠 쓴다([section]). 홈은 날씨 · 여정 카드 · 오늘 요약 ·
+ * 즐겨찾기 · 최근 저장을, 기록은 검색 · 용도/종류 필터 · 달력 · 날짜별 타임라인을 그린다. 두 탭은 같은
+ * 뷰모델을 써서, 홈에서 고른 조건이 기록 탭에 그대로 걸린다.
  *
- * 화면 이동과 빠른 동작은 모두 하단 독이 담당한다. 별도 탭 바는 두지 않는다.
- *
+ * @param section 그릴 구역
+ * @param onOpenRecords 기록 탭으로 (홈의 "전체 보기"·통계 칸)
  * @param onCamera 촬영 화면으로
- * @param onBarcode 바코드 스캔으로
- * @param onMemo 메모 작성으로
  * @param onOpenSettings 설정으로
  * @param onRecordClick 기록 상세로 (기록 id)
  * @param onOpenJourney 여정 상세로 (여정 id)
@@ -78,9 +77,9 @@ import dev.chrisbanes.haze.hazeSource
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
+    section: HomeSection,
+    onOpenRecords: () -> Unit,
     onCamera: () -> Unit,
-    onBarcode: () -> Unit,
-    onMemo: () -> Unit,
     onOpenSettings: () -> Unit,
     onRecordClick: (String) -> Unit,
     onOpenJourney: (String) -> Unit,
@@ -140,16 +139,6 @@ fun HomeScreen(
 
     BackHandler(enabled = selectionMode) { viewModel.selection.clear() }
 
-    // 화면을 떠날 때 시스템 기본값으로 되돌린다.
-    val view = androidx.compose.ui.platform.LocalView.current
-    DisposableEffect(Unit) {
-        val window = (view.context as android.app.Activity).window
-        val controller = androidx.core.view.WindowCompat.getInsetsController(window, view)
-        val previous = controller.isAppearanceLightStatusBars
-        controller.isAppearanceLightStatusBars = false
-        onDispose { controller.isAppearanceLightStatusBars = previous }
-    }
-
     // 날씨에 쓸 위치 권한 — 이미 있으면 갱신만, 없으면 처음 들어올 때 한 번만 묻는다.
     val weatherPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -178,30 +167,18 @@ fun HomeScreen(
         if (selectionMode) viewModel.selection.toggleRecord(id) else onRecordClick(id)
     }
 
-    // 빠른 동작은 하단 독에 모아 둔다.
-    val dockAccent = MaterialTheme.colorScheme.primary
     val shareChooserTitle = stringResource(R.string.action_share)
-    val dockActions = buildList {
-        // 여정이 없을 때만 + 메뉴에 여정 시작 노출.
-        if (activeJourney == null) {
-            add(DockAction(stringResource(R.string.home_action_start_journey), AppIcons.Truck, dockAccent) { showStartSheet = true })
+
+    // 탭 바의 "+" 메뉴가 맡긴 일. 경로 화면·여정 오버레이는 홈 탭에만 있으므로 홈 탭이 처리한다.
+    val pendingAction by viewModel.pendingAction.collectAsStateWithLifecycle()
+    LaunchedEffect(pendingAction, section) {
+        if (section != HomeSection.TODAY) return@LaunchedEffect
+        when (pendingAction) {
+            HomeAction.PLAN_ROUTE -> if (activeJourney == null) showStartSheet = true else showAddStopSheet = true
+            HomeAction.IMPORT_PHOTO -> picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            null -> return@LaunchedEffect
         }
-        add(
-            DockAction(
-                stringResource(if (signedIn) R.string.home_action_account else R.string.home_action_sign_in),
-                AppIcons.Backup,
-                dockAccent,
-                onOpenAccount,
-            ),
-        )
-        add(DockAction(stringResource(R.string.floating_capture), AppIcons.CameraAlt, dockAccent, onCamera))
-        add(DockAction(stringResource(R.string.home_action_scan_barcode), AppIcons.QrCodeScanner, dockAccent, onBarcode))
-        add(
-            DockAction(stringResource(R.string.home_action_import_photo), AppIcons.PhotoLibrary, dockAccent) {
-                picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-            },
-        )
-        add(DockAction(stringResource(R.string.home_action_quick_memo), AppIcons.EditNote, dockAccent, onMemo))
+        viewModel.pendingAction.value = null
     }
 
     val listState = rememberLazyListState()
@@ -308,7 +285,12 @@ fun HomeScreen(
                 run {
                     // 검색 버튼 위치에서 왼쪽으로 확장되는 검색창.
                     Box(Modifier.fillMaxWidth()) {
-                        if (!searchMode) {
+                        if (!searchMode && section == HomeSection.RECORDS) {
+                            RecordsHeader(
+                                topPadding = contentPadding.calculateTopPadding(),
+                                onSearch = { searchMode = true },
+                            )
+                        } else if (!searchMode) {
                             WeatherHeader(
                                 collapse = collapse,
                                 topPadding = contentPadding.calculateTopPadding(),
@@ -356,6 +338,7 @@ fun HomeScreen(
                     contentPadding = contentPadding,
                     modifier = Modifier.weight(1f),
                     selectionMode = selectionMode,
+                    section = section,
                     filtering = filtering,
                     searchMode = searchMode,
                     signedIn = signedIn,
@@ -393,18 +376,12 @@ fun HomeScreen(
                     onOpenAccount = onOpenAccount,
                     onOpenJourney = onOpenJourney,
                     onOpenJourneyHistory = onOpenJourneyHistory,
+                    onOpenRecords = onOpenRecords,
                 )
             }
 
-            // 하단 독. 다중 선택 중에는 같은 위치에 선택 도구가 표시된다.
-            if (!selectionMode) {
-                // 오른쪽 위치 버튼은 경로 화면을 연다. 여정 중이면 정차지 추가로.
-                QuickDock(
-                    actions = dockActions,
-                    onCapture = onCamera,
-                    onPlaceSearch = { if (activeJourney == null) showStartSheet = true else showAddStopSheet = true },
-                )
-            } else {
+            // 다중 선택 중에는 탭 바 대신 선택 도구가 아래에 뜬다.
+            if (selectionMode) {
                 HomeSelectionDock(
                     count = selection.size + selectedMedia.size,
                     onClose = viewModel.selection::clear,
@@ -433,7 +410,10 @@ fun HomeScreen(
             // 재방문 환영 인사 — 상단에서 잠깐 내려왔다 사라진다. 상단 바를 잠시 덮으므로 불투명한 토스트로 띄운다.
             val greeting by viewModel.greeting.collectAsStateWithLifecycle()
             val greetingToast = com.naury.kinetica.ui.rememberKToastState()
-            LaunchedEffect(greeting) {
+            // 스플래시가 걷힌 뒤에 띄운다. 토스트는 별도 창이라 스플래시보다 위에 그려진다.
+            val appReady = com.naury.trubbi.ui.designsystem.LocalAppReady.current
+            LaunchedEffect(greeting, appReady) {
+                if (!appReady) return@LaunchedEffect
                 greeting?.let {
                     greetingToast.show(it, durationMs = 2600)
                     viewModel.clearGreeting()
@@ -471,4 +451,29 @@ fun HomeScreen(
         confirmCancelJourney = confirmCancelJourney,
         onDismissCancel = { confirmCancelJourney = false },
     )
+}
+
+/** 기록 탭 머리 — 큰 제목과 검색 버튼. 날씨 배너 대신 쓴다. */
+@Composable
+private fun RecordsHeader(topPadding: androidx.compose.ui.unit.Dp, onSearch: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = topPadding + 12.dp, start = 20.dp, end = 16.dp, bottom = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            stringResource(R.string.tab_records),
+            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+            color = Color.White,
+            modifier = Modifier.weight(1f),
+        )
+        com.naury.kinetica.ui.KIconButton(
+            AppIcons.Search,
+            stringResource(R.string.action_search),
+            onClick = onSearch,
+            surface = com.naury.kinetica.ui.SurfaceStyles.LiteGlassDark,
+            contentColor = Color.White,
+        )
+    }
 }

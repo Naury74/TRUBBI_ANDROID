@@ -41,6 +41,9 @@ class TrubbiToastState {
  */
 val LocalAppToast = staticCompositionLocalOf<TrubbiToastState?> { null }
 
+/** 스플래시가 걷히고 첫 화면이 보이는지. 그 전에는 토스트·인사처럼 위에 뜨는 것을 미룬다. */
+val LocalAppReady = androidx.compose.runtime.compositionLocalOf { true }
+
 @Composable
 fun rememberTrubbiToastState(): TrubbiToastState = remember { TrubbiToastState() }
 
