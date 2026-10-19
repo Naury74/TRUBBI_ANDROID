@@ -3,6 +3,7 @@ package com.naury.trubbi.feature.account
 import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -276,7 +277,14 @@ class AccountViewModel @Inject constructor(
                 val request = GetCredentialRequest.Builder().addCredentialOption(option).build()
                 val response = CredentialManager.create(context).getCredential(context, request)
                 GoogleIdTokenCredential.createFrom(response.credential.data).idToken
-            }.getOrElse { return@launchGuarded } // user cancelled the picker — no error popup
+            }.getOrElse { e ->
+                // 고르기 창을 닫은 것은 오류가 아니다. 기기에 구글 계정이 없을 때는 아무 반응이 없으면
+                // 버튼이 고장 난 것처럼 보이므로 이유를 알린다.
+                if (e is NoCredentialException) {
+                    dialog.value = AuthDialog(strings[R.string.auth_google_no_account_title], strings[R.string.auth_google_no_account_body])
+                }
+                return@launchGuarded
+            }
             authRepo.signInWithGoogleIdToken(idToken).onSuccess { onDone() }
                 .onFailure { showAuthError(it, "") }
         }

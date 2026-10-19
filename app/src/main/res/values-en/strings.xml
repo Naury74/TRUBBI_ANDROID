@@ -628,6 +628,8 @@ You can keep the original scan images too.</string>
     <string name="auth_reset_sent_body">Follow the link in the email to set a new password.</string>
     <string name="auth_google_not_ready_title">Google sign-in not ready</string>
     <string name="auth_google_not_ready_body">Enable Google sign-in in the Firebase console to use it.</string>
+    <string name="auth_google_no_account_title">No Google account</string>
+    <string name="auth_google_no_account_body">Add a Google account in device settings and try again, or sign in with email.</string>
     <string name="auth_google_signing_in">Signing in with Google</string>
     <string name="auth_name_required_title">Please enter a name</string>
     <string name="auth_name_required_body">Enter the name you want shown.</string>

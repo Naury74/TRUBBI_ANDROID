@@ -629,6 +629,8 @@
     <string name="auth_reset_sent_body">메일의 안내에 따라 비밀번호를 다시 설정해 주세요.</string>
     <string name="auth_google_not_ready_title">구글 로그인 준비 중</string>
     <string name="auth_google_not_ready_body">Firebase 콘솔에서 구글 로그인을 활성화하면 사용할 수 있어요.</string>
+    <string name="auth_google_no_account_title">구글 계정이 없어요</string>
+    <string name="auth_google_no_account_body">기기 설정에서 구글 계정을 추가한 뒤 다시 시도하거나, 이메일로 로그인해 주세요.</string>
     <string name="auth_google_signing_in">구글 계정으로 로그인 중이에요</string>
     <string name="auth_name_required_title">이름을 입력해 주세요</string>
     <string name="auth_name_required_body">표시할 이름을 입력해 주세요.</string>
