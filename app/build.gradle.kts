@@ -194,13 +194,6 @@ dependencies {
     // Real rich-text memo editing: selection-based styling + standard HTML round-trip
     implementation(libs.richeditor.compose)
 
-    // Media3 — video preview (ExoPlayer/PlayerView) + editing/export (Transformer + effects)
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.ui)
-    implementation(libs.androidx.media3.transformer)
-    implementation(libs.androidx.media3.effect)
-    implementation(libs.androidx.media3.common)
-
     // DataStore
     implementation(libs.androidx.datastore.preferences)
 

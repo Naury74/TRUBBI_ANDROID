@@ -39,6 +39,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,6 +61,7 @@ import com.naury.trubbi.core.file.WatermarkStyle
 import com.naury.trubbi.core.i18n.label
 import com.naury.trubbi.core.util.DateUtils
 import com.naury.trubbi.data.settings.WatermarkDefaults
+import com.naury.trubbi.feature.editor.rememberShareEditor
 import com.naury.trubbi.ui.designsystem.AppIcons
 import com.naury.trubbi.ui.designsystem.PillButton
 import com.naury.trubbi.ui.designsystem.pressable
@@ -159,12 +161,17 @@ fun ShareComposerScreen(
     val current = items[pager.currentPage.coerceIn(0, items.size - 1)]
     val curWm = wmOf(current)
 
-    // 1회성 편집 — 편집본 uri를 항목별로 보관(원본 미변경). 편집 시 이 uri로 미리보기/공유.
-    val editVm: com.naury.trubbi.feature.editor.EditorViewModel = androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel()
-    var editId by remember { mutableStateOf<String?>(null) }
+    // 1회성 편집 — 편집본은 공유 캐시에만 두고 기록에는 남기지 않는다(원본 미변경). 편집 시 이 uri로 미리보기/공유.
+    var editId by rememberSaveable { mutableStateOf<String?>(null) }
     val editedUris = remember { mutableStateMapOf<String, String>() }
     // 편집본의 실제 가로/세로 — 크롭 후 미리보기 비율이 맞도록.
     val editedDims = remember { mutableStateMapOf<String, Pair<Int, Int>>() }
+    val shareEditor = rememberShareEditor { uri, w, h ->
+        val id = editId ?: return@rememberShareEditor
+        editedUris[id] = uri
+        if (w > 0 && h > 0) editedDims[id] = w to h
+        editId = null
+    }
 
     // 미리보기는 썸네일(영상), 전송/편집은 원본 파일. 편집본이 있으면 그걸 우선.
     fun previewUri(item: ShareComposerItem) = editedUris[item.id] ?: item.thumbUri ?: item.imageUri
@@ -195,7 +202,7 @@ fun ShareComposerScreen(
                 if (current.editable && !current.isVideo) {
                     CircleBtn(AppIcons.Edit) {
                         editId = current.id
-                        editVm.loadSource(shareUriOf(current))
+                        shareEditor(shareUriOf(current))
                     }
                     Spacer(Modifier.width(8.dp))
                 }
@@ -432,22 +439,6 @@ fun ShareComposerScreen(
                         }
                     }
                 }
-            }
-        }
-        // 1회성 편집 오버레이 — 공유 화면 위에 에디터를 띄워 편집 후 적용(원본 미변경).
-        editId?.let { id ->
-            Box(Modifier.fillMaxSize().background(Color.Black)) {
-                com.naury.trubbi.feature.editor.EditorScreen(
-                    onClose = { editId = null },
-                    onSaved = {},
-                    viewModel = editVm,
-                    shareMode = true,
-                    onShareResult = { uri, w, h ->
-                        editedUris[id] = uri
-                        if (w > 0 && h > 0) editedDims[id] = w to h
-                        editId = null
-                    },
-                )
             }
         }
     }

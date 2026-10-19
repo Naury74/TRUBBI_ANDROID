@@ -401,6 +401,73 @@ class MediaStorage @Inject constructor(
         )
     }
 
+    /**
+     * 편집기(FrameKit)가 만든 사진을 저장소로 들여온다.
+     *
+     * 편집기 결과는 회전이 이미 적용된 파일이라 다시 인코딩하지 않고 바이트 그대로 옮긴다(화질 손실 없음).
+     * 편집기 쪽 파일은 호출한 쪽이 지운다.
+     *
+     * @param source 편집기 결과 uri (`content://…framekit.files/…`)
+     * @param extension 파일 확장자(`jpg`·`png`·`webp`)
+     * @param mimeType 결과 형식
+     * @param width 결과 가로 픽셀
+     * @param height 결과 세로 픽셀
+     */
+    suspend fun importEditedImage(
+        source: Uri,
+        extension: String,
+        mimeType: String,
+        width: Int,
+        height: Int,
+    ): SavedMedia = withContext(Dispatchers.IO) {
+        val name = "Trubbi_edit_${UUID.randomUUID().toString().take(8)}.$extension"
+        val target = File(mediaDir, name)
+        copyInto(source, target)
+        val thumb = writeThumbnail(decodeNormalized(target), name.substringBeforeLast('.') + ".jpg")
+        SavedMedia(
+            uri = Uri.fromFile(target).toString(),
+            thumbnailUri = thumb,
+            width = width,
+            height = height,
+            fileSize = target.length(),
+            mimeType = mimeType,
+        )
+    }
+
+    /**
+     * 편집기(FrameKit)가 만든 영상을 저장소로 들여온다. 포스터 프레임과 길이는 [saveVideo] 와 같은 방식으로 뽑는다.
+     *
+     * @param source 편집기 결과 uri
+     */
+    suspend fun importEditedVideo(source: Uri): SavedMedia = withContext(Dispatchers.IO) {
+        val temp = File(context.cacheDir, "import_${UUID.randomUUID()}.mp4")
+        try {
+            copyInto(source, temp)
+            saveVideo(temp, "edit")
+        } finally {
+            temp.delete()
+        }
+    }
+
+    /**
+     * 공유 화면에서 한 번만 편집한 결과를 공유 캐시에 둔다. 기록에는 남기지 않는다.
+     *
+     * 캐시에 두므로 기기가 공간이 필요할 때 지울 수 있다. 공유가 끝난 뒤에는 필요 없다.
+     *
+     * @return 공유 캐시 파일의 `file://` uri. [watermarkForShare]·[shareUri] 에 그대로 넘길 수 있다
+     */
+    suspend fun cacheEditedForShare(source: Uri, extension: String): String = withContext(Dispatchers.IO) {
+        val target = File(shareDir, "edit_${UUID.randomUUID().toString().take(8)}.$extension")
+        copyInto(source, target)
+        Uri.fromFile(target).toString()
+    }
+
+    private fun copyInto(source: Uri, target: File) {
+        context.contentResolver.openInputStream(source)?.use { input ->
+            FileOutputStream(target).use { output -> input.copyTo(output) }
+        } ?: error("Cannot open source uri")
+    }
+
     /** [writeThumbnail] 과 동일하되 최대 변 길이가 더 크다. 전체화면 미리보기용. */
     private fun writePreview(source: Bitmap, baseName: String, maxSide: Int = 1600): String {
         val scale = maxSide.toFloat() / maxOf(source.width, source.height).coerceAtLeast(1)

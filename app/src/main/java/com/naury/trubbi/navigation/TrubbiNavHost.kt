@@ -20,8 +20,8 @@ import com.naury.trubbi.feature.calendar.CalendarScreen
 import com.naury.trubbi.feature.camera.CameraScreen
 import com.naury.trubbi.feature.contact.ContactsScreen
 import com.naury.trubbi.feature.detail.DetailScreen
-import com.naury.trubbi.feature.editor.EditorScreen
-import com.naury.trubbi.feature.editor.VideoEditorScreen
+import com.naury.trubbi.feature.editor.EditKind
+import com.naury.trubbi.feature.editor.MediaEditRoute
 import com.naury.trubbi.feature.home.HomeScreen
 import com.naury.trubbi.feature.journey.JourneyDetailScreen
 import com.naury.trubbi.feature.journey.JourneyHistoryScreen
@@ -245,10 +245,7 @@ fun TrubbiNavHost(
                     navArgument("mediaUri") { type = NavType.StringType },
                 ),
             ) {
-                EditorScreen(
-                    onClose = { navController.popBackStack() },
-                    onSaved = { navController.popBackStack() },
-                )
+                MediaEditRoute(EditKind.PHOTO, onClose = { navController.popBackStack() })
             }
 
             composable(
@@ -258,10 +255,7 @@ fun TrubbiNavHost(
                     navArgument("mediaUri") { type = NavType.StringType },
                 ),
             ) {
-                VideoEditorScreen(
-                    onClose = { navController.popBackStack() },
-                    onSaved = { navController.popBackStack() },
-                )
+                MediaEditRoute(EditKind.VIDEO, onClose = { navController.popBackStack() })
             }
 
             composable(

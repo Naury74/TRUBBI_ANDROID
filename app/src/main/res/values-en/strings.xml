@@ -345,20 +345,6 @@ Finish the journey anyway?</string>
     <string name="arrival_listening">🎤 Listening — say “start” or “wait”</string>
     <string name="action_speak_again">🎤 Say it again</string>
 
-    <string name="crop_free">Free</string>
-    <string name="crop_receipt">Receipt</string>
-    <string name="editor_tool_adjust">Adjust</string>
-    <string name="editor_tool_crop">Crop</string>
-    <string name="editor_tool_redact">Redact</string>
-    <string name="redact_mosaic">Mosaic</string>
-    <string name="redact_blur">Blur</string>
-    <string name="video_tool_trim">Trim</string>
-    <string name="video_tool_crop">Aspect</string>
-    <string name="video_tool_rotate">Rotate</string>
-    <string name="video_tool_speed">Speed</string>
-    <string name="video_tool_audio">Audio</string>
-    <string name="video_tool_quality">Quality</string>
-    <string name="video_export_failed">Export failed</string>
 
     <string name="backup_done">Backed up %1$d records and %2$d files</string>
     <string name="backup_failed">Backup failed: %1$s</string>
@@ -394,12 +380,6 @@ Finish the journey anyway?</string>
 
 
     <!-- ─────────────────────────── 비율 · 화질 표기 ─────────────────────────── -->
-    <string name="crop_square">1:1</string>
-    <string name="crop_4_3">4:3</string>
-    <string name="crop_16_9">16:9</string>
-    <string name="crop_9_16">9:16</string>
-    <string name="video_quality_hd">HD 720p</string>
-    <string name="video_quality_sd">SD 480p</string>
 
     <!-- ─────────────────────────── Settings screen ─────────────────────────── -->
     <string name="settings_title">Settings</string>
@@ -487,29 +467,11 @@ Finish the journey anyway?</string>
     <string name="memo_body_hint">Write something</string>
 
     <!-- ─────────────────────────── Image editor ─────────────────────────── -->
-    <string name="editor_title_apply">Edit and apply</string>
-    <string name="editor_title_photo">Edit photo</string>
-    <string name="editor_processing">Working…</string>
-    <string name="action_apply">Apply</string>
-    <string name="editor_load_failed">Could not load this image</string>
-    <string name="editor_save_title">Save edit</string>
-    <string name="editor_save_message">Save the changes as a new image? The original is kept as it is.</string>
-    <string name="editor_brightness">Brightness</string>
-    <string name="editor_contrast">Contrast</string>
-    <string name="editor_crop_hint">Pick a ratio, or drag the corner handles to set the area</string>
-    <string name="editor_redact_hint">Drag over what you want hidden (personal data, plate numbers…)</string>
+    <string name="editor_open_failed">Can\'t open the editor</string>
+    <string name="editor_open_failed_body">The file may have been deleted or its format isn\'t supported.</string>
+    <string name="editor_import_failed">Couldn\'t save the edited file</string>
 
     <!-- ─────────────────────────── Video editor ─────────────────────────── -->
-    <string name="video_editor_title">Edit video</string>
-    <string name="video_saving">Saving…</string>
-    <string name="video_exporting">Exporting %1$d%%</string>
-    <string name="video_trim_hint">Drag the ends to set the range, drag the middle to move it</string>
-    <string name="video_length">Length %1$s</string>
-    <string name="video_crop_hint">Pick a ratio, or drag the corners in Free</string>
-    <string name="video_speed_hint">Pick a playback speed (audio follows)</string>
-    <string name="video_muted">Muted — saved without sound</string>
-    <string name="video_unmuted">Sound on — tap to mute</string>
-    <string name="video_quality_hint">Pick the export quality (lower means a smaller file)</string>
 
     <!-- ─────────────────────────── Welcome / onboarding ─────────────────────────── -->
     <string name="welcome_start">Get started</string>
@@ -651,8 +613,6 @@ You can keep the original scan images too.</string>
     <string name="account_agree_and_start">Accept and start</string>
     <string name="account_title_sign_in">Sign in</string>
     <string name="account_title_signed_in">Account · backup</string>
-    <string name="account_hint_go_sign_in">Already registered → sign in</string>
-    <string name="account_hint_go_sign_up">Not registered → sign up</string>
     <string name="account_start_sub">Sign in with your TRUBBI account, or use a social login</string>
     <string name="account_sign_in_with_trubbi">Sign in with TRUBBI</string>
     <string name="account_kakao_soon_title">Kakao sign-in is on the way</string>
@@ -842,8 +802,6 @@ You can keep the original scan images too.</string>
 
     <!-- ─────────────────────────── Remaining screen copy ─────────────────────────── -->
     <string name="onboarding_welcome_body">TRUBBI is a trucker\'s work-record mate.\nIt files away every record of a haul for you.</string>
-    <string name="editor_rotation_state">Rotated %1$d°</string>
-    <string name="editor_rotation_flipped"> · flipped</string>
     <string name="camera_document_hint">Scan a waybill or receipt and it is saved\nas an auto-corrected PDF.</string>
     <string name="account_verify_sent_body">We sent a verification link to that address.\nOpen the link in the mail, then tap the button below.</string>
 
@@ -918,8 +876,6 @@ You can keep the original scan images too.</string>
     <string name="wizard_countdown_start">Starting in %1$d s</string>
     <string name="wizard_start_now">Start now</string>
     <string name="wizard_add_more">Add more</string>
-    <string name="wizard_no_location">No position yet</string>
-    <string name="wizard_pick_here">Pick this spot</string>
     <string name="wizard_unfavorite">Remove from favorites</string>
     <string name="wizard_favorite">Add to favorites</string>
     <string name="wizard_search_again">Search again</string>
@@ -956,26 +912,19 @@ You can keep the original scan images too.</string>
     <!-- ─────────────────────────── Accessibility labels ─────────────────────────── -->
     <string name="action_refresh">Refresh</string>
     <string name="action_remove">Remove</string>
-    <string name="action_undo">Undo</string>
-    <string name="action_rotate_left">Rotate left</string>
-    <string name="action_rotate_right">Rotate right</string>
-    <string name="action_flip">Flip</string>
     <string name="action_prev">Previous</string>
     <string name="action_filter">Filters</string>
-    <string name="action_my_location">Current location</string>
     <string name="action_keyboard">Keyboard input</string>
     <string name="action_favorite">Favorite</string>
 
     <!-- ─────────────────────────── Accessibility labels ─────────────────────────── -->
     <string name="camera_flash_on">Turn the flash on</string>
     <string name="camera_flash_off">Turn the flash off</string>
-    <string name="action_pause">Pause</string>
     <string name="map_zoom_in">Zoom in</string>
     <string name="map_zoom_out">Zoom out</string>
     <string name="map_my_location">Go to current location</string>
 
     <!-- 편집기의 '원본' — 사진 저장 품질(quality_original)과는 다른 개념이라 따로 둔다. -->
-    <string name="option_original">Original</string>
     <!-- 여정 시작 시트의 제목. 이름 없는 여정을 가리키는 journey_untitled(:data) 와는 쓰임이 다르다. -->
     <string name="journey_new_title">New journey</string>
 </resources>

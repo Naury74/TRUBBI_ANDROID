@@ -33,11 +33,6 @@
 -keep class com.google.android.gms.internal.mlkit_** { *; }
 -dontwarn com.google.mlkit.**
 
-# ── Media3 (Transformer / ExoPlayer) ────────────────────────────────────────
-# 디코더·이펙트가 리플렉션으로 선택된다.
--keep class androidx.media3.** { *; }
--dontwarn androidx.media3.**
-
 # ── ZXing ───────────────────────────────────────────────────────────────────
 -dontwarn com.google.zxing.**
 
