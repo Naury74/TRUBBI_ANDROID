@@ -3,7 +3,6 @@ package com.naury.trubbi.feature.detail
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -191,7 +191,9 @@ fun DetailContent(
                                 showBarcodeFull = true
                             }, icon = AppIcons.Fullscreen, modifier = Modifier.weight(1f))
                             GlassPillButton(stringResource(R.string.detail_copy_value), onClick = {
-                                context.copyToClipboard("barcode", barcodeValue, copiedMessage)
+                                context.copyToClipboard("barcode", barcodeValue)
+                                // Android 13 부터는 시스템이 복사 확인을 직접 띄운다. 겹치지 않게 그 아래 버전에서만 알린다.
+                                if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU) toast.show(copiedMessage)
                             }, icon = AppIcons.ContentCopy, modifier = Modifier.weight(1f))
                         }
                     }
@@ -230,7 +232,10 @@ fun DetailContent(
                                     modifier = Modifier.fillMaxSize(),
                                 )
                                 if (isBatch) {
-                                    OverlayChipDetail(stringResource(R.string.photo_count, item.media.size), Modifier.align(Alignment.TopEnd).padding(12.dp))
+                                    OverlayChipDetail(
+                                        pluralStringResource(R.plurals.photo_count, item.media.size, item.media.size),
+                                        Modifier.align(Alignment.TopEnd).padding(12.dp),
+                                    )
                                 }
                                 OverlayChipDetail(stringResource(R.string.detail_tap_to_enlarge), Modifier.align(Alignment.BottomCenter).padding(12.dp))
                             }
@@ -428,8 +433,7 @@ private fun InfoRow(label: String, value: String) {
     }
 }
 
-private fun Context.copyToClipboard(label: String, text: String, message: String) {
+private fun Context.copyToClipboard(label: String, text: String) {
     val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     clipboard.setPrimaryClip(ClipData.newPlainText(label, text))
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }

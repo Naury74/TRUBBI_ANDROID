@@ -13,20 +13,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -46,7 +41,6 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -58,7 +52,6 @@ import com.naury.trubbi.ui.designsystem.AppIcons
 import com.naury.trubbi.ui.designsystem.DockAction
 import com.naury.trubbi.ui.designsystem.LocalHazeState
 import com.naury.trubbi.ui.designsystem.QuickDock
-import com.naury.trubbi.ui.designsystem.glass
 import com.naury.trubbi.ui.weather.WeatherBackground
 import com.naury.trubbi.ui.weather.WeatherHeader
 import dev.chrisbanes.haze.HazeState
@@ -435,43 +428,16 @@ fun HomeScreen(
             // 단계 시작/완료를 중앙에 또렷하게 확인.
             com.naury.trubbi.feature.journey.StageConfirmOverlay(confirm, viewModel.journey::clearConfirm)
 
-            // 재방문 환영 인사 — 상단에서 잠깐 슬라이드 인.
+            // 재방문 환영 인사 — 상단에서 잠깐 내려왔다 사라진다. 상단 바를 잠시 덮으므로 불투명한 토스트로 띄운다.
             val greeting by viewModel.greeting.collectAsStateWithLifecycle()
-            androidx.compose.animation.AnimatedVisibility(
-                visible = greeting != null,
-                enter = androidx.compose.animation.slideInVertically { -it } + fadeIn(),
-                exit = androidx.compose.animation.slideOutVertically { -it } + fadeOut(),
-                modifier = Modifier.align(Alignment.TopCenter),
-            ) {
-                LaunchedEffect(greeting) {
-                    if (greeting != null) {
-                        kotlinx.coroutines.delay(2600)
-                        viewModel.clearGreeting()
-                    }
-                }
-                Row(
-                    Modifier
-                        .statusBarsPadding()
-                        .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-                        .fillMaxWidth()
-                        .glass(RoundedCornerShape(percent = 50))
-                        .padding(horizontal = 18.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    androidx.compose.material3.Icon(
-                        AppIcons.Person,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(18.dp),
-                    )
-                    Spacer(Modifier.width(10.dp))
-                    Text(
-                        greeting.orEmpty(),
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
+            val greetingToast = com.naury.kinetica.ui.rememberKToastState()
+            LaunchedEffect(greeting) {
+                greeting?.let {
+                    greetingToast.show(it, durationMs = 2600)
+                    viewModel.clearGreeting()
                 }
             }
+            com.naury.kinetica.ui.KToastHost(greetingToast, Modifier.align(Alignment.TopCenter))
 
             HomeOverlays(
                 viewModel = viewModel,

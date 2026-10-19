@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -198,7 +199,7 @@ internal fun SearchBreakdownBar(total: Int, breakdown: List<Pair<SearchField, In
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Text(
-            stringResource(R.string.search_result_count, total),
+            pluralStringResource(R.plurals.search_result_count, total, total),
             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
             color = MaterialTheme.colorScheme.onBackground,
         )

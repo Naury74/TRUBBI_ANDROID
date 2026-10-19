@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -502,7 +503,7 @@ private fun DateStickyHeader(dateIso: String, items: List<com.naury.trubbi.data.
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    stringResource(R.string.home_record_count, items.size),
+                    pluralStringResource(R.plurals.home_record_count, items.size, items.size),
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
                     color = MaterialTheme.colorScheme.onSurface,
                 )

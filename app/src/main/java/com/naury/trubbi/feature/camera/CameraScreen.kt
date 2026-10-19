@@ -58,7 +58,12 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -481,15 +486,19 @@ private fun CameraContent(
                 horizontalArrangement = Arrangement.Center,
             ) {
                 when (mode) {
-                    CamMode.PHOTO -> ShutterButton(enabled = !capturing, recording = false) {
+                    CamMode.PHOTO -> ShutterButton(stringResource(R.string.camera_shutter_photo), enabled = !capturing, recording = false) {
                         capturePhoto { f -> pendingPhoto = f }
                     }
-                    CamMode.VIDEO -> ShutterButton(enabled = true, recording = isRecording) {
+                    CamMode.VIDEO -> ShutterButton(
+                        stringResource(if (isRecording) R.string.camera_shutter_stop else R.string.camera_shutter_record),
+                        enabled = true,
+                        recording = isRecording,
+                    ) {
                         toggleRecording()
                     }
                     CamMode.BURST -> {
                         Spacer(Modifier.size(64.dp))
-                        ShutterButton(enabled = !capturing, recording = false) {
+                        ShutterButton(stringResource(R.string.camera_shutter_burst), enabled = !capturing, recording = false) {
                             capturePhoto { f -> burstFiles.add(f) }
                         }
                         Box(Modifier.size(64.dp), contentAlignment = Alignment.Center) {
@@ -777,7 +786,7 @@ private fun DocumentSaveSheet(
                 modifier = Modifier.weight(1f),
             )
             Text(
-                stringResource(R.string.camera_page_count, pageCount),
+                pluralStringResource(R.plurals.camera_page_count, pageCount, pageCount),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -844,9 +853,13 @@ private fun PurposeSelector(purposes: List<String>, selected: String, onSelect: 
 }
 
 @Composable
-private fun ShutterButton(enabled: Boolean, recording: Boolean, onClick: () -> Unit) {
+private fun ShutterButton(label: String, enabled: Boolean, recording: Boolean, onClick: () -> Unit) {
     Box(
         Modifier
+            .semantics {
+                contentDescription = label
+                role = Role.Button
+            }
             .size(78.dp)
             .clip(RoundedCornerShape(percent = 50))
             .background(Color.White.copy(alpha = if (enabled) 0.25f else 0.1f))

@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -241,11 +242,11 @@ fun ActiveJourneyCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
             ) {
-                SummaryItem(AppIcons.PhotoLibrary, stringResource(R.string.photo_count, photos))
+                SummaryItem(AppIcons.PhotoLibrary, pluralStringResource(R.plurals.photo_count, photos, photos))
                 if (expenseTotal > 0) {
                     SummaryItem(AppIcons.Wallet, stringResource(R.string.amount_krw, "%,d".format(expenseTotal)))
                 }
-                SummaryItem(AppIcons.Description, stringResource(R.string.record_count, records.size))
+                SummaryItem(AppIcons.Description, pluralStringResource(R.plurals.record_count, records.size, records.size))
                 Spacer(Modifier.weight(1f))
                 Icon(
                     AppIcons.KeyboardArrowRight,

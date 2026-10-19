@@ -50,6 +50,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -583,7 +584,7 @@ private fun DateHeader(dateIso: String, count: Int) {
             modifier = Modifier.weight(1f),
         )
         Text(
-            stringResource(R.string.count_items, count),
+            pluralStringResource(R.plurals.count_items, count, count),
             style = MaterialTheme.typography.labelMedium,
             color = LocalTrubbiColors.current.secondaryLabel,
         )

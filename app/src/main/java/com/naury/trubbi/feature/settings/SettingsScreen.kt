@@ -1,5 +1,4 @@
 package com.naury.trubbi.feature.settings
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -48,6 +47,7 @@ import com.naury.trubbi.data.settings.PhotoQuality
 import com.naury.trubbi.data.settings.ThemeMode
 import com.naury.trubbi.ui.common.ProfileAvatar
 import com.naury.trubbi.ui.designsystem.AppIcons
+import com.naury.trubbi.ui.designsystem.LocalAppToast
 import com.naury.trubbi.ui.designsystem.NavRow
 import com.naury.trubbi.ui.designsystem.SectionCard
 import com.naury.trubbi.ui.designsystem.SegmentedControl
@@ -93,9 +93,10 @@ fun SettingsScreen(
     ) { uri -> if (uri != null) viewModel.changeProfilePhoto(uri) }
     var nameField by remember(profile.name) { mutableStateOf(profile.name) }
 
+    val appToast = LocalAppToast.current
     LaunchedEffect(backupStatus) {
         backupStatus?.let { status ->
-            Toast.makeText(context, status.message, Toast.LENGTH_SHORT).show()
+            appToast?.show(status.message)
             if (!status.inProgress) viewModel.clearMessage()
         }
     }

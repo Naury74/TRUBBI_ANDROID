@@ -74,7 +74,9 @@
     <string name="tab_settings">설정</string>
 
     <!-- ─────────────────────────── 공통 UI ─────────────────────────── -->
-    <string name="photo_count">%1$d장</string>
+    <plurals name="photo_count">
+        <item quantity="other">%1$d장</item>
+    </plurals>
     <string name="camera_permission_title">카메라 권한이 필요합니다</string>
     <string name="camera_permission_body">업무 사진 촬영과 바코드 스캔을 위해 카메라 접근을 허용해 주세요.</string>
     <string name="camera_permission_allow">권한 허용</string>
@@ -205,10 +207,14 @@
     <string name="album_pick_hint">좌측에서 기록을 선택하세요</string>
     <string name="album_empty">저장된 기록이 없습니다</string>
     <string name="search_no_results">검색 결과가 없습니다</string>
-    <string name="search_result_count">검색 결과 %1$d건</string>
+    <plurals name="search_result_count">
+        <item quantity="other">검색 결과 %1$d건</item>
+    </plurals>
     <string name="album_search_hint">용도·날짜·종류·메모·이름 검색</string>
     <string name="selected_count">%1$d개 선택</string>
-    <string name="count_items">%1$d건</string>
+    <plurals name="count_items">
+        <item quantity="other">%1$d건</item>
+    </plurals>
     <string name="filter_section_type">종류</string>
     <string name="filter_section_purpose">용도</string>
     <string name="filter_section_sort">정렬</string>
@@ -276,7 +282,9 @@
     <string name="marker_etc_short">기</string>
     <string name="journey_history_title">지난 여정</string>
     <string name="journey_history_empty">완료된 여정이 아직 없어요</string>
-    <string name="journey_stop_count">정차지 %1$d곳</string>
+    <plurals name="journey_stop_count">
+        <item quantity="other">정차지 %1$d곳</item>
+    </plurals>
     <string name="place_search_hint">장소·건물·주소 검색</string>
     <string name="place_search_voice">음성 검색</string>
     <string name="map_legend_route">여정 경로</string>
@@ -284,7 +292,9 @@
     <string name="map_legend_stops">상·하차지</string>
     <string name="map_legend_here">현위치</string>
     <string name="place_search_empty">검색 결과가 없어요</string>
-    <string name="place_search_count">검색 결과 %1$d곳 · 누르면 메뉴</string>
+    <plurals name="place_search_count">
+        <item quantity="other">검색 결과 %1$d곳 · 누르면 메뉴</item>
+    </plurals>
     <string name="place_searching">‘%1$s’ 찾는 중…</string>
     <string name="place_add_to_journey">진행 중인 여정에 추가</string>
     <string name="place_add_pickup">상차지 추가</string>
@@ -322,7 +332,9 @@
     <string name="action_stops">정차지</string>
     <string name="action_detail">상세</string>
     <string name="action_add">추가</string>
-    <string name="record_count">기록 %1$d건</string>
+    <plurals name="record_count">
+        <item quantity="other">기록 %1$d건</item>
+    </plurals>
     <string name="stop_waiting_since">대기 %1$s · 도착 %2$s</string>
     <string name="stop_working_for">%1$s 작업 %2$s</string>
     <string name="stop_waited_suffix"> · 대기 %1$s</string>
@@ -520,7 +532,9 @@
     <string name="contacts_share_title">연락처 공유</string>
 
     <!-- ─────────────────────────── 공유 갤러리 ─────────────────────────── -->
-    <string name="share_composer_title">공유 · 묶음 %1$d장</string>
+    <plurals name="share_composer_title">
+        <item quantity="other">공유 · 묶음 %1$d장</item>
+    </plurals>
     <string name="share_label_video">영상</string>
     <string name="share_preview_note">미리보기 · 이렇게 전송돼요</string>
     <string name="share_batch_index">묶음 %1$d/%2$d</string>
@@ -549,7 +563,9 @@
     <string name="camera_batch_name">묶음 이름</string>
     <string name="camera_photo_names">개별 사진 이름</string>
     <string name="camera_save_document">문서 저장</string>
-    <string name="camera_page_count">%1$d쪽</string>
+    <plurals name="camera_page_count">
+        <item quantity="other">%1$d쪽</item>
+    </plurals>
     <string name="camera_document_name">문서 이름</string>
     <string name="camera_keep_page_images">원본 이미지도 함께 저장</string>
     <string name="camera_keep_page_images_sub">PDF + 페이지별 사진을 묶어서 보관</string>
@@ -713,7 +729,9 @@
     <string name="journey_tap_to_enter">탭해서 입력</string>
     <string name="journey_total_expense">총 비용</string>
     <string name="journey_net_profit">예상 순수익</string>
-    <string name="journey_no_receipt_count">영수증 없는 비용 %1$d건</string>
+    <plurals name="journey_no_receipt_count">
+        <item quantity="other">영수증 없는 비용 %1$d건</item>
+    </plurals>
     <string name="journey_add_expense">비용 추가</string>
     <string name="journey_capture_receipt">영수증 촬영</string>
     <string name="journey_receipt_pending">영수증 → 비용 등록 대기</string>
@@ -731,7 +749,9 @@
     <string name="journey_freight_amount">금액(원)</string>
     <string name="journey_freight_hint">예: 450000</string>
     <string name="journey_view_receipt">영수증 보기</string>
-    <string name="journey_group_photos">%1$s · %2$d장</string>
+    <plurals name="journey_group_photos">
+        <item quantity="other">%1$s · %2$d장</item>
+    </plurals>
 
     <!-- ─────────────────────────── 홈 화면 ─────────────────────────── -->
     <string name="home_action_start_journey">여정 시작</string>
@@ -761,7 +781,9 @@
     <string name="home_close_search">검색 닫기</string>
     <string name="home_month_year">%1$d월 · %2$d년</string>
     <string name="home_day_of_month">%1$d일</string>
-    <string name="home_record_count">%1$d건의 기록</string>
+    <plurals name="home_record_count">
+        <item quantity="other">%1$d건의 기록</item>
+    </plurals>
     <string name="weekday_mon_full">월요일</string>
     <string name="weekday_tue_full">화요일</string>
     <string name="weekday_wed_full">수요일</string>
@@ -840,7 +862,9 @@
     <string name="wizard_prompt_extra_add_mode">어디 들르세요? 다 됐으면 ‘완료’라고 하세요.</string>
     <string name="wizard_prompt_extra">더 들를 곳 있나요? 없으면 %1$s.</string>
     <string name="wizard_say_one_found">한 곳 찾았어요. 맞으면 ‘네’.</string>
-    <string name="wizard_say_n_found">%1$d곳 찾았어요. 몇 번째요?</string>
+    <plurals name="wizard_say_n_found">
+        <item quantity="other">%1$d곳 찾았어요. 몇 번째요?</item>
+    </plurals>
     <string name="wizard_say_no_results">결과가 없어요. 다시 말씀해 주세요.</string>
     <string name="wizard_reask_dest">어디로 가세요?</string>
     <string name="wizard_reask_extra_pickup">어디서 상차해요?</string>
@@ -863,7 +887,9 @@
     <string name="wizard_searching">‘%1$s’ 찾는 중…</string>
     <string name="wizard_place_search">위치 검색</string>
     <string name="wizard_no_results_for">‘%1$s’ 검색 결과 없음</string>
-    <string name="wizard_results_count">검색 결과 %1$d곳</string>
+    <plurals name="wizard_results_count">
+        <item quantity="other">검색 결과 %1$d곳</item>
+    </plurals>
     <string name="wizard_use_typed_hint">원하는 곳이 없으면 입력한 이름 그대로 쓸 수 있어요</string>
     <string name="wizard_tap_to_confirm">누르면 지도로 위치를 확인한 뒤 %1$s로 추가돼요</string>
     <string name="wizard_use_typed">‘%1$s’ 이름 그대로 사용</string>
@@ -929,4 +955,8 @@
     <!-- 편집기의 '원본' — 사진 저장 품질(quality_original)과는 다른 개념이라 따로 둔다. -->
     <!-- 여정 시작 시트의 제목. 이름 없는 여정을 가리키는 journey_untitled(:data) 와는 쓰임이 다르다. -->
     <string name="journey_new_title">새 여정</string>
+    <string name="camera_shutter_photo">사진 찍기</string>
+    <string name="camera_shutter_record">녹화 시작</string>
+    <string name="camera_shutter_stop">녹화 멈추기</string>
+    <string name="camera_shutter_burst">연속 촬영 한 장 찍기</string>
 </resources>

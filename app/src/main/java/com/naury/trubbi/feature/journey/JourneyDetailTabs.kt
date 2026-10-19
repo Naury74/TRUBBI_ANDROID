@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -262,7 +263,7 @@ internal fun LazyListScope.expenseTab(
             val noReceipt = data.expenses.count { it.receiptRecordId == null }
             if (noReceipt > 0) {
                 Text(
-                    stringResource(R.string.journey_no_receipt_count, noReceipt),
+                    pluralStringResource(R.plurals.journey_no_receipt_count, noReceipt, noReceipt),
                     style = MaterialTheme.typography.labelSmall,
                     color = LocalTrubbiColors.current.secondaryLabel,
                 )

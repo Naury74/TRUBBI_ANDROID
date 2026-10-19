@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -189,7 +190,13 @@ fun ShareComposerScreen(
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
                     Text(
-                        if (items.size > 1) stringResource(R.string.share_composer_title, items.size) else stringResource(R.string.action_share),
+                        if (items.size >
+                            1
+                        ) {
+                            pluralStringResource(R.plurals.share_composer_title, items.size, items.size)
+                        } else {
+                            stringResource(R.string.action_share)
+                        },
                         color = Color.White,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     )

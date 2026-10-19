@@ -22,6 +22,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,6 +42,9 @@ import com.naury.trubbi.domain.model.Purpose
 import com.naury.trubbi.navigation.Routes
 import com.naury.trubbi.navigation.TrubbiNavHost
 import com.naury.trubbi.navigation.navigateTab
+import com.naury.trubbi.ui.designsystem.LocalAppToast
+import com.naury.trubbi.ui.designsystem.TrubbiToastHost
+import com.naury.trubbi.ui.designsystem.rememberTrubbiToastState
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
 import com.naury.trubbi.ui.theme.TrubbiTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -107,6 +111,7 @@ private fun TrubbiAppRoot(expanded: Boolean, initialIntent: Intent?) {
     // 뒤로가기로 즉시 종료되지 않게 — 스택 맨 아래(더 돌아갈 곳 없음)에서만 '한 번 더' 확인.
     val backCtx = androidx.compose.ui.platform.LocalContext.current
     val backRes = androidx.compose.ui.platform.LocalResources.current
+    val appToast = rememberTrubbiToastState()
     var lastBackAt by remember { mutableStateOf(0L) }
     androidx.activity.compose.BackHandler(enabled = navController.previousBackStackEntry == null) {
         val now = System.currentTimeMillis()
@@ -114,9 +119,7 @@ private fun TrubbiAppRoot(expanded: Boolean, initialIntent: Intent?) {
             (backCtx as? android.app.Activity)?.finish()
         } else {
             lastBackAt = now
-            android.widget.Toast
-                .makeText(backCtx, backRes.getString(R.string.press_back_again), android.widget.Toast.LENGTH_SHORT)
-                .show()
+            appToast.show(backRes.getString(R.string.press_back_again))
         }
     }
 
@@ -209,44 +212,47 @@ private fun TrubbiAppRoot(expanded: Boolean, initialIntent: Intent?) {
         }
     }
 
-    androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
-        if (authGate == com.naury.trubbi.AuthGate.SIGNED_OUT && welcomeSeen == false) {
-            com.naury.trubbi.ui.designsystem.AuthHeroBackground {
-                com.naury.trubbi.feature.onboarding.WelcomeScreen(onStart = { appViewModel.markWelcomeSeen() })
-            }
-        } else if (authGate == com.naury.trubbi.AuthGate.SIGNED_OUT) {
-            // 로그인 관문. 세션이 기기에 캐시되므로 한 번 지나면 오프라인에서도 통과한다.
-            com.naury.trubbi.ui.designsystem.AuthHeroBackground {
-                com.naury.trubbi.feature.account.LoginGateScreen()
-            }
-        } else if (authGate == com.naury.trubbi.AuthGate.NEEDS_VERIFICATION) {
-            // 이메일 가입은 메일로 온 링크를 눌러야 통과한다.
-            com.naury.trubbi.ui.designsystem.AuthHeroBackground {
-                com.naury.trubbi.feature.account.VerifyEmailScreen()
-            }
-        } else if (termsAgreed == false) {
-            // 로그인했지만 약관 동의 기록이 없으면(소셜/기기변경 등) 동의를 받는다.
-            com.naury.trubbi.ui.designsystem.AuthHeroBackground {
-                com.naury.trubbi.feature.account.TermsGateScreen()
-            }
-        } else if (needsOnboarding) {
-            com.naury.trubbi.feature.onboarding.OnboardingScreen(onDone = {})
-        } else {
-            com.naury.trubbi.ui.designsystem.TrubbiBackground {
-                // 메인 화면 하나에 하위 화면을 쌓는 구조. 탭 바 대신 화면 안의 하단 독으로 이동한다.
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    containerColor = androidx.compose.ui.graphics.Color.Transparent,
-                ) { innerPadding ->
-                    TrubbiNavHost(
-                        navController = navController,
-                        expanded = expanded,
-                        contentPadding = innerPadding,
-                    )
+    CompositionLocalProvider(LocalAppToast provides appToast) {
+        androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
+            if (authGate == com.naury.trubbi.AuthGate.SIGNED_OUT && welcomeSeen == false) {
+                com.naury.trubbi.ui.designsystem.AuthHeroBackground {
+                    com.naury.trubbi.feature.onboarding.WelcomeScreen(onStart = { appViewModel.markWelcomeSeen() })
+                }
+            } else if (authGate == com.naury.trubbi.AuthGate.SIGNED_OUT) {
+                // 로그인 관문. 세션이 기기에 캐시되므로 한 번 지나면 오프라인에서도 통과한다.
+                com.naury.trubbi.ui.designsystem.AuthHeroBackground {
+                    com.naury.trubbi.feature.account.LoginGateScreen()
+                }
+            } else if (authGate == com.naury.trubbi.AuthGate.NEEDS_VERIFICATION) {
+                // 이메일 가입은 메일로 온 링크를 눌러야 통과한다.
+                com.naury.trubbi.ui.designsystem.AuthHeroBackground {
+                    com.naury.trubbi.feature.account.VerifyEmailScreen()
+                }
+            } else if (termsAgreed == false) {
+                // 로그인했지만 약관 동의 기록이 없으면(소셜/기기변경 등) 동의를 받는다.
+                com.naury.trubbi.ui.designsystem.AuthHeroBackground {
+                    com.naury.trubbi.feature.account.TermsGateScreen()
+                }
+            } else if (needsOnboarding) {
+                com.naury.trubbi.feature.onboarding.OnboardingScreen(onDone = {})
+            } else {
+                com.naury.trubbi.ui.designsystem.TrubbiBackground {
+                    // 메인 화면 하나에 하위 화면을 쌓는 구조. 탭 바 대신 화면 안의 하단 독으로 이동한다.
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        containerColor = androidx.compose.ui.graphics.Color.Transparent,
+                    ) { innerPadding ->
+                        TrubbiNavHost(
+                            navController = navController,
+                            expanded = expanded,
+                            contentPadding = innerPadding,
+                        )
+                    }
                 }
             }
+            SplashOverlay(visible = showSplash || profile == null)
+            TrubbiToastHost(appToast, Modifier.align(Alignment.BottomCenter))
         }
-        SplashOverlay(visible = showSplash || profile == null)
     }
 }
 

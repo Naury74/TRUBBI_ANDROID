@@ -655,7 +655,7 @@ internal class JourneyWizardState(
         if (count == 1) {
             context.getString(R.string.wizard_say_one_found)
         } else {
-            context.getString(R.string.wizard_say_n_found, count)
+            context.resources.getQuantityString(R.plurals.wizard_say_n_found, count, count)
         }
 
     /** 화면 말풍선만 갱신한다. 음성 없이 문구를 먼저 보여 줄 때 쓴다. */

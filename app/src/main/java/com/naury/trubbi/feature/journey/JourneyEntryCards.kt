@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -169,7 +170,7 @@ fun PastJourneysCard(
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f),
             )
-            Text(stringResource(R.string.count_items, totalCount), style = MaterialTheme.typography.labelLarge, color = c.secondaryLabel)
+            Text(pluralStringResource(R.plurals.count_items, totalCount, totalCount), style = MaterialTheme.typography.labelLarge, color = c.secondaryLabel)
             Spacer(Modifier.width(4.dp))
             Icon(AppIcons.ChevronRight, contentDescription = null, tint = c.secondaryLabel, modifier = Modifier.size(18.dp))
         }

@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,6 +28,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.naury.trubbi.R
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
 
@@ -220,7 +223,7 @@ fun StatPill(
             .clip(shape)
             .background(tint.copy(alpha = (if (c.isDark) 0.18f else 0.10f) * emphasis))
             .border(1.dp, tint.copy(alpha = (if (c.isDark) 0.30f else 0.20f) * emphasis), shape)
-            .padding(horizontal = 14.dp, vertical = 14.dp),
+            .padding(horizontal = 6.dp, vertical = 14.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -229,6 +232,13 @@ fun StatPill(
             style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
             color = tint.copy(alpha = emphasis),
         )
-        Text(label, style = MaterialTheme.typography.labelMedium, color = c.secondaryLabel.copy(alpha = if (active) 1f else 0.55f))
+        // 다섯 칸이 한 줄에 들어가므로 좁은 화면·긴 언어(영어 "Document")에서는 글자를 줄여 한 줄을 지킨다.
+        val labelStyle = MaterialTheme.typography.labelMedium
+        BasicText(
+            label,
+            style = labelStyle.copy(color = c.secondaryLabel.copy(alpha = if (active) 1f else 0.55f)),
+            maxLines = 1,
+            autoSize = TextAutoSize.StepBased(minFontSize = 9.sp, maxFontSize = labelStyle.fontSize),
+        )
     }
 }

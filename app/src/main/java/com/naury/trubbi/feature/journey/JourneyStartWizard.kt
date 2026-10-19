@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -574,7 +575,7 @@ private fun WizardResultList(state: JourneyWizardState, roleLabel: String) {
                     if (list.isEmpty()) {
                         stringResource(R.string.wizard_no_results_for, typed)
                     } else {
-                        stringResource(R.string.wizard_results_count, list.size)
+                        pluralStringResource(R.plurals.wizard_results_count, list.size, list.size)
                     },
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onSurface,

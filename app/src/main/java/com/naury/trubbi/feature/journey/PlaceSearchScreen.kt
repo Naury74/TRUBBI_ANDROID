@@ -48,6 +48,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -422,7 +423,7 @@ fun PlaceSearchScreen(
                     if (list.isEmpty()) {
                         stringResource(R.string.place_search_empty)
                     } else {
-                        stringResource(R.string.place_search_count, list.size)
+                        pluralStringResource(R.plurals.place_search_count, list.size, list.size)
                     },
                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
                     color = c.secondaryLabel,

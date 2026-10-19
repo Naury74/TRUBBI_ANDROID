@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -452,7 +453,7 @@ internal fun TimelineGroupRow(
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f).padding(bottom = 14.dp, top = 6.dp)) {
             Text(
-                stringResource(R.string.journey_group_photos, first.title, cells.size),
+                pluralStringResource(R.plurals.journey_group_photos, cells.size, first.title, cells.size),
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                 color = MaterialTheme.colorScheme.onSurface,
             )

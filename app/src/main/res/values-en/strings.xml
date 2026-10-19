@@ -73,7 +73,10 @@
     <string name="tab_settings">Settings</string>
 
     <!-- ─────────────────────────── Common UI ─────────────────────────── -->
-    <string name="photo_count">%1$d photos</string>
+    <plurals name="photo_count">
+        <item quantity="one">%1$d photo</item>
+        <item quantity="other">%1$d photos</item>
+    </plurals>
     <string name="camera_permission_title">Camera permission needed</string>
     <string name="camera_permission_body">Allow camera access to take work photos and scan barcodes.</string>
     <string name="camera_permission_allow">Allow</string>
@@ -204,10 +207,16 @@
     <string name="album_pick_hint">Pick a record on the left</string>
     <string name="album_empty">No records saved yet</string>
     <string name="search_no_results">No results</string>
-    <string name="search_result_count">%1$d results</string>
+    <plurals name="search_result_count">
+        <item quantity="one">%1$d result</item>
+        <item quantity="other">%1$d results</item>
+    </plurals>
     <string name="album_search_hint">Search purpose, date, type, memo, name</string>
     <string name="selected_count">%1$d selected</string>
-    <string name="count_items">%1$d items</string>
+    <plurals name="count_items">
+        <item quantity="one">%1$d item</item>
+        <item quantity="other">%1$d items</item>
+    </plurals>
     <string name="filter_section_type">Type</string>
     <string name="filter_section_purpose">Purpose</string>
     <string name="filter_section_sort">Sort</string>
@@ -275,7 +284,10 @@
     <string name="marker_etc_short">·</string>
     <string name="journey_history_title">Past journeys</string>
     <string name="journey_history_empty">No completed journeys yet</string>
-    <string name="journey_stop_count">%1$d stops</string>
+    <plurals name="journey_stop_count">
+        <item quantity="one">%1$d stop</item>
+        <item quantity="other">%1$d stops</item>
+    </plurals>
     <string name="place_search_hint">Search a place, building or address</string>
     <string name="place_search_voice">Voice search</string>
     <string name="map_legend_route">Route</string>
@@ -283,7 +295,10 @@
     <string name="map_legend_stops">Stops</string>
     <string name="map_legend_here">You</string>
     <string name="place_search_empty">No matches</string>
-    <string name="place_search_count">%1$d results · tap for actions</string>
+    <plurals name="place_search_count">
+        <item quantity="one">%1$d result · tap for actions</item>
+        <item quantity="other">%1$d results · tap for actions</item>
+    </plurals>
     <string name="place_searching">Looking for “%1$s”…</string>
     <string name="place_add_to_journey">Add to the running journey</string>
     <string name="place_add_pickup">Add as pickup</string>
@@ -321,7 +336,10 @@ Finish the journey anyway?</string>
     <string name="action_stops">Stops</string>
     <string name="action_detail">Details</string>
     <string name="action_add">Add</string>
-    <string name="record_count">%1$d records</string>
+    <plurals name="record_count">
+        <item quantity="one">%1$d record</item>
+        <item quantity="other">%1$d records</item>
+    </plurals>
     <string name="stop_waiting_since">Waiting %1$s · arrived %2$s</string>
     <string name="stop_working_for">%1$s for %2$s</string>
     <string name="stop_waited_suffix"> · waited %1$s</string>
@@ -519,7 +537,10 @@ Finish the journey anyway?</string>
     <string name="contacts_share_title">Share contact</string>
 
     <!-- ─────────────────────────── Share composer ─────────────────────────── -->
-    <string name="share_composer_title">Share · %1$d photos</string>
+    <plurals name="share_composer_title">
+        <item quantity="one">Share · %1$d photo</item>
+        <item quantity="other">Share · %1$d photos</item>
+    </plurals>
     <string name="share_label_video">Video</string>
     <string name="share_preview_note">Preview · this is what gets sent</string>
     <string name="share_batch_index">%1$d / %2$d</string>
@@ -548,7 +569,10 @@ Finish the journey anyway?</string>
     <string name="camera_batch_name">Batch name</string>
     <string name="camera_photo_names">Individual photo names</string>
     <string name="camera_save_document">Save document</string>
-    <string name="camera_page_count">%1$d pages</string>
+    <plurals name="camera_page_count">
+        <item quantity="one">%1$d page</item>
+        <item quantity="other">%1$d pages</item>
+    </plurals>
     <string name="camera_document_name">Document name</string>
     <string name="camera_keep_page_images">Keep the page images too</string>
     <string name="camera_keep_page_images_sub">Stores the PDF together with each page photo</string>
@@ -712,7 +736,10 @@ You can keep the original scan images too.</string>
     <string name="journey_tap_to_enter">Tap to enter</string>
     <string name="journey_total_expense">Total cost</string>
     <string name="journey_net_profit">Est. net</string>
-    <string name="journey_no_receipt_count">%1$d costs without a receipt</string>
+    <plurals name="journey_no_receipt_count">
+        <item quantity="one">%1$d cost without a receipt</item>
+        <item quantity="other">%1$d costs without a receipt</item>
+    </plurals>
     <string name="journey_add_expense">Add cost</string>
     <string name="journey_capture_receipt">Photograph a receipt</string>
     <string name="journey_receipt_pending">Receipt → waiting to be logged</string>
@@ -730,7 +757,10 @@ You can keep the original scan images too.</string>
     <string name="journey_freight_amount">Amount</string>
     <string name="journey_freight_hint">e.g. 450000</string>
     <string name="journey_view_receipt">View receipt</string>
-    <string name="journey_group_photos">%1$s · %2$d photos</string>
+    <plurals name="journey_group_photos">
+        <item quantity="one">%1$s · %2$d photo</item>
+        <item quantity="other">%1$s · %2$d photos</item>
+    </plurals>
 
     <!-- ─────────────────────────── Home screen ─────────────────────────── -->
     <string name="home_action_start_journey">Start journey</string>
@@ -760,7 +790,10 @@ You can keep the original scan images too.</string>
     <string name="home_close_search">Close search</string>
     <string name="home_month_year">%1$d · %2$d</string>
     <string name="home_day_of_month">%1$d</string>
-    <string name="home_record_count">%1$d records</string>
+    <plurals name="home_record_count">
+        <item quantity="one">%1$d record</item>
+        <item quantity="other">%1$d records</item>
+    </plurals>
     <string name="weekday_mon_full">Monday</string>
     <string name="weekday_tue_full">Tuesday</string>
     <string name="weekday_wed_full">Wednesday</string>
@@ -838,7 +871,10 @@ You can keep the original scan images too.</string>
     <string name="wizard_prompt_extra_add_mode">Where else do you stop? Say “done” when you are finished.</string>
     <string name="wizard_prompt_extra">Any other stop? If not, say %1$s.</string>
     <string name="wizard_say_one_found">Found one place. Say yes if that is it.</string>
-    <string name="wizard_say_n_found">Found %1$d places. Which one?</string>
+    <plurals name="wizard_say_n_found">
+        <item quantity="one">Found %1$d place. Is that it?</item>
+        <item quantity="other">Found %1$d places. Which one?</item>
+    </plurals>
     <string name="wizard_say_no_results">Nothing found. Say it again, please.</string>
     <string name="wizard_reask_dest">Where are you headed?</string>
     <string name="wizard_reask_extra_pickup">Where do you pick up?</string>
@@ -861,7 +897,10 @@ You can keep the original scan images too.</string>
     <string name="wizard_searching">Searching “%1$s”…</string>
     <string name="wizard_place_search">Search a place</string>
     <string name="wizard_no_results_for">No results for “%1$s”</string>
-    <string name="wizard_results_count">%1$d results</string>
+    <plurals name="wizard_results_count">
+        <item quantity="one">%1$d result</item>
+        <item quantity="other">%1$d results</item>
+    </plurals>
     <string name="wizard_use_typed_hint">If none of these fit, you can keep the name you typed</string>
     <string name="wizard_tap_to_confirm">Tap to check it on the map, then add it as the %1$s</string>
     <string name="wizard_use_typed">Use “%1$s” as typed</string>
@@ -927,4 +966,8 @@ You can keep the original scan images too.</string>
     <!-- 편집기의 '원본' — 사진 저장 품질(quality_original)과는 다른 개념이라 따로 둔다. -->
     <!-- 여정 시작 시트의 제목. 이름 없는 여정을 가리키는 journey_untitled(:data) 와는 쓰임이 다르다. -->
     <string name="journey_new_title">New journey</string>
+    <string name="camera_shutter_photo">Take photo</string>
+    <string name="camera_shutter_record">Start recording</string>
+    <string name="camera_shutter_stop">Stop recording</string>
+    <string name="camera_shutter_burst">Take burst shot</string>
 </resources>

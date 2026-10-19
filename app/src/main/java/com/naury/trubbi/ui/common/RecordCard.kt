@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -237,7 +238,7 @@ fun RecordGridCell(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 if (!selectionMode && record.record.type == RecordType.PHOTO.name && record.media.size > 1) {
-                    OverlayChip(stringResource(R.string.photo_count, record.media.size))
+                    OverlayChip(pluralStringResource(R.plurals.photo_count, record.media.size, record.media.size))
                 }
                 if (record.record.isFavorite) {
                     Icon(AppIcons.Star, contentDescription = null, tint = LocalTrubbiColors.current.orange, modifier = Modifier.size(18.dp))

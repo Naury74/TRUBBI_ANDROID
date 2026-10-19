@@ -83,7 +83,7 @@ fun JourneyHistoryScreen(
     // 날짜 형식은 기기 언어를 따른다.
     val dayFmt = remember { SimpleDateFormat("M.d (E)", Locale.getDefault()) }
     val timeFmt = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
-    val stopCountLabel: (Int) -> String = { count -> resources.getString(R.string.journey_stop_count, count) }
+    val stopCountLabel: (Int) -> String = { count -> resources.getQuantityString(R.plurals.journey_stop_count, count, count) }
 
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         GlassTopBar(title = stringResource(R.string.journey_history_title), onBack = onBack)

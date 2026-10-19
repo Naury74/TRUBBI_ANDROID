@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.naury.kinetica.ui.KSnackbarHost
@@ -32,6 +33,13 @@ class TrubbiToastState {
         message = null
     }
 }
+
+/**
+ * 앱 맨 바깥에 하나 둔 토스트. 자기 토스트 자리가 없는 화면(설정·로그인 등)이 쓴다.
+ *
+ * 앱 화면 밖(로그인 관문 포함) 어디서든 꺼낼 수 있다. 미리보기처럼 앱 바깥에서 그리면 null 이다.
+ */
+val LocalAppToast = staticCompositionLocalOf<TrubbiToastState?> { null }
 
 @Composable
 fun rememberTrubbiToastState(): TrubbiToastState = remember { TrubbiToastState() }
