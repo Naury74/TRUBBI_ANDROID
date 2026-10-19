@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +28,7 @@ import com.naury.trubbi.feature.journey.JourneyStartWizard
 import com.naury.trubbi.ui.designsystem.AppIcons
 import com.naury.trubbi.ui.designsystem.PillButton
 import com.naury.trubbi.ui.designsystem.TrubbiConfirmDialog
+import com.naury.trubbi.ui.designsystem.TrubbiSheet
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
 
 /**
@@ -264,11 +264,7 @@ private fun SharedPlaceSheet(
     onDismiss: () -> Unit,
 ) {
     val c = LocalTrubbiColors.current
-    androidx.compose.material3.ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-    ) {
+    TrubbiSheet(onDismiss = onDismiss) {
         Column(Modifier.padding(horizontal = 22.dp).padding(bottom = 30.dp)) {
             Text(
                 place.name,
@@ -331,11 +327,7 @@ private fun JourneyAskSheet(
     onStandalone: () -> Unit,
 ) {
     val c = LocalTrubbiColors.current
-    androidx.compose.material3.ModalBottomSheet(
-        onDismissRequest = onStandalone,
-        containerColor = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-    ) {
+    TrubbiSheet(onDismiss = onStandalone) {
         Column(Modifier.padding(horizontal = 22.dp).padding(bottom = 30.dp)) {
             Text(
                 stringResource(R.string.home_include_in_journey_q),

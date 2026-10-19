@@ -813,7 +813,7 @@ private fun DocumentSaveSheet(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            androidx.compose.material3.Switch(checked = keepOriginals, onCheckedChange = { keepOriginals = it })
+            com.naury.kinetica.ui.KSwitch(checked = keepOriginals, onCheckedChange = { keepOriginals = it })
         }
         PillButton(stringResource(R.string.action_save), onClick = { onConfirm(name, keepOriginals) }, modifier = Modifier.fillMaxWidth(), icon = AppIcons.Save)
     }

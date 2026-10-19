@@ -133,7 +133,8 @@ fun TrubbiTheme(
             colorScheme = colorScheme,
             typography = Typography,
             shapes = TrubbiShapes,
-            content = content,
-        )
+        ) {
+            ProvideKinetica(darkTheme, extras, content)
+        }
     }
 }

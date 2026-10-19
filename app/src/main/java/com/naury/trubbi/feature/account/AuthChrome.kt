@@ -159,11 +159,7 @@ internal fun AuthProgressHost(viewModel: AccountViewModel) {
                 Modifier.clip(RoundedCornerShape(22.dp)).background(MaterialTheme.colorScheme.surface).padding(horizontal = 30.dp, vertical = 26.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                androidx.compose.material3.CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.primary,
-                    strokeWidth = 3.dp,
-                    modifier = Modifier.size(38.dp),
-                )
+                com.naury.kinetica.ui.KLoadingIndicator(size = 38.dp)
                 Spacer(Modifier.height(16.dp))
                 Text(text, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = MaterialTheme.colorScheme.onSurface)
                 Spacer(Modifier.height(4.dp))

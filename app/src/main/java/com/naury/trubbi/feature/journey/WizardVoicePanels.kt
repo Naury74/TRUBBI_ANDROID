@@ -139,11 +139,7 @@ private fun ProcessingPanel(text: String) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
-        androidx.compose.material3.CircularProgressIndicator(
-            color = MaterialTheme.colorScheme.primary,
-            strokeWidth = 2.4.dp,
-            modifier = Modifier.size(20.dp),
-        )
+        com.naury.kinetica.ui.KLoadingIndicator(size = 20.dp)
         Spacer(Modifier.width(12.dp))
         Text(
             text,

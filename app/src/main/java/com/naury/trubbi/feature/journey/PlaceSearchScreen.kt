@@ -33,9 +33,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -74,6 +72,7 @@ import com.naury.trubbi.ui.common.MapPoint
 import com.naury.trubbi.ui.designsystem.AppIcons
 import com.naury.trubbi.ui.designsystem.GlassIconButton
 import com.naury.trubbi.ui.designsystem.PillButton
+import com.naury.trubbi.ui.designsystem.TrubbiSheet
 import com.naury.trubbi.ui.designsystem.pressable
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -525,12 +524,7 @@ private fun StopInfoSheet(
     onDismiss: () -> Unit,
 ) {
     val c = LocalTrubbiColors.current
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-    ) {
+    TrubbiSheet(onDismiss = onDismiss) {
         Column(Modifier.padding(horizontal = 22.dp).padding(bottom = 30.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
@@ -577,12 +571,7 @@ private fun PlaceActionSheet(
     onAdd: (StopKind) -> Unit,
 ) {
     val c = LocalTrubbiColors.current
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-    ) {
+    TrubbiSheet(onDismiss = onDismiss) {
         Column(Modifier.padding(horizontal = 22.dp).padding(bottom = 30.dp)) {
             Text(
                 place.name,

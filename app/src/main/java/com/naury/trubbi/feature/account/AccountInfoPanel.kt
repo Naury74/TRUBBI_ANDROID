@@ -206,7 +206,7 @@ private fun ToggleRow(title: String, subtitle: String, checked: Boolean, onChang
             Text(title, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), color = MaterialTheme.colorScheme.onSurface)
             Text(subtitle, style = MaterialTheme.typography.labelSmall, color = c.secondaryLabel)
         }
-        androidx.compose.material3.Switch(checked = checked, onCheckedChange = onChange)
+        com.naury.kinetica.ui.KSwitch(checked = checked, onCheckedChange = onChange)
     }
 }
 

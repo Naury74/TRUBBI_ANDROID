@@ -22,7 +22,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,6 +42,7 @@ import com.naury.trubbi.data.repo.JourneyRepository
 import com.naury.trubbi.domain.model.StopKind
 import com.naury.trubbi.ui.designsystem.AppIcons
 import com.naury.trubbi.ui.designsystem.PillButton
+import com.naury.trubbi.ui.designsystem.TrubbiSheet
 import com.naury.trubbi.ui.designsystem.pressable
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
 import java.util.Locale
@@ -98,11 +98,7 @@ fun JourneyStartSheet(
         }
     }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-    ) {
+    TrubbiSheet(onDismiss = onDismiss) {
         Column(Modifier.padding(horizontal = 22.dp).padding(bottom = 28.dp)) {
             Text(
                 stringResource(R.string.journey_new_title),

@@ -1,16 +1,6 @@
 package com.naury.trubbi.ui.designsystem
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,7 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
+import com.naury.kinetica.ui.KSnackbarHost
+import com.naury.kinetica.ui.rememberKSnackbarState
 
 /**
  * 커스텀 토스트 컨트롤러.
@@ -45,36 +36,22 @@ class TrubbiToastState {
 @Composable
 fun rememberTrubbiToastState(): TrubbiToastState = remember { TrubbiToastState() }
 
-/** 토스트를 그린다. Box 안에 하단 중앙 정렬로 놓는다. */
+/**
+ * 토스트를 그린다. Box 안에 하단 중앙 정렬로 놓는다.
+ *
+ * 홈의 빠른 실행 바에 가리지 않도록 화면 아래에서 110dp 위에 띄운다. 문구가 바뀌면 떠 있던 것을 바로 바꾼다.
+ */
 @Composable
 fun TrubbiToastHost(state: TrubbiToastState, modifier: Modifier = Modifier) {
+    val snackbar = rememberKSnackbarState()
     val msg = state.message
-    var last by remember { mutableStateOf("") }
-    if (msg != null) last = msg
     LaunchedEffect(msg) {
         if (msg != null) {
-            delay(1800)
+            snackbar.show(msg, durationMs = TOAST_MS)
             state.clear()
         }
     }
-    AnimatedVisibility(
-        visible = msg != null,
-        enter = fadeIn() + slideInVertically { it / 2 },
-        exit = fadeOut() + slideOutVertically { it / 2 },
-        modifier = modifier,
-    ) {
-        Box(
-            Modifier
-                .navigationBarsPadding()
-                .padding(bottom = 110.dp)
-                .liquidGlass(RoundedCornerShape(percent = 50), elevation = 12.dp)
-                .padding(horizontal = 22.dp, vertical = 12.dp),
-        ) {
-            Text(
-                last,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
-    }
+    KSnackbarHost(snackbar, modifier.navigationBarsPadding(), bottomOffset = 110.dp)
 }
+
+private const val TOAST_MS = 1800L

@@ -1,35 +1,21 @@
 package com.naury.trubbi.ui.designsystem
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,12 +24,20 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.naury.kinetica.ui.KButton
+import com.naury.kinetica.ui.KButtonSize
+import com.naury.kinetica.ui.KIconButton
+import com.naury.kinetica.ui.KLoadingIndicator
+import com.naury.kinetica.ui.KSegmentedControl
+import com.naury.kinetica.ui.KTone
+import com.naury.kinetica.ui.KVariant
+import com.naury.kinetica.ui.KineticaTheme
+import com.naury.kinetica.ui.SurfaceStyles
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
 import dev.chrisbanes.haze.HazeState
 
@@ -253,76 +247,13 @@ fun SegmentedControl(
     modifier: Modifier = Modifier,
     onDark: Boolean = false,
 ) {
-    val c = LocalTrubbiColors.current
-    val n = options.size.coerceAtLeast(1)
-    val idx = selectedIndex.coerceIn(0, n - 1)
-    val animIndex by animateFloatAsState(
-        targetValue = idx.toFloat(),
-        animationSpec = spring(dampingRatio = 0.82f, stiffness = Spring.StiffnessMediumLow),
-        label = "segIndex",
+    KSegmentedControl(
+        options = options,
+        selectedIndex = selectedIndex.coerceIn(0, (options.size - 1).coerceAtLeast(0)),
+        onSelect = onSelected,
+        modifier = modifier,
+        surface = if (onDark) SurfaceStyles.CleanDark else KineticaTheme.surface,
     )
-    BoxWithConstraints(
-        modifier
-            .height(38.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(
-                if (onDark) {
-                    Color(0xFF2C2C2E)
-                } else if (c.isDark) {
-                    Color(0xFF1C1C1E)
-                } else {
-                    Color(0x14787880)
-                },
-            )
-            .padding(3.dp),
-    ) {
-        val segWidth = maxWidth / n
-        Box(
-            Modifier
-                .offset(x = segWidth * animIndex)
-                .width(segWidth)
-                .fillMaxHeight()
-                .clip(RoundedCornerShape(9.dp))
-                .background(
-                    if (onDark) {
-                        Color.White
-                    } else if (c.isDark) {
-                        Color(0xFF3A3A40)
-                    } else {
-                        MaterialTheme.colorScheme.surface
-                    },
-                ),
-        )
-        Row(Modifier.fillMaxSize()) {
-            options.forEachIndexed { index, label ->
-                val selected = index == idx
-                val textColor by animateColorAsState(
-                    when {
-                        onDark && selected -> Color.Black
-                        onDark -> Color.White.copy(alpha = 0.75f)
-                        selected -> MaterialTheme.colorScheme.onSurface
-                        else -> c.secondaryLabel
-                    },
-                    label = "segText",
-                )
-                val interaction = remember { MutableInteractionSource() }
-                Box(
-                    Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .clickable(interactionSource = interaction, indication = null) { onSelected(index) },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = label,
-                        style = MaterialTheme.typography.labelLarge,
-                        color = textColor,
-                        maxLines = 1,
-                    )
-                }
-            }
-        }
-    }
 }
 
 /**
@@ -350,46 +281,59 @@ fun PillButton(
     containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,
 ) {
+    val scheme = MaterialTheme.colorScheme
     val c = LocalTrubbiColors.current
-    val shape = RoundedCornerShape(28.dp)
-    val isPrimary = containerColor == MaterialTheme.colorScheme.primary
-    val active = enabled && !loading
-    val dim = if (active) 1f else 0.5f
-    val fill = if (isPrimary) {
-        Modifier.background(Brush.horizontalGradient(c.gradient.map { it.copy(alpha = it.alpha * dim) }), shape)
-    } else {
-        Modifier.background(containerColor.copy(alpha = dim), shape)
+    // 앱이 쓰는 배경색은 넷 중 하나다. 주 동작·위험 동작·보조 동작은 Kinetica 버튼의 단계로 옮기고,
+    // 로고처럼 직접 그리는 앞쪽 내용이나 그 밖의 색(어두운 소개 화면의 흰 버튼)만 예전 그림을 쓴다.
+    val style: Pair<KVariant, KTone>? = when {
+        leading != null -> null
+        containerColor == scheme.primary -> KVariant.Filled to KTone.Accent
+        containerColor == c.red -> KVariant.Filled to KTone.Destructive
+        containerColor == scheme.surfaceVariant -> KVariant.Tonal to KTone.Neutral
+        else -> null
     }
+    if (style != null) {
+        KButton(
+            text = text,
+            onClick = onClick,
+            modifier = modifier,
+            variant = style.first,
+            tone = style.second,
+            size = KButtonSize.Large,
+            icon = icon,
+            loading = loading,
+            enabled = enabled,
+        )
+    } else {
+        CustomPillButton(text, onClick, modifier, icon, enabled, loading, leading, containerColor, contentColor)
+    }
+}
+
+@Composable
+private fun CustomPillButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier,
+    icon: ImageVector?,
+    enabled: Boolean,
+    loading: Boolean,
+    leading: (@Composable () -> Unit)?,
+    containerColor: Color,
+    contentColor: Color,
+) {
+    val shape = RoundedCornerShape(28.dp)
+    val active = enabled && !loading
     Row(
         modifier
-            .then(
-                if (isPrimary &&
-                    active
-                ) {
-                    Modifier.shadow(
-                        10.dp,
-                        shape,
-                        clip = false,
-                        ambientColor = c.gradient.first().copy(alpha = 0.4f),
-                        spotColor = c.gradient.last().copy(alpha = 0.4f),
-                    )
-                } else {
-                    Modifier
-                },
-            )
             .clip(shape)
-            .then(fill)
+            .background(containerColor.copy(alpha = if (active) 1f else 0.5f), shape)
             .pressable(enabled = active, onClick = onClick)
             .padding(horizontal = 22.dp, vertical = 13.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
         if (loading) {
-            androidx.compose.material3.CircularProgressIndicator(
-                color = contentColor,
-                strokeWidth = 2.2.dp,
-                modifier = Modifier.size(18.dp),
-            )
+            KLoadingIndicator(size = 18.dp, color = contentColor)
             Spacer(Modifier.size(10.dp))
         } else if (leading != null) {
             leading()
@@ -428,35 +372,12 @@ fun GlassIconButton(
     tint: Color = MaterialTheme.colorScheme.onSurface,
     size: Dp = 44.dp,
 ) {
-    val c = LocalTrubbiColors.current
-    val shape = RoundedCornerShape(percent = 50)
-    val iconTint = if (tint == Color.White) MaterialTheme.colorScheme.onSurface else tint
-    val interaction = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
-    val pressed by interaction.collectIsPressedAsState()
-    val veil = if (c.isDark) Color(0xFF1C1C1E) else Color.White
-    val veilAlpha = if (c.isDark) 0.82f else 0.86f
-    val bg by androidx.compose.animation.animateColorAsState(
-        targetValue = if (pressed) {
-            if (c.isDark) {
-                veil.copy(alpha = 0.94f)
-            } else {
-                iconTint.copy(alpha = 0.14f).compositeOver(veil.copy(alpha = veilAlpha))
-            }
-        } else {
-            veil.copy(alpha = veilAlpha)
-        },
-        label = "glassIconBg",
+    KIconButton(
+        icon = icon,
+        contentDescription = contentDescription,
+        onClick = onClick,
+        modifier = modifier,
+        size = size,
+        contentColor = if (tint == Color.White) MaterialTheme.colorScheme.onSurface else tint,
     )
-    val circle = modifier
-        .size(size)
-        .shadow(if (pressed) 1.dp else 4.dp, shape, clip = false)
-        .clip(shape)
-        .background(bg)
-        .border(1.dp, c.separator.copy(alpha = 0.5f), shape)
-    Box(
-        circle.pressable(interactionSource = interaction, onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(icon, contentDescription = contentDescription, tint = iconTint, modifier = Modifier.size(size * 0.45f))
-    }
 }

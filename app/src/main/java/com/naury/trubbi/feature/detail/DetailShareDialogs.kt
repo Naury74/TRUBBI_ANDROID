@@ -188,6 +188,6 @@ private fun ShareToggleRow(title: String, subtitle: String, checked: Boolean, on
             Text(title, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
             Text(subtitle, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        androidx.compose.material3.Switch(checked = checked, onCheckedChange = onChange)
+        com.naury.kinetica.ui.KSwitch(checked = checked, onCheckedChange = onChange)
     }
 }

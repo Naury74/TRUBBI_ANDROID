@@ -19,9 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,6 +43,7 @@ import com.naury.trubbi.core.voice.rememberSpeechInput
 import com.naury.trubbi.domain.model.JourneyEventType
 import com.naury.trubbi.ui.designsystem.AppIcons
 import com.naury.trubbi.ui.designsystem.PillButton
+import com.naury.trubbi.ui.designsystem.TrubbiSheet
 import com.naury.trubbi.ui.designsystem.pressable
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
 import kotlinx.coroutines.delay
@@ -142,12 +141,7 @@ fun ArrivalPromptSheet(
     }
     LaunchedEffect(speech.error) { if (speech.error && !done) handle("") }
 
-    ModalBottomSheet(
-        onDismissRequest = onWait,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-    ) {
+    TrubbiSheet(onDismiss = onWait) {
         Column(
             Modifier.padding(horizontal = 22.dp).padding(bottom = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
