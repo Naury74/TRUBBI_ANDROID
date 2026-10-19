@@ -262,25 +262,6 @@
         <item quantity="one">%1$d stop</item>
         <item quantity="other">%1$d stops</item>
     </plurals>
-    <string name="place_search_hint">Search a place, building or address</string>
-    <string name="place_search_voice">Voice search</string>
-    <string name="map_legend_route">Route</string>
-    <string name="map_legend_current_stop">Current stop</string>
-    <string name="map_legend_stops">Stops</string>
-    <string name="map_legend_here">You</string>
-    <string name="place_search_empty">No matches</string>
-    <plurals name="place_search_count">
-        <item quantity="one">%1$d result · tap for actions</item>
-        <item quantity="other">%1$d results · tap for actions</item>
-    </plurals>
-    <string name="place_searching">Looking for “%1$s”…</string>
-    <string name="place_add_to_journey">Add to the running journey</string>
-    <string name="place_add_pickup">Add as pickup</string>
-    <string name="place_add_dropoff">Add as dropoff</string>
-    <string name="place_or_start_new">Or start a new journey</string>
-    <string name="place_start_journey_here">Start a journey here</string>
-    <string name="place_depart_here">Depart from here</string>
-    <string name="place_arrive_here">Arrive here</string>
     <string name="missing_evidence_title">Some evidence is missing</string>
     <string name="missing_evidence_message">%1$s
 
@@ -324,14 +305,6 @@ Finish the journey anyway?</string>
     <string name="journey_start_cta_sub">One tap to start — every arrival is logged for you</string>
     <string name="date_month_day_pattern">MMM d</string>
     <string name="journey_completed_at">Finished %1$s</string>
-    <string name="wizard_pickup_prompt">Say the pickup place</string>
-    <string name="wizard_dropoff_prompt">Say the dropoff place</string>
-    <string name="journey_sheet_note">You can start with nothing filled in — arrivals are logged from your position</string>
-    <string name="field_pickup_optional">Pickup (optional)</string>
-    <string name="field_dropoff_optional">Dropoff (optional)</string>
-    <string name="frequent_recent_stops">Frequent · recent stops</string>
-    <string name="action_start_journey">Start journey</string>
-    <string name="action_voice_input">Voice input</string>
 
     <!-- ─────────────────────────── Voice answering ─────────────────────────── -->
     <string name="arrival_listening">🎤 Listening — say “start” or “wait”</string>
@@ -807,101 +780,11 @@ You can keep the original scan images too.</string>
     <string name="account_verify_sent_body">We sent a verification link to that address.\nOpen the link in the mail, then tap the button below.</string>
 
 
-    <string-array name="search_suggestions">
-        <item>Waybill</item>
-        <item>Tire</item>
-        <item>Lock</item>
-        <item>Pallet</item>
-        <item>Dashboard</item>
-        <item>Loading</item>
-        <item>Unloading</item>
-        <item>Maintenance</item>
-    </string-array>
     <!-- ─────────────────────────── Journey start wizard — voice prompts ─────────────────────────── -->
-    <string name="wizard_default_destination">Destination</string>
-    <string name="wizard_current_location">Current location</string>
-    <string name="wizard_say_move_first">Moved %1$s to the front.</string>
-    <string name="wizard_say_already_first">%1$s is already first.</string>
-    <string name="wizard_say_which_one_retry">Tell me the number, or say the place again.</string>
-    <string name="wizard_say_no_such_number">There is no number %1$d. Pick one between 1 and %2$d, or say it again.</string>
-    <string name="wizard_say_use_current_q">Start from your current location? Say yes, or tell me the pickup point.</string>
-    <string name="wizard_say_origin_missed">I did not catch the pickup point. I will start from your current location. Tap Say again for another one.</string>
-    <string name="wizard_summary_from_to">the run from %1$s to %2$s</string>
-    <string name="wizard_summary_to">the run to %1$s</string>
-    <string name="wizard_summary_this">this journey</string>
-    <string name="wizard_say_start_with">Starting %1$s.</string>
-    <string name="wizard_prompt_dest">Where are you headed? Tell me the destination.</string>
-    <string name="wizard_prompt_origin_after_dest">%1$s, got it. Where do you start from?</string>
-    <string name="wizard_prompt_origin">Where do you start from?</string>
-    <string name="wizard_word_done">“done”</string>
-    <string name="wizard_word_none">“no more”</string>
-    <string name="wizard_prompt_extra_added">Added %1$s. Any other stop? If not, say %2$s.</string>
-    <string name="wizard_prompt_extra_add_mode">Where else do you stop? Say “done” when you are finished.</string>
-    <string name="wizard_prompt_extra">Any other stop? If not, say %1$s.</string>
-    <string name="wizard_say_one_found">Found one place. Say yes if that is it.</string>
-    <plurals name="wizard_say_n_found">
-        <item quantity="one">Found %1$d place. Is that it?</item>
-        <item quantity="other">Found %1$d places. Which one?</item>
-    </plurals>
-    <string name="wizard_say_no_results">Nothing found. Say it again, please.</string>
-    <string name="wizard_reask_dest">Where are you headed?</string>
-    <string name="wizard_reask_extra_pickup">Where do you pick up?</string>
-    <string name="wizard_reask_extra_dropoff">Where do you drop off?</string>
 
     <!-- ─────────────────────────── Journey start wizard — screen ─────────────────────────── -->
-    <string name="wizard_role_origin">Pickup</string>
-    <string name="wizard_role_extra">Stop</string>
-    <string name="wizard_role_dest">Destination</string>
-    <string name="wizard_head_dest">Where are you headed?</string>
-    <string name="wizard_head_origin">Where do you start from?</string>
-    <string name="wizard_head_extra">Any other stop?</string>
-    <string name="wizard_head_extra_say">Tell me where you stop</string>
-    <string name="wizard_kind_pickup_stop">Pickup stop</string>
-    <string name="wizard_kind_dropoff_stop">Dropoff stop</string>
-    <string name="wizard_hint_dest">e.g. Seongnam DC, Busan New Port</string>
-    <string name="wizard_hint_origin">Pickup name or address</string>
-    <string name="wizard_hint_extra">Stop name or address</string>
-    <string name="wizard_retry_banner">I did not catch that. Say it again, please.</string>
-    <string name="wizard_searching">Searching “%1$s”…</string>
-    <string name="wizard_place_search">Search a place</string>
-    <string name="wizard_no_results_for">No results for “%1$s”</string>
-    <plurals name="wizard_results_count">
-        <item quantity="one">%1$d result</item>
-        <item quantity="other">%1$d results</item>
-    </plurals>
-    <string name="wizard_use_typed_hint">If none of these fit, you can keep the name you typed</string>
-    <string name="wizard_tap_to_confirm">Tap to check it on the map, then add it as the %1$s</string>
-    <string name="wizard_use_typed">Use “%1$s” as typed</string>
-    <string name="wizard_locating">Locating…</string>
-    <string name="wizard_start_from_here">Start from here</string>
-    <string name="wizard_start_from_here_sub">Use where you are now as the pickup</string>
-    <string name="wizard_recent_stops">Recent stops</string>
-    <string name="wizard_later_dest">Set the dropoff later · start now</string>
-    <string name="wizard_later_origin">Enter the pickup later</string>
-    <string name="wizard_add_done">Added</string>
-    <string name="wizard_start_journey_bang">Start the journey</string>
-    <string name="wizard_countdown_start">Starting in %1$d s</string>
-    <string name="wizard_start_now">Start now</string>
-    <string name="wizard_add_more">Add more</string>
     <string name="wizard_unfavorite">Remove from favorites</string>
     <string name="wizard_favorite">Add to favorites</string>
-    <string name="wizard_search_again">Search again</string>
-    <string name="wizard_confirm_here">This is the one</string>
-    <string name="wizard_countdown_depart">Leaving from here in %1$d s</string>
-    <string name="wizard_depart_from_here">Leaving from your current location</string>
-    <string name="wizard_depart_now">Leave now</string>
-    <string name="wizard_say_again">Say again</string>
-    <string name="wizard_heard">Here is what I heard</string>
-    <string name="wizard_maybe_this">Did you mean one of these?</string>
-    <string name="wizard_heard_hint">If that is off, fix it in the box above or say it again</string>
-    <string name="wizard_reorder">Reorder</string>
-    <string name="wizard_view_on_map">See on the map</string>
-    <string name="wizard_map">Map</string>
-    <string name="wizard_rank_nth">No. %1$d</string>
-    <string name="wizard_step_dropoff">Dropoff</string>
-    <string name="wizard_step_pickup">Pickup</string>
-    <string name="wizard_step_via">Stops</string>
-    <string name="wizard_listening_hint">It searches as soon as you stop talking · tap to cancel</string>
 
     <!-- ─────────────────────────── Widgets ─────────────────────────── -->
     <string name="widget_scan_barcode">Scan a barcode</string>
@@ -917,8 +800,6 @@ You can keep the original scan images too.</string>
     <string name="widget_memo">Memo</string>
 
     <!-- ─────────────────────────── Accessibility labels ─────────────────────────── -->
-    <string name="action_refresh">Refresh</string>
-    <string name="action_remove">Remove</string>
     <string name="action_prev">Previous</string>
     <string name="action_keyboard">Keyboard input</string>
     <string name="action_favorite">Favorite</string>
@@ -932,9 +813,35 @@ You can keep the original scan images too.</string>
 
     <!-- 편집기의 '원본' — 사진 저장 품질(quality_original)과는 다른 개념이라 따로 둔다. -->
     <!-- 여정 시작 시트의 제목. 이름 없는 여정을 가리키는 journey_untitled(:data) 와는 쓰임이 다르다. -->
-    <string name="journey_new_title">New journey</string>
     <string name="camera_shutter_photo">Take photo</string>
     <string name="camera_shutter_record">Start recording</string>
     <string name="camera_shutter_stop">Stop recording</string>
     <string name="camera_shutter_burst">Take burst shot</string>
+    <string name="planner_origin">From</string>
+    <string name="planner_destination">To</string>
+    <string name="planner_here">Current location</string>
+    <string name="planner_locating">Finding your location…</string>
+    <string name="planner_dest_hint">Where to?</string>
+    <string name="planner_add_hint">Which place to add?</string>
+    <string name="planner_origin_hint">Where are you starting?</string>
+    <string name="planner_via_hint">Search for a stop</string>
+    <string name="planner_add_via">Add stop</string>
+    <string name="planner_remove_via">Remove stop</string>
+    <string name="planner_swap">Swap start and destination</string>
+    <string name="planner_start">Start</string>
+    <string name="planner_add_confirm">Add stop</string>
+    <string name="planner_favorites">Favorites</string>
+    <string name="planner_recent">Recent places</string>
+    <string name="planner_recent_empty">Places from your journeys will show up here</string>
+    <string name="planner_no_results">No places found</string>
+    <string name="planner_no_results_body">Try a shorter name or a street address.</string>
+    <string name="planner_voice">Search by voice</string>
+    <string name="planner_voice_prompt">Say where you\'re headed</string>
+    <string name="planner_star">Add to favorites</string>
+    <string name="planner_unstar">Remove from favorites</string>
+    <string name="planner_distance_straight">%1$s straight-line</string>
+    <plurals name="planner_via_count">
+        <item quantity="one">%1$d stop</item>
+        <item quantity="other">%1$d stops</item>
+    </plurals>
 </resources>

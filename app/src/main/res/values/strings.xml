@@ -260,24 +260,6 @@
     <plurals name="journey_stop_count">
         <item quantity="other">정차지 %1$d곳</item>
     </plurals>
-    <string name="place_search_hint">장소·건물·주소 검색</string>
-    <string name="place_search_voice">음성 검색</string>
-    <string name="map_legend_route">여정 경로</string>
-    <string name="map_legend_current_stop">현재 정차지</string>
-    <string name="map_legend_stops">상·하차지</string>
-    <string name="map_legend_here">현위치</string>
-    <string name="place_search_empty">검색 결과가 없어요</string>
-    <plurals name="place_search_count">
-        <item quantity="other">검색 결과 %1$d곳 · 누르면 메뉴</item>
-    </plurals>
-    <string name="place_searching">‘%1$s’ 찾는 중…</string>
-    <string name="place_add_to_journey">진행 중인 여정에 추가</string>
-    <string name="place_add_pickup">상차지 추가</string>
-    <string name="place_add_dropoff">하차지 추가</string>
-    <string name="place_or_start_new">또는 새 여정 시작</string>
-    <string name="place_start_journey_here">이 곳으로 여정 시작</string>
-    <string name="place_depart_here">여기서 출발</string>
-    <string name="place_arrive_here">여기로 도착</string>
     <string name="missing_evidence_title">증빙이 누락됐어요</string>
     <string name="missing_evidence_message">%1$s
 
@@ -320,14 +302,6 @@
     <string name="journey_start_cta_sub">한 번 탭하면 시작 — 도착할 때마다 자동 기록돼요</string>
     <string name="date_month_day_pattern">M월 d일</string>
     <string name="journey_completed_at">%1$s 완료</string>
-    <string name="wizard_pickup_prompt">상차지 이름을 말씀해주세요</string>
-    <string name="wizard_dropoff_prompt">하차지 이름을 말씀해주세요</string>
-    <string name="journey_sheet_note">입력 없이 시작해도 돼요 — 도착하면 현재 위치로 자동 기록됩니다</string>
-    <string name="field_pickup_optional">상차지 (선택)</string>
-    <string name="field_dropoff_optional">하차지 (선택)</string>
-    <string name="frequent_recent_stops">자주 · 최근 정차지</string>
-    <string name="action_start_journey">여정 시작</string>
-    <string name="action_voice_input">음성 입력</string>
 
     <!-- ─────────────────────────── 음성 응답 ─────────────────────────── -->
     <string name="arrival_listening">🎤 듣고 있어요 — “시작” 또는 “대기”라고 말씀하세요</string>
@@ -799,99 +773,11 @@
 
 
     <!-- 검색창이 비었을 때 띄우는 예시 키워드. -->
-    <string-array name="search_suggestions">
-        <item>운송장</item>
-        <item>타이어</item>
-        <item>자물쇠</item>
-        <item>파렛트</item>
-        <item>계기판</item>
-        <item>상차</item>
-        <item>하차</item>
-        <item>정비</item>
-    </string-array>
     <!-- ─────────────────────────── 여정 시작 마법사 — 음성 안내 ─────────────────────────── -->
-    <string name="wizard_default_destination">목적지</string>
-    <string name="wizard_current_location">현재 위치</string>
-    <string name="wizard_say_move_first">%1$s 먼저 가도록 바꿨어요.</string>
-    <string name="wizard_say_already_first">%1$s이 이미 먼저예요.</string>
-    <string name="wizard_say_which_one_retry">몇 번째인지, 또는 다시 말씀해 주세요.</string>
-    <string name="wizard_say_no_such_number">%1$d번은 없어요. 1번부터 %2$d번 중에 고르거나 다시 말씀해 주세요.</string>
-    <string name="wizard_say_use_current_q">현재 위치로 시작할까요? ‘네’ 또는 출발지를 말씀해 주세요.</string>
-    <string name="wizard_say_origin_missed">출발지를 못 들었어요. 현재 위치에서 곧 출발할게요. 다른 곳이면 ‘다시 말하기’를 눌러주세요.</string>
-    <string name="wizard_summary_from_to">%1$s에서 %2$s로 가는 여정</string>
-    <string name="wizard_summary_to">%1$s로 가는 여정</string>
-    <string name="wizard_summary_this">이 여정</string>
-    <string name="wizard_say_start_with">%1$s으로 시작할게요.</string>
-    <string name="wizard_prompt_dest">어디로 가세요? 목적지를 말씀해 주세요.</string>
-    <string name="wizard_prompt_origin_after_dest">%1$s, 좋아요. 출발지는 어디세요?</string>
-    <string name="wizard_prompt_origin">출발지는 어디세요?</string>
-    <string name="wizard_word_done">‘완료’</string>
-    <string name="wizard_word_none">‘없어요’</string>
-    <string name="wizard_prompt_extra_added">%1$s 추가했어요. 더 들를 곳 있나요? 없으면 %2$s.</string>
-    <string name="wizard_prompt_extra_add_mode">어디 들르세요? 다 됐으면 ‘완료’라고 하세요.</string>
-    <string name="wizard_prompt_extra">더 들를 곳 있나요? 없으면 %1$s.</string>
-    <string name="wizard_say_one_found">한 곳 찾았어요. 맞으면 ‘네’.</string>
-    <plurals name="wizard_say_n_found">
-        <item quantity="other">%1$d곳 찾았어요. 몇 번째요?</item>
-    </plurals>
-    <string name="wizard_say_no_results">결과가 없어요. 다시 말씀해 주세요.</string>
-    <string name="wizard_reask_dest">어디로 가세요?</string>
-    <string name="wizard_reask_extra_pickup">어디서 상차해요?</string>
-    <string name="wizard_reask_extra_dropoff">어디서 하차해요?</string>
 
     <!-- ─────────────────────────── 여정 시작 마법사 — 화면 ─────────────────────────── -->
-    <string name="wizard_role_origin">출발지</string>
-    <string name="wizard_role_extra">경유지</string>
-    <string name="wizard_role_dest">도착지</string>
-    <string name="wizard_head_dest">어디로 가시나요?</string>
-    <string name="wizard_head_origin">어디서 출발하세요?</string>
-    <string name="wizard_head_extra">더 들를 곳이 있나요?</string>
-    <string name="wizard_head_extra_say">들를 곳을 말씀해주세요</string>
-    <string name="wizard_kind_pickup_stop">상차 들름</string>
-    <string name="wizard_kind_dropoff_stop">하차 들름</string>
-    <string name="wizard_hint_dest">예: 성남 물류센터, 부산 신항</string>
-    <string name="wizard_hint_origin">상차지 이름/주소</string>
-    <string name="wizard_hint_extra">들를 곳 이름/주소</string>
-    <string name="wizard_retry_banner">잘 못 알아들었어요. 다시 말씀해 주세요.</string>
-    <string name="wizard_searching">‘%1$s’ 찾는 중…</string>
-    <string name="wizard_place_search">위치 검색</string>
-    <string name="wizard_no_results_for">‘%1$s’ 검색 결과 없음</string>
-    <plurals name="wizard_results_count">
-        <item quantity="other">검색 결과 %1$d곳</item>
-    </plurals>
-    <string name="wizard_use_typed_hint">원하는 곳이 없으면 입력한 이름 그대로 쓸 수 있어요</string>
-    <string name="wizard_tap_to_confirm">누르면 지도로 위치를 확인한 뒤 %1$s로 추가돼요</string>
-    <string name="wizard_use_typed">‘%1$s’ 이름 그대로 사용</string>
-    <string name="wizard_locating">위치 확인 중…</string>
-    <string name="wizard_start_from_here">현재 위치에서 출발</string>
-    <string name="wizard_start_from_here_sub">지금 있는 곳을 출발지로</string>
-    <string name="wizard_recent_stops">최근 정차지</string>
-    <string name="wizard_later_dest">하차지는 나중에 · 바로 시작</string>
-    <string name="wizard_later_origin">상차지는 나중에 입력</string>
-    <string name="wizard_add_done">추가 완료</string>
-    <string name="wizard_start_journey_bang">여정 시작!</string>
-    <string name="wizard_countdown_start">%1$d초 후 여정을 시작해요</string>
-    <string name="wizard_start_now">지금 시작</string>
-    <string name="wizard_add_more">더 추가</string>
     <string name="wizard_unfavorite">즐겨찾기 해제</string>
     <string name="wizard_favorite">즐겨찾기 추가</string>
-    <string name="wizard_search_again">다시 찾기</string>
-    <string name="wizard_confirm_here">여기가 맞아요</string>
-    <string name="wizard_countdown_depart">%1$d초 후 현재 위치에서 출발해요</string>
-    <string name="wizard_depart_from_here">현재 위치에서 출발할게요</string>
-    <string name="wizard_depart_now">지금 출발</string>
-    <string name="wizard_say_again">다시 말하기</string>
-    <string name="wizard_heard">이렇게 들었어요</string>
-    <string name="wizard_maybe_this">혹시 이거였나요?</string>
-    <string name="wizard_heard_hint">맞지 않으면 위 입력칸에서 직접 고치거나 다시 말해보세요</string>
-    <string name="wizard_reorder">순서 이동</string>
-    <string name="wizard_view_on_map">지도에서 보기</string>
-    <string name="wizard_map">지도</string>
-    <string name="wizard_rank_nth">%1$d번째</string>
-    <string name="wizard_step_dropoff">하차지</string>
-    <string name="wizard_step_pickup">상차지</string>
-    <string name="wizard_step_via">경유지</string>
-    <string name="wizard_listening_hint">말씀이 끝나면 자동으로 검색돼요 · 탭하면 취소</string>
 
     <!-- ─────────────────────────── 위젯 ─────────────────────────── -->
     <string name="widget_scan_barcode">바코드 스캔</string>
@@ -907,8 +793,6 @@
     <string name="widget_memo">메모</string>
 
     <!-- ─────────────────────────── 접근성 라벨 ─────────────────────────── -->
-    <string name="action_refresh">새로고침</string>
-    <string name="action_remove">빼기</string>
     <string name="action_prev">이전</string>
     <string name="action_keyboard">키보드 입력</string>
     <string name="action_favorite">즐겨찾기</string>
@@ -922,9 +806,34 @@
 
     <!-- 편집기의 '원본' — 사진 저장 품질(quality_original)과는 다른 개념이라 따로 둔다. -->
     <!-- 여정 시작 시트의 제목. 이름 없는 여정을 가리키는 journey_untitled(:data) 와는 쓰임이 다르다. -->
-    <string name="journey_new_title">새 여정</string>
     <string name="camera_shutter_photo">사진 찍기</string>
     <string name="camera_shutter_record">녹화 시작</string>
     <string name="camera_shutter_stop">녹화 멈추기</string>
     <string name="camera_shutter_burst">연속 촬영 한 장 찍기</string>
+    <string name="planner_origin">출발</string>
+    <string name="planner_destination">도착</string>
+    <string name="planner_here">현재 위치</string>
+    <string name="planner_locating">현재 위치를 찾는 중…</string>
+    <string name="planner_dest_hint">어디로 갈까요?</string>
+    <string name="planner_add_hint">어디를 추가할까요?</string>
+    <string name="planner_origin_hint">어디서 출발하나요?</string>
+    <string name="planner_via_hint">경유지를 찾아 주세요</string>
+    <string name="planner_add_via">경유지 추가</string>
+    <string name="planner_remove_via">경유지 빼기</string>
+    <string name="planner_swap">출발지와 도착지 바꾸기</string>
+    <string name="planner_start">출발</string>
+    <string name="planner_add_confirm">정차지 추가</string>
+    <string name="planner_favorites">즐겨찾기</string>
+    <string name="planner_recent">최근 간 곳</string>
+    <string name="planner_recent_empty">여정을 다녀오면 간 곳이 여기에 쌓여요</string>
+    <string name="planner_no_results">찾는 곳이 없어요</string>
+    <string name="planner_no_results_body">이름을 줄이거나 도로명·지번 주소로 찾아보세요.</string>
+    <string name="planner_voice">말로 찾기</string>
+    <string name="planner_voice_prompt">어디로 갈지 말해 주세요</string>
+    <string name="planner_star">즐겨찾기에 넣기</string>
+    <string name="planner_unstar">즐겨찾기에서 빼기</string>
+    <string name="planner_distance_straight">직선 %1$s</string>
+    <plurals name="planner_via_count">
+        <item quantity="other">경유 %1$d곳</item>
+    </plurals>
 </resources>

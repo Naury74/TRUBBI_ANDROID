@@ -9,6 +9,7 @@ import com.composables.icons.lucide.ArrowDown
 import com.composables.icons.lucide.ArrowDownToLine
 import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.ArrowUp
+import com.composables.icons.lucide.ArrowUpDown
 import com.composables.icons.lucide.ArrowUpFromLine
 import com.composables.icons.lucide.Bold
 import com.composables.icons.lucide.Calendar
@@ -18,6 +19,7 @@ import com.composables.icons.lucide.ChevronLeft
 import com.composables.icons.lucide.ChevronRight
 import com.composables.icons.lucide.Circle
 import com.composables.icons.lucide.CircleCheck
+import com.composables.icons.lucide.CircleDot
 import com.composables.icons.lucide.Cloud
 import com.composables.icons.lucide.CloudFog
 import com.composables.icons.lucide.CloudLightning
@@ -49,6 +51,7 @@ import com.composables.icons.lucide.Maximize2
 import com.composables.icons.lucide.MessageSquare
 import com.composables.icons.lucide.Mic
 import com.composables.icons.lucide.Moon
+import com.composables.icons.lucide.Navigation
 import com.composables.icons.lucide.Pause
 import com.composables.icons.lucide.Pencil
 import com.composables.icons.lucide.Phone
@@ -58,6 +61,7 @@ import com.composables.icons.lucide.QrCode
 import com.composables.icons.lucide.RefreshCw
 import com.composables.icons.lucide.RotateCcw
 import com.composables.icons.lucide.RotateCw
+import com.composables.icons.lucide.Route
 import com.composables.icons.lucide.Save
 import com.composables.icons.lucide.ScanLine
 import com.composables.icons.lucide.Scissors
@@ -172,6 +176,10 @@ object AppIcons {
     val EyeOff: ImageVector get() = Lucide.EyeOff
     val Truck: ImageVector get() = Lucide.Truck
     val Flag: ImageVector get() = Lucide.Flag
+    val SwapVert: ImageVector get() = Lucide.ArrowUpDown
+    val Route: ImageVector get() = Lucide.Route
+    val Navigation: ImageVector get() = Lucide.Navigation
+    val OriginDot: ImageVector get() = Lucide.CircleDot
     val Wallet: ImageVector get() = Lucide.Wallet
     val Warning: ImageVector get() = Lucide.TriangleAlert
     val Pickup: ImageVector get() = Lucide.ArrowUpFromLine

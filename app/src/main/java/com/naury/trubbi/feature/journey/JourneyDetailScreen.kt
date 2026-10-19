@@ -34,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.naury.trubbi.R
 import com.naury.trubbi.core.i18n.label
 import com.naury.trubbi.core.ml.ReceiptParser
@@ -369,23 +370,22 @@ private fun JourneyDetailDialogs(
         )
     }
     if (sheets.showAddStop) {
-        // 홈과 동일한 대화형(음성/검색/지도) 추가 위저드 — 추가 모드.
+        // 홈과 같은 경로 화면을 추가 모드로 연다.
         var suggestions by remember { mutableStateOf<List<JourneyStopEntity>>(emptyList()) }
         androidx.compose.runtime.LaunchedEffect(Unit) { suggestions = viewModel.suggestedStops() }
-        JourneyStartWizard(
+        val favorites by viewModel.favorites.collectAsStateWithLifecycle()
+        com.naury.trubbi.feature.journey.planner.RoutePlanner(
+            addMode = true,
             recentStops = suggestions,
+            favorites = favorites,
             searchPlaces = viewModel::searchPlaces,
             currentPlace = viewModel::currentPlace,
-            onStart = { drafts ->
+            onToggleFavorite = viewModel::toggleFavorite,
+            onConfirm = { drafts ->
                 sheets.showAddStop = false
                 viewModel.addStops(drafts)
             },
             onDismiss = { sheets.showAddStop = false },
-            speak = viewModel.voice::speak,
-            speakAwait = viewModel.voice::speakAwait,
-            stopVoice = viewModel.voice::stop,
-            interpret = viewModel.voice::interpret,
-            addMode = true,
         )
     }
     arrivalPrompt?.let { prompt ->

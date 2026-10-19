@@ -24,7 +24,8 @@ import com.naury.trubbi.R
 import com.naury.trubbi.core.i18n.label
 import com.naury.trubbi.data.i18n.routeLabel
 import com.naury.trubbi.domain.journey.ArrivalPrompt
-import com.naury.trubbi.feature.journey.JourneyStartWizard
+import com.naury.trubbi.feature.journey.planner.PlannedPlace
+import com.naury.trubbi.feature.journey.planner.RoutePlanner
 import com.naury.trubbi.ui.designsystem.AppIcons
 import com.naury.trubbi.ui.designsystem.PillButton
 import com.naury.trubbi.ui.designsystem.TrubbiConfirmDialog
@@ -67,29 +68,26 @@ internal fun HomeOverlays(
     val shareChooserTitle = stringResource(R.string.action_share)
     val homeShareItems = shareItems
     val orderedStops = activeJourney?.orderedStops.orEmpty()
-    // ── 여정 시작 위저드 (전체화면 오버레이) — 루트 Box 안에서 모든 것 위에 그려져 인셋이 정확.
+    // ── 여정 시작 — 지도 위에서 출발·도착을 고르는 전체 화면. 루트 Box 안에서 모든 것 위에 그려 인셋이 정확하다.
     if (showStartSheet) {
         var recent by remember { mutableStateOf<List<com.naury.trubbi.data.local.JourneyStopEntity>>(emptyList()) }
         LaunchedEffect(Unit) { recent = viewModel.journey.recentStops() }
         val favorites by viewModel.journey.favorites.collectAsStateWithLifecycle()
-        JourneyStartWizard(
+        RoutePlanner(
+            addMode = false,
             recentStops = recent,
+            favorites = favorites,
             searchPlaces = viewModel.journey::searchPlaces,
             currentPlace = viewModel.journey::currentPlace,
-            onStart = { drafts ->
+            onToggleFavorite = viewModel.journey::toggleFavorite,
+            onConfirm = { drafts ->
                 onCloseStartSheet()
                 viewModel.journey.startJourney(drafts)
             },
-            onDismiss = {
-                onCloseStartSheet()
+            onDismiss = onCloseStartSheet,
+            initialDestination = startDestDraft?.let { d ->
+                d.name?.let { PlannedPlace(it, d.address, d.latitude, d.longitude) }
             },
-            favorites = favorites,
-            onToggleFavorite = viewModel.journey::toggleFavorite,
-            initialDestination = startDestDraft,
-            speak = viewModel.journey.voice::speak,
-            speakAwait = viewModel.journey.voice::speakAwait,
-            stopVoice = viewModel.journey.voice::stop,
-            interpret = viewModel.journey.voice::interpret,
         )
     }
 
@@ -116,27 +114,23 @@ internal fun HomeOverlays(
         }
     }
 
-    // ── 진행 중 여정에 정차지 추가 (등록 때와 동일한 대화형 음성/검색 흐름, 추가 모드).
+    // ── 진행 중 여정에 정차지 추가 — 시작과 같은 화면을 추가 모드로 연다.
     if (showAddStopSheet) {
         var recent by remember { mutableStateOf<List<com.naury.trubbi.data.local.JourneyStopEntity>>(emptyList()) }
         LaunchedEffect(Unit) { recent = viewModel.journey.recentStops() }
         val favorites by viewModel.journey.favorites.collectAsStateWithLifecycle()
-        JourneyStartWizard(
+        RoutePlanner(
+            addMode = true,
             recentStops = recent,
+            favorites = favorites,
             searchPlaces = viewModel.journey::searchPlaces,
             currentPlace = viewModel.journey::currentPlace,
-            onStart = { drafts ->
+            onToggleFavorite = viewModel.journey::toggleFavorite,
+            onConfirm = { drafts ->
                 onCloseAddStop()
                 viewModel.journey.addStops(drafts)
             },
-            onDismiss = { onCloseAddStop() },
-            favorites = favorites,
-            onToggleFavorite = viewModel.journey::toggleFavorite,
-            speak = viewModel.journey.voice::speak,
-            speakAwait = viewModel.journey.voice::speakAwait,
-            stopVoice = viewModel.journey.voice::stop,
-            interpret = viewModel.journey.voice::interpret,
-            addMode = true,
+            onDismiss = onCloseAddStop,
         )
     }
 

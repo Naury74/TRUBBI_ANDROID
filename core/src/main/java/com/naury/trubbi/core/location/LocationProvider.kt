@@ -30,12 +30,19 @@ data class CapturedLocation(
     val address: String?,
 )
 
-/** 장소 검색 결과 한 건. 입력·음성으로 들어온 장소명을 확인시켜 줄 때 쓴다. */
+/**
+ * 장소 검색 결과 한 건. 입력·음성으로 들어온 장소명을 확인시켜 줄 때 쓴다.
+ *
+ * @property category 업종(예: "물류센터", "주유소"). 주소 검색 결과나 Geocoder 결과에는 없다
+ * @property distanceM 검색 기준 위치에서의 직선거리(m). 기준 위치를 넘기지 않았으면 null
+ */
 data class PlaceCandidate(
     val name: String,
     val address: String?,
     val latitude: Double,
     val longitude: Double,
+    val category: String? = null,
+    val distanceM: Int? = null,
 )
 
 /**
@@ -141,9 +148,32 @@ class LocationProvider @Inject constructor(
      * 음성으로 들어온 숫자 발음("일사오칠 다시 일사")도 "1457-14"로 정규화해 함께 질의한다.
      * 카카오 키가 없으면 Geocoder로 폴백.
      */
-    suspend fun searchPlaces(query: String, max: Int = 6): List<PlaceCandidate> = withContext(Dispatchers.IO) {
-        if (query.isBlank()) return@withContext emptyList()
-        if (!kakaoEnabled) return@withContext geocoderSearch(query, max)
+    suspend fun searchPlaces(
+        query: String,
+        max: Int = 6,
+        nearLat: Double? = null,
+        nearLng: Double? = null,
+    ): List<PlaceCandidate> = withContext(Dispatchers.IO) {
+        val found = searchPlacesRaw(query, max, nearLat, nearLng)
+        // 결과 순서는 이름 정확도를 따르고, 거리는 표시용으로만 붙인다. 가까운 순으로 바꾸면
+        // "부산신항"처럼 먼 곳을 찾을 때 근처의 엉뚱한 상호가 위로 올라온다.
+        if (nearLat == null || nearLng == null) {
+            found
+        } else {
+            found.map { p -> if (p.distanceM != null) p else p.copy(distanceM = distanceM(nearLat, nearLng, p.latitude, p.longitude)) }
+        }
+    }
+
+    private fun distanceM(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Int {
+        val out = FloatArray(1)
+        Location.distanceBetween(lat1, lng1, lat2, lng2, out)
+        return out[0].toInt()
+    }
+
+    private fun searchPlacesRaw(query: String, max: Int, nearLat: Double?, nearLng: Double?): List<PlaceCandidate> {
+        if (query.isBlank()) return emptyList()
+        if (!kakaoEnabled) return geocoderSearch(query, max)
+        val near = if (nearLat != null && nearLng != null) "&x=$nearLng&y=$nearLat" else ""
 
         val normalized = normalizeAddressNumbers(query)
         // 숫자/행정구역 접미사가 보이면 주소 검색을 먼저(상단에) 노출한다.
@@ -158,15 +188,15 @@ class LocationProvider @Inject constructor(
         if (addressLike) {
             // 정규화된 지번/도로명 주소를 최우선으로. (원문은 한글 숫자라 주소로는 무의미 → 제외)
             add(kakaoAddressSearch(normalized, max))
-            add(kakaoSearch(normalized, max))
-            if (normalized != query) add(kakaoSearch(query, max))
+            add(kakaoSearch(normalized, max, near))
+            if (normalized != query) add(kakaoSearch(query, max, near))
         } else {
-            add(kakaoSearch(query, max))
+            add(kakaoSearch(query, max, near))
             add(kakaoAddressSearch(query, max))
         }
         val merged = out.values.toList()
-        if (merged.isNotEmpty()) return@withContext merged.take(max)
-        geocoderSearch(normalized, max).ifEmpty { geocoderSearch(query, max) }
+        if (merged.isNotEmpty()) return merged.take(max)
+        return geocoderSearch(normalized, max).ifEmpty { geocoderSearch(query, max) }
     }
 
     /**
@@ -229,11 +259,11 @@ class LocationProvider @Inject constructor(
         }.getOrElse { emptyList() }
 
     /** 카카오 로컬 키워드 검색 — 건물명·상호로 좌표와 주소를 찾는다. 키가 없으면 null. */
-    private fun kakaoSearch(query: String, max: Int): List<PlaceCandidate>? {
+    private fun kakaoSearch(query: String, max: Int, near: String = ""): List<PlaceCandidate>? {
         if (!kakaoEnabled) return null
         return runCatching {
             val url = URL(
-                "https://dapi.kakao.com/v2/local/search/keyword.json?size=$max&query=" +
+                "https://dapi.kakao.com/v2/local/search/keyword.json?size=$max$near&query=" +
                     URLEncoder.encode(query, "UTF-8"),
             )
             val conn = (url.openConnection() as HttpURLConnection).apply {
@@ -259,6 +289,9 @@ class LocationProvider @Inject constructor(
                     address = road ?: jibun,
                     latitude = lat,
                     longitude = lng,
+                    // "서비스,산업 > 물류,유통 > 물류센터" 에서 마지막 칸만 보여 준다.
+                    category = d.optString("category_name").substringAfterLast('>').trim().ifBlank { null },
+                    distanceM = d.optString("distance").toIntOrNull(),
                 )
             }
         }.getOrNull()

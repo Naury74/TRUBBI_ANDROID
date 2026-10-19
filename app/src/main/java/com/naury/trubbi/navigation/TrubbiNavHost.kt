@@ -25,7 +25,6 @@ import com.naury.trubbi.feature.home.HomeScreen
 import com.naury.trubbi.feature.journey.JourneyDetailScreen
 import com.naury.trubbi.feature.journey.JourneyHistoryScreen
 import com.naury.trubbi.feature.journey.JourneyMapScreen
-import com.naury.trubbi.feature.journey.PlaceSearchScreen
 import com.naury.trubbi.feature.memo.MemoScreen
 import com.naury.trubbi.feature.settings.PurposeSettingsScreen
 import com.naury.trubbi.feature.settings.SettingsScreen
@@ -69,7 +68,6 @@ fun TrubbiNavHost(
                     onRecordClick = { id -> navController.navigate(Routes.detail(id)) },
                     onOpenJourney = { id -> navController.navigate(Routes.journey(id)) },
                     onOpenJourneyHistory = { navController.navigate(Routes.JOURNEYS) },
-                    onOpenPlaceSearch = { navController.navigate(Routes.PLACE_SEARCH) },
                     onOpenAccount = { navController.navigate(Routes.ACCOUNT) },
                     contentPadding = contentPadding,
                 )
@@ -102,13 +100,6 @@ fun TrubbiNavHost(
                 JourneyMapScreen(
                     onBack = { navController.popBackStack() },
                     onOpenRecord = { id -> navController.navigate(Routes.detail(id)) },
-                )
-            }
-
-            composable(Routes.PLACE_SEARCH) {
-                PlaceSearchScreen(
-                    onBack = { navController.popBackStack() },
-                    onJourneyStarted = { id -> navController.navigate(Routes.journey(id)) { popUpTo(Routes.PLACE_SEARCH) { inclusive = true } } },
                 )
             }
 

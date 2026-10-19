@@ -34,8 +34,6 @@ object Routes {
     const val JOURNEY_MAP = "journeyMap/{journeyId}"
     fun journeyMap(journeyId: String) = "journeyMap/$journeyId"
 
-    const val PLACE_SEARCH = "placeSearch"
-
     const val ACCOUNT = "account"
 
     const val EDITOR = "editor/{recordId}/{mediaUri}"

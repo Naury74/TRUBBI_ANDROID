@@ -71,7 +71,6 @@ import dev.chrisbanes.haze.hazeSource
  * @param onRecordClick 기록 상세로 (기록 id)
  * @param onOpenJourney 여정 상세로 (여정 id)
  * @param onOpenJourneyHistory 지난 여정 목록으로
- * @param onOpenPlaceSearch 장소 검색으로
  * @param onOpenAccount 계정·백업 화면으로
  * @param contentPadding 시스템 바를 피하기 위한 여백
  * @param viewModel 홈 상태
@@ -86,7 +85,6 @@ fun HomeScreen(
     onRecordClick: (String) -> Unit,
     onOpenJourney: (String) -> Unit,
     onOpenJourneyHistory: () -> Unit,
-    onOpenPlaceSearch: () -> Unit,
     onOpenAccount: () -> Unit,
     contentPadding: PaddingValues,
     viewModel: HomeViewModel = hiltViewModel(),
@@ -188,7 +186,6 @@ fun HomeScreen(
         if (activeJourney == null) {
             add(DockAction(stringResource(R.string.home_action_start_journey), AppIcons.Truck, dockAccent) { showStartSheet = true })
         }
-        add(DockAction(stringResource(R.string.action_place_search), AppIcons.LocationOn, dockAccent, onOpenPlaceSearch))
         add(
             DockAction(
                 stringResource(if (signedIn) R.string.home_action_account else R.string.home_action_sign_in),
@@ -401,7 +398,12 @@ fun HomeScreen(
 
             // 하단 독. 다중 선택 중에는 같은 위치에 선택 도구가 표시된다.
             if (!selectionMode) {
-                QuickDock(actions = dockActions, onCapture = onCamera, onPlaceSearch = onOpenPlaceSearch)
+                // 오른쪽 위치 버튼은 경로 화면을 연다. 여정 중이면 정차지 추가로.
+                QuickDock(
+                    actions = dockActions,
+                    onCapture = onCamera,
+                    onPlaceSearch = { if (activeJourney == null) showStartSheet = true else showAddStopSheet = true },
+                )
             } else {
                 HomeSelectionDock(
                     count = selection.size + selectedMedia.size,

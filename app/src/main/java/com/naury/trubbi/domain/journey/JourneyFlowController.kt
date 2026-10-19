@@ -340,8 +340,9 @@ class JourneyFlowController @AssistedInject constructor(
         scope.launch { journeyRepo.toggleFavorite(name, address, lat, lng) }
     }
 
-    /** 입력·음성으로 들어온 장소명을 실제 후보로 바꾼다. */
-    suspend fun searchPlaces(query: String): List<PlaceCandidate> = locationProvider.searchPlaces(query)
+    /** 입력·음성으로 들어온 장소명을 실제 후보로 바꾼다. 기준 위치를 주면 후보마다 직선거리가 붙는다. */
+    suspend fun searchPlaces(query: String, nearLat: Double? = null, nearLng: Double? = null): List<PlaceCandidate> =
+        locationProvider.searchPlaces(query, max = SEARCH_MAX, nearLat = nearLat, nearLng = nearLng)
 
     /** 현재 위치와 주소. */
     suspend fun currentPlace(): CapturedLocation? = locationProvider.capture()
@@ -463,3 +464,6 @@ class JourneyFlowController @AssistedInject constructor(
         const val RECENT_JOURNEY_LIMIT = 3
     }
 }
+
+/** 장소 검색 한 번에 보여 줄 후보 수. */
+private const val SEARCH_MAX = 12

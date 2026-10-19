@@ -218,9 +218,16 @@ class JourneyDetailViewModel @Inject constructor(
         }
     }
 
-    // ── 위저드(정차지 추가)용 — 홈과 같은 검색·위치·음성 경로를 그대로 쓴다 ──────
+    // ── 정차지 추가 화면용 — 홈과 같은 검색·위치·즐겨찾기 경로를 그대로 쓴다 ──────
 
-    suspend fun searchPlaces(query: String) = location.searchPlaces(query)
+    suspend fun searchPlaces(query: String, nearLat: Double?, nearLng: Double?) =
+        location.searchPlaces(query, max = SEARCH_MAX, nearLat = nearLat, nearLng = nearLng)
+
+    val favorites = repo.favorites.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    fun toggleFavorite(name: String, address: String?, lat: Double?, lng: Double?) {
+        viewModelScope.launch { repo.toggleFavorite(name, address, lat, lng) }
+    }
 
     suspend fun currentPlace() = location.capture()
 
@@ -331,3 +338,6 @@ class JourneyDetailViewModel @Inject constructor(
             }
         }
 }
+
+/** 장소 검색 한 번에 보여 줄 후보 수. 홈 경로 화면과 같다. */
+private const val SEARCH_MAX = 12
