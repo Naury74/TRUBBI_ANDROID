@@ -1,14 +1,18 @@
 package com.naury.trubbi.feature.camera
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.naury.framekit.android.output.FrameKitOutputs
 import com.naury.trubbi.R
 import com.naury.trubbi.core.file.MediaStorage
 import com.naury.trubbi.core.ui.StringProvider
 import com.naury.trubbi.data.repo.RecordRepository
 import com.naury.trubbi.data.settings.SettingsRepository
+import com.naury.trubbi.domain.document.DocumentPdfBuilder
 import com.naury.trubbi.domain.model.Purpose
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -38,6 +42,8 @@ class CameraViewModel @Inject constructor(
     journeyRepo: com.naury.trubbi.data.repo.JourneyRepository,
     private val locationProvider: com.naury.trubbi.core.location.LocationProvider,
     private val strings: StringProvider,
+    private val pdfBuilder: DocumentPdfBuilder,
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
 
     /**
@@ -172,17 +178,17 @@ class CameraViewModel @Inject constructor(
     }
 
     /**
-     * 스캔한 문서를 저장한다.
+     * 스캔한 문서를 저장한다. 쪽 사진을 그대로 담고 검색용 글자 레이어를 겹친 PDF 를 만든다.
      *
-     * @param pdfUri 스캐너가 만든 PDF. 페이지 이미지가 있으면 쓰지 않고 직접 다시 만든다
-     * @param pageUris 페이지별 원본 이미지
-     * @param keepOriginals true 면 원본 페이지 사진도 함께 남긴다
+     * 다 저장하면(실패해도) 스캐너가 만든 쪽 파일은 지운다.
+     *
+     * @param pageUris 스캐너가 펴서 돌려준 쪽 사진들(쪽 순서)
+     * @param keepOriginals true 면 쪽 사진도 기록에 함께 남긴다
      * @param purposeLabel 용도 라벨
      * @param title 기록 제목. 비우면 용도로 기본 제목을 만든다
      * @param onSaved 저장이 끝나면 (기록 id, PDF uri) 로 불린다
      */
     fun saveDocument(
-        pdfUri: android.net.Uri,
         pageUris: List<android.net.Uri>,
         keepOriginals: Boolean,
         purposeLabel: String,
@@ -190,28 +196,38 @@ class CameraViewModel @Inject constructor(
         onSaved: (recordId: String, pdfUri: String) -> Unit,
     ) {
         viewModelScope.launch {
-            val savedPages = if (keepOriginals) {
-                pageUris.map { mediaStorage.copyFromUri(it, purposeLabel) }
-            } else {
-                emptyList()
+            try {
+                val pdf = pdfBuilder.build(pageUris) ?: return@launch
+                val savedPdf = try {
+                    mediaStorage.savePdf(pdf.uri, purposeLabel)
+                } finally {
+                    FrameKitOutputs.deleteOutput(context, pdf.uri)
+                }
+                // 쪽 사진은 스캐너가 이미 펴고 보정한 JPEG 라 다시 인코딩하지 않고 옮긴다.
+                val savedPages = if (keepOriginals) {
+                    pageUris.map { mediaStorage.importEditedImage(it, "jpg", "image/jpeg", 0, 0, label = "scan") }
+                } else {
+                    emptyList()
+                }
+                val id = repo.createDocumentRecord(
+                    pdf = savedPdf,
+                    pages = savedPages,
+                    purposeLabel = purposeLabel,
+                    // 비어 있으면 리포지토리가 용도로 기본 제목을 만든다.
+                    title = title,
+                    recognizedText = pdf.recognizedText,
+                )
+                if (saveLocation.value) repo.attachLocationAsync(id)
+                onSaved(id, savedPdf.uri)
+            } finally {
+                discardScan(pageUris)
             }
-            // 흰 바탕 + 인식 텍스트(OCR 처리)로 PDF 생성(페이지 이미지가 있을 때).
-            // 이미지가 없으면(예외적 경우) 스캐너가 만든 PDF를 그대로 사용.
-            val savedPdf = if (pageUris.isNotEmpty()) {
-                mediaStorage.buildOcrPdf(pageUris, purposeLabel)
-            } else {
-                mediaStorage.savePdf(pdfUri, purposeLabel)
-            }
-            val id = repo.createDocumentRecord(
-                pdf = savedPdf,
-                pages = savedPages,
-                purposeLabel = purposeLabel,
-                // 비어 있으면 리포지토리가 용도로 기본 제목을 만든다.
-                title = title,
-            )
-            if (saveLocation.value) repo.attachLocationAsync(id)
-            onSaved(id, savedPdf.uri)
         }
+    }
+
+    /** 저장하지 않기로 한 스캔 결과를 지운다. */
+    fun discardScan(pageUris: List<android.net.Uri>) {
+        pageUris.forEach { FrameKitOutputs.deleteOutput(context, it) }
     }
 
     /**

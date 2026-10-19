@@ -215,6 +215,7 @@ class RecordRepository @Inject constructor(
      * @param locationName 촬영 위치 주소(선택)
      * @param latitude 촬영 위도(선택)
      * @param longitude 촬영 경도(선택)
+     * @param recognizedText PDF 를 만들며 모든 쪽에서 읽은 글자. 있으면 검색 색인에 그대로 쓴다
      * @return 만들어진 기록 id
      */
     suspend fun createDocumentRecord(
@@ -226,6 +227,7 @@ class RecordRepository @Inject constructor(
         locationName: String? = null,
         latitude: Double? = null,
         longitude: Double? = null,
+        recognizedText: String? = null,
     ): String {
         val now = DateUtils.now()
         val recordId = UUID.randomUUID().toString()
@@ -252,9 +254,10 @@ class RecordRepository @Inject constructor(
             dao.insertMedia(m.toEntity(recordId, now + index).copy(name = strings[R.string.page_index, index + 1]))
         }
         dao.insertMedia(pdf.toEntity(recordId, now + pages.size + 1))
-        // 검색 색인용으로 첫 페이지만 OCR 한다. 전체 페이지를 처리하면 저장 후 부하가 길게 이어진다.
+        // PDF 를 만들 때 모든 쪽의 글자를 이미 읽었으면 그걸 색인에 쓰고, 라벨링만 첫 쪽으로 돌린다.
+        // 없으면 첫 쪽만 OCR 한다. 전체 쪽을 다시 처리하면 저장 후 부하가 길게 이어진다.
         val ocrSource = pages.firstOrNull()?.uri ?: pdf.thumbnailUri
-        triggerAnalysis(recordId, ocrSource, emptyList())
+        triggerAnalysis(recordId, ocrSource, emptyList(), ocrOverride = recognizedText?.takeIf { it.isNotBlank() })
         journeyRepo.onRecordSaved(recordId, title.ifBlank { strings[R.string.default_title_document, purposeLabel] })
         return recordId
     }
@@ -269,7 +272,7 @@ class RecordRepository @Inject constructor(
      * @param mediaUri 분석할 이미지 uri
      * @param baseTags 그대로 유지할 사용자 태그
      */
-    private fun triggerAnalysis(recordId: String, mediaUri: String, baseTags: List<String>) {
+    private fun triggerAnalysis(recordId: String, mediaUri: String, baseTags: List<String>, ocrOverride: String? = null) {
         appScope.launch {
             val bitmap = runCatching { mediaStorage.decodeForEditing(mediaUri) }
                 .logFailure(TAG, "검색 색인용 이미지 디코딩 실패")
@@ -277,7 +280,7 @@ class RecordRepository @Inject constructor(
             val result = analyzer.analyze(bitmap)
             dao.updateAnalysis(
                 id = recordId,
-                ocrText = result.ocrText,
+                ocrText = ocrOverride ?: result.ocrText,
                 aiLabels = result.labelKeywords.joinToString(" "),
                 tags = baseTags,
                 now = DateUtils.now(),

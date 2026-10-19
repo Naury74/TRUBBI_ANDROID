@@ -271,72 +271,6 @@ class MediaStorage @Inject constructor(
         )
     }
 
-    /**
-     * 스캔한 페이지 사진들로 **글자만 남긴** PDF 를 만든다.
-     *
-     * 사진을 그대로 싣지 않고, 인식한 글자를 원래 좌표에 다시 그린다. 촬영 조명과 무관하게
-     * 같은 판독성이 나오고 파일 크기도 작다. 원본 사진은 별도 미디어로 함께 저장된다.
-     *
-     * @param pageUris 페이지 순서대로의 이미지 uri 들
-     * @param purpose 용도 라벨 — 파일명에 들어간다
-     * @param locationName 짧은 위치명(선택)
-     */
-    suspend fun buildOcrPdf(
-        pageUris: List<Uri>,
-        purpose: String,
-        locationName: String? = null,
-    ): SavedMedia = withContext(Dispatchers.IO) {
-        val ts = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-        val p = slug(purpose).ifBlank { "기타" }
-        val loc = locationName?.takeIf { it.isNotBlank() }?.let { "_" + slug(it) }.orEmpty()
-        val name = context.getString(R.string.file_name_document, p, ts, loc)
-        val target = File(mediaDir, name)
-
-        val doc = android.graphics.pdf.PdfDocument()
-        var thumbUri: String? = null
-        var firstW = 0
-        var firstH = 0
-        try {
-            pageUris.forEachIndexed { index, uri ->
-                val bmp = runCatching { decodeUri(uri) }
-                    .logFailure(TAG, "PDF 페이지 이미지 디코딩 실패 — 이 페이지는 빠진다")
-                    .getOrNull() ?: return@forEachIndexed
-                val w = bmp.width
-                val h = bmp.height
-                val ocr = runCatching { analyzer.recognizeBlocks(bmp) }
-                    .logFailure(TAG, "PDF 페이지 문자 인식 실패 — 이미지 그대로 넣는다")
-                    .getOrNull()
-                bmp.recycle() // 원본은 페이지 크기/OCR 추출에만 필요 — PDF엔 흰 바탕+텍스트만 그린다.
-
-                val info = android.graphics.pdf.PdfDocument.PageInfo.Builder(w, h, index + 1).create()
-                val page = doc.startPage(info)
-                renderOcrPage(page.canvas, ocr)
-                doc.finishPage(page)
-
-                if (index == 0) {
-                    firstW = w
-                    firstH = h
-                    val thumb = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-                    renderOcrPage(android.graphics.Canvas(thumb), ocr)
-                    // 전체화면 미리보기용 고해상도본. 썸네일(480px)로는 해상도가 부족하다.
-                    thumbUri = writePreview(thumb, name.removeSuffix(".pdf") + ".jpg")
-                }
-            }
-            FileOutputStream(target).use { doc.writeTo(it) }
-        } finally {
-            doc.close()
-        }
-
-        SavedMedia(
-            uri = Uri.fromFile(target).toString(),
-            thumbnailUri = thumbUri ?: Uri.fromFile(target).toString(),
-            width = firstW,
-            height = firstH,
-            fileSize = target.length(),
-            mimeType = "application/pdf",
-        )
-    }
-
     /** 페이지에서 처음 나오는 의미 있는 줄을 문서 제목으로 쓴다. 인식 실패 시 null. */
     suspend fun ocrTitle(uri: Uri): String? = withContext(Dispatchers.IO) {
         val bmp = runCatching { decodeUri(uri, 1600) }
@@ -349,29 +283,6 @@ class MediaStorage @Inject constructor(
             ?.map { it.text.trim() }
             ?.firstOrNull { line -> line.length in 2..40 && line.any { it.isLetter() } }
             ?.take(40)
-    }
-
-    /** 인식한 각 줄을 원래 좌표에 다시 그린다. */
-    private fun renderOcrPage(canvas: android.graphics.Canvas, text: com.google.mlkit.vision.text.Text?) {
-        canvas.drawColor(android.graphics.Color.WHITE)
-        if (text == null) return
-        val paint = android.graphics.Paint().apply {
-            color = android.graphics.Color.BLACK
-            isAntiAlias = true
-        }
-        text.textBlocks.forEach { block ->
-            block.lines.forEach { line ->
-                val box = line.boundingBox ?: return@forEach
-                val content = line.text
-                if (content.isBlank() || box.height() <= 0 || box.width() <= 0) return@forEach
-                paint.textScaleX = 1f
-                paint.textSize = box.height().toFloat().coerceIn(6f, 240f)
-                val measured = paint.measureText(content).coerceAtLeast(1f)
-                // 인식 박스 너비에 맞춰 가로로 스케일해 원문 레이아웃을 유지한다.
-                paint.textScaleX = (box.width().toFloat() / measured).coerceIn(0.05f, 12f)
-                canvas.drawText(content, box.left.toFloat(), box.bottom.toFloat() - box.height() * 0.18f, paint)
-            }
-        }
     }
 
     /** 이미지 uri 를 축소 디코딩한다. 스캔 원본을 그대로 읽으면 OOM 이 발생한다. */
@@ -410,8 +321,9 @@ class MediaStorage @Inject constructor(
      * @param source 편집기 결과 uri (`content://…framekit.files/…`)
      * @param extension 파일 확장자(`jpg`·`png`·`webp`)
      * @param mimeType 결과 형식
-     * @param width 결과 가로 픽셀
-     * @param height 결과 세로 픽셀
+     * @param width 결과 가로 픽셀. 0 이하면 파일에서 읽는다
+     * @param height 결과 세로 픽셀. 0 이하면 파일에서 읽는다
+     * @param label 파일명에 들어갈 출처(`edit`·`scan` 등)
      */
     suspend fun importEditedImage(
         source: Uri,
@@ -419,16 +331,19 @@ class MediaStorage @Inject constructor(
         mimeType: String,
         width: Int,
         height: Int,
+        label: String = "edit",
     ): SavedMedia = withContext(Dispatchers.IO) {
-        val name = "Trubbi_edit_${UUID.randomUUID().toString().take(8)}.$extension"
+        val name = "Trubbi_${label}_${UUID.randomUUID().toString().take(8)}.$extension"
         val target = File(mediaDir, name)
         copyInto(source, target)
         val thumb = writeThumbnail(decodeNormalized(target), name.substringBeforeLast('.') + ".jpg")
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        if (width <= 0 || height <= 0) BitmapFactory.decodeFile(target.absolutePath, bounds)
         SavedMedia(
             uri = Uri.fromFile(target).toString(),
             thumbnailUri = thumb,
-            width = width,
-            height = height,
+            width = if (width > 0) width else bounds.outWidth,
+            height = if (height > 0) height else bounds.outHeight,
             fileSize = target.length(),
             mimeType = mimeType,
         )
@@ -466,24 +381,6 @@ class MediaStorage @Inject constructor(
         context.contentResolver.openInputStream(source)?.use { input ->
             FileOutputStream(target).use { output -> input.copyTo(output) }
         } ?: error("Cannot open source uri")
-    }
-
-    /** [writeThumbnail] 과 동일하되 최대 변 길이가 더 크다. 전체화면 미리보기용. */
-    private fun writePreview(source: Bitmap, baseName: String, maxSide: Int = 1600): String {
-        val scale = maxSide.toFloat() / maxOf(source.width, source.height).coerceAtLeast(1)
-        val out = if (scale < 1f) {
-            Bitmap.createScaledBitmap(
-                source,
-                (source.width * scale).toInt().coerceAtLeast(1),
-                (source.height * scale).toInt().coerceAtLeast(1),
-                true,
-            )
-        } else {
-            source
-        }
-        val file = File(thumbDir, "thumb_$baseName")
-        FileOutputStream(file).use { out.compress(Bitmap.CompressFormat.JPEG, 88, it) }
-        return Uri.fromFile(file).toString()
     }
 
     private fun writeThumbnail(source: Bitmap, baseName: String): String {

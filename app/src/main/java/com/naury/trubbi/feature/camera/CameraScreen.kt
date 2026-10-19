@@ -198,10 +198,10 @@ private fun CameraContent(
     var pendingVideo by remember { mutableStateOf<File?>(null) }
     var showBurstNaming by remember { mutableStateOf(false) }
 
-    // 스캔 결과를 잠시 들고 있는다 — PDF 와 원본 페이지 이미지. 저장 시트에서 보관 여부를 고른다.
-    var pendingScan by remember { mutableStateOf<Pair<android.net.Uri, List<android.net.Uri>>?>(null) }
-    val launchScan = rememberDocumentScanLauncher { pdf, pages ->
-        if (pdf != null) pendingScan = pdf to pages
+    // 스캔한 쪽 사진들을 잠시 들고 있는다. 저장 시트에서 원본 쪽 보관 여부를 고른다.
+    var pendingScan by remember { mutableStateOf<List<android.net.Uri>?>(null) }
+    val launchScan = rememberDocumentScanLauncher { pages ->
+        if (pages.isNotEmpty()) pendingScan = pages
     }
     // 문서 탭 선택(또는 딥링크로 문서 모드 진입) 시 별도 버튼 없이 곧바로 스캐너를 띄운다.
     LaunchedEffect(mode) {
@@ -577,7 +577,7 @@ private fun CameraContent(
             },
         )
     }
-    pendingScan?.let { (pdfUri, pages) ->
+    pendingScan?.let { pages ->
         // 인식된 문서 제목을 기본 이름으로 제안(없으면 위치/시간 기반). OCR이 끝나면 자동 갱신.
         val docSuggest by androidx.compose.runtime.produceState(
             initialValue = remember(locLabel) { viewModel.suggestName(purpose, documentWord) },
@@ -588,10 +588,13 @@ private fun CameraContent(
         DocumentSaveSheet(
             pageCount = pages.size,
             suggested = docSuggest,
-            onDismiss = { pendingScan = null },
+            onDismiss = {
+                pendingScan = null
+                viewModel.discardScan(pages)
+            },
             onConfirm = { name, keepOriginals ->
                 pendingScan = null
-                viewModel.saveDocument(pdfUri, pages, keepOriginals, purpose, name) { id, uri ->
+                viewModel.saveDocument(pages, keepOriginals, purpose, name) { id, uri ->
                     onSaved(id, uri, false)
                 }
             },

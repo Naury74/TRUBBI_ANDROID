@@ -14,9 +14,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -90,7 +93,13 @@ fun PdfViewerScreen(
             else -> {
                 LazyColumn(
                     Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 92.dp, bottom = 32.dp),
+                    // 위쪽 바(상태 표시줄 + 버튼 줄) 아래에서 첫 쪽이 시작되게 한다. 기기마다 상태 표시줄 높이가 다르다.
+                    contentPadding = PaddingValues(
+                        start = 12.dp,
+                        end = 12.dp,
+                        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 72.dp,
+                        bottom = 32.dp,
+                    ),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     itemsIndexed(rendered) { index, bmp ->

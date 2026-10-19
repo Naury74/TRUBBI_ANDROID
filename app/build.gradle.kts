@@ -162,8 +162,6 @@ dependencies {
     // ML Kit OCR (Korean) + on-device image labeling
     implementation(libs.mlkit.text.recognition.korean)
     implementation(libs.mlkit.image.labeling)
-    // ML Kit 문서 스캐너 (촬영·영역조정·보정·PDF 생성)
-    implementation(libs.mlkit.document.scanner)
 
     // Image loading (+ video frame decoding so any video uri renders a poster frame)
     implementation(libs.coil.compose)
