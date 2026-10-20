@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -164,6 +165,11 @@ fun HomeScreen(
     }
 
     val shareChooserTitle = stringResource(R.string.action_share)
+
+    // 전체 화면 오버레이가 떠 있으면 탭 바(셸)가 그 위에 겹치지 않게 알린다.
+    val overlayOpen = showStartSheet || showAddStopSheet || showManageStops || homeShareItems.isNotEmpty()
+    LaunchedEffect(overlayOpen) { viewModel.fullScreenOverlay.value = overlayOpen }
+    DisposableEffect(Unit) { onDispose { viewModel.fullScreenOverlay.value = false } }
 
     // 탭 바의 "+" 메뉴가 맡긴 일. 경로 화면·여정 오버레이는 홈 탭에만 있으므로 홈 탭이 처리한다.
     val pendingAction by viewModel.pendingAction.collectAsStateWithLifecycle()

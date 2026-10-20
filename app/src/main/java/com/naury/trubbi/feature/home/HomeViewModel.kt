@@ -108,6 +108,9 @@ class HomeViewModel @Inject constructor(
      */
     val pendingAction = MutableStateFlow<HomeAction?>(null)
 
+    /** 홈 위에 전체 화면(경로 화면·정차지 순서·공유 화면)이 떠 있는지. 떠 있는 동안 탭 바를 숨긴다. */
+    val fullScreenOverlay = MutableStateFlow(false)
+
     // ── 인사말 ────────────────────────────────────────────────────────────────
 
     /** 홈에 한 번 뜨는 인사 배너. */

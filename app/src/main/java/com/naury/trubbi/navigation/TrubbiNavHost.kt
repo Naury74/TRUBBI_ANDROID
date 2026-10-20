@@ -78,6 +78,7 @@ fun TrubbiNavHost(
     val selectedRecords by homeVm.selection.records.collectAsStateWithLifecycle()
     val selectedMedia by homeVm.selection.media.collectAsStateWithLifecycle()
     val activeJourney by homeVm.journey.activeJourney.collectAsStateWithLifecycle()
+    val homeOverlay by homeVm.fullScreenOverlay.collectAsStateWithLifecycle()
     fun homeDo(action: HomeAction) {
         homeVm.pendingAction.value = action
         if (currentTab != MainTab.HOME) navController.navigateTab(Routes.HOME)
@@ -288,7 +289,7 @@ fun TrubbiNavHost(
                 }
             }
             // 최상위 탭에서만 탭 바를 띄운다. 여러 개를 고르는 중에는 그 자리에 선택 도구가 뜬다.
-            if (currentTab != null && selectedRecords.isEmpty() && selectedMedia.isEmpty()) {
+            if (currentTab != null && selectedRecords.isEmpty() && selectedMedia.isEmpty() && !homeOverlay) {
                 MainTabBar(
                     current = currentTab,
                     journeyActive = activeJourney != null,
