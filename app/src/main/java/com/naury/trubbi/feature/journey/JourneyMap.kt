@@ -7,34 +7,48 @@ import android.graphics.Color as AColor
 import android.graphics.Paint
 import android.graphics.RectF
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.imageLoader
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
 import coil3.toBitmap
 import com.naury.trubbi.R
+import com.naury.trubbi.core.i18n.label
+import com.naury.trubbi.data.i18n.displayName
 import com.naury.trubbi.data.local.JourneyStopEntity
 import com.naury.trubbi.data.local.RecordWithMedia
 import com.naury.trubbi.data.local.RoutePointEntity
+import com.naury.trubbi.data.repo.RouteSimplifier
+import com.naury.trubbi.domain.model.IssueType
 import com.naury.trubbi.domain.model.RecordType
 import com.naury.trubbi.ui.common.KakaoMapView
 import com.naury.trubbi.ui.common.MapControls
 import com.naury.trubbi.ui.common.MapHandle
 import com.naury.trubbi.ui.common.MapMarker
 import com.naury.trubbi.ui.common.MapPoint
+import com.naury.trubbi.ui.designsystem.TrubbiSheet
+import com.naury.trubbi.ui.theme.LocalTrubbiColors
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -68,6 +82,7 @@ fun JourneyMapCard(
     val onPrimary = MaterialTheme.colorScheme.onPrimary.toArgb()
 
     val route = remember(routePoints) { routePoints.map { MapPoint(it.latitude, it.longitude) } }
+    val breaks = remember(routePoints) { routeBreaks(routePoints) }
     val stopPoints = remember(stops) {
         stops.mapNotNull { s ->
             val la = s.latitude
@@ -76,6 +91,8 @@ fun JourneyMapCard(
         }
     }
     val handle = remember { MapHandle() }
+    // 탭한 정차지·문제 마커. 기록 마커는 기록 상세로 바로 간다.
+    var selected by remember { mutableStateOf<String?>(null) }
     // 현재 작업 중인 정차지(첫 미완료) — 마커를 강조한다.
     val currentStopId = stops.firstOrNull { it.completedAt == null }?.stopId
 
@@ -92,13 +109,14 @@ fun JourneyMapCard(
             route = route,
             routeColor = primary,
             plannedRoute = stopPoints,
+            routeBreaks = breaks,
             myLocation = if (interactive) myLocation else null,
             handle = handle,
             gesturesEnabled = onExpand == null,
             onMapTap = onExpand,
             // 전체화면은 왼쪽 위 닫기 버튼과 오른쪽 아래 조작 버튼이 얹혀 있어 여백을 넉넉히 둔다.
             framePadding = if (interactive) 72.dp else 40.dp,
-            onMarkerClick = { id -> if (!id.startsWith("stop:") && !id.startsWith("issue:")) onRecordClick(id) },
+            onMarkerClick = { id -> if (id.startsWith(STOP_PREFIX) || id.startsWith(ISSUE_PREFIX)) selected = id else onRecordClick(id) },
             modifier = Modifier.fillMaxSize(),
         )
         // 티맵식 떠 있는 조작 — 현재 위치로 / 경로 전체 보기 / 확대·축소. 전체화면(interactive)에서 노출.
@@ -113,9 +131,84 @@ fun JourneyMapCard(
             )
         }
     }
+
+    selected?.let { id ->
+        MarkerDetailSheet(
+            stop = stops.firstOrNull { STOP_PREFIX + it.stopId == id },
+            issue = issues.firstOrNull { ISSUE_PREFIX + it.issueId == id },
+            onDismiss = { selected = null },
+        )
+    }
 }
 
+/** 정차지·문제 마커를 탭했을 때 뜨는 요약. 도착·대기·완료 시각, 문제 내용. */
+@Composable
+private fun MarkerDetailSheet(
+    stop: JourneyStopEntity?,
+    issue: com.naury.trubbi.data.local.IssueEntity?,
+    onDismiss: () -> Unit,
+) {
+    if (stop == null && issue == null) return
+    val secondary = LocalTrubbiColors.current.secondaryLabel
+    TrubbiSheet(onDismiss = onDismiss) {
+        Column(Modifier.fillMaxWidth().padding(horizontal = 22.dp).padding(bottom = 28.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            if (stop != null) {
+                Text(
+                    "${stop.kindEnum.label()} · ${stop.displayName()}",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                stop.address?.takeIf { it != stop.name }?.let {
+                    Text(it, style = MaterialTheme.typography.bodyMedium, color = secondary)
+                }
+                val parts = buildList {
+                    stop.arrivedAt?.let { add(stringResource(R.string.report_stop_arrived, markerStamp(it))) }
+                    stop.waitingMs?.takeIf { it > 60_000 }?.let { add(stringResource(R.string.report_stop_waited, (it / 60_000).toInt())) }
+                    stop.completedAt?.let { add(stringResource(R.string.report_stop_completed, markerStamp(it))) }
+                }
+                Text(
+                    if (parts.isEmpty()) stop.phase.label() else parts.joinToString(" · "),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            } else if (issue != null) {
+                Text(
+                    IssueType.fromName(issue.type).label(),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.error,
+                )
+                Text(markerStamp(issue.occurredAt), style = MaterialTheme.typography.labelLarge, color = secondary)
+                if (issue.description.isNotBlank()) {
+                    Text(issue.description, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
+                }
+                issue.address?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = secondary) }
+            }
+        }
+    }
+}
+
+/**
+ * 자취가 끊긴 곳의 위치들. 앞 점과 5분 넘게 비었으면(터널·추적 중단) 그 사이를 실제로 달린 길을 모른다.
+ *
+ * 거리로는 판단하지 않는다. 끝난 여정은 직선 구간의 점을 줄여 저장하므로([RouteSimplifier]) 점 사이가 멀어도
+ * 정상이고, 순간이동 같은 튀는 점은 추적 단계에서 이미 걸러진다.
+ */
+internal fun routeBreaks(points: List<RoutePointEntity>): Set<Int> =
+    (1..points.lastIndex).filterTo(HashSet()) { i -> points[i].at - points[i - 1].at >= RouteSimplifier.GAP_MS }
+
+private const val STOP_PREFIX = "stop:"
+private const val ISSUE_PREFIX = "issue:"
+
 private val markerTimeFmt = SimpleDateFormat("HH:mm", Locale.KOREA)
+private val markerDateTimeFmt = SimpleDateFormat("M/d HH:mm", Locale.KOREA)
+
+/** 오늘이면 시각만, 아니면 날짜까지. 며칠에 걸친 여정에서 마커 시각이 헷갈리지 않게 한다. */
+private fun markerStamp(ms: Long): String {
+    val day = 24 * 60 * 60 * 1000L
+    val offset = java.util.TimeZone.getDefault().getOffset(ms)
+    val sameDay = (ms + offset) / day == (System.currentTimeMillis() + offset) / day
+    return (if (sameDay) markerTimeFmt else markerDateTimeFmt).format(Date(ms))
+}
 
 /** 지도에 올리는 기록 마커 수 상한. 썸네일을 모두 디코딩하므로 너무 많으면 지도가 늦게 뜬다. */
 private const val MAX_RECORD_MARKERS = 80
@@ -135,7 +228,7 @@ private suspend fun buildMarkers(
         val lat = stop.latitude ?: return@forEach
         val lng = stop.longitude ?: return@forEach
         out += MapMarker(
-            id = "stop:${stop.stopId}",
+            id = STOP_PREFIX + stop.stopId,
             point = MapPoint(lat, lng),
             bitmap = stopPin(
                 text = context.getString(stop.kindEnum.shortRes),
@@ -149,7 +242,7 @@ private suspend fun buildMarkers(
     issues.forEach { issue ->
         val lat = issue.latitude ?: return@forEach
         val lng = issue.longitude ?: return@forEach
-        out += MapMarker(id = "issue:${issue.issueId}", point = MapPoint(lat, lng), bitmap = issuePin())
+        out += MapMarker(id = ISSUE_PREFIX + issue.issueId, point = MapPoint(lat, lng), bitmap = issuePin())
     }
     // 기록 마커 — 찍은 사진 썸네일(없으면 종류 아이콘)과 시각.
     // 기록은 오래된 순으로 온다. 긴 여정에서 최근 기록이 빠지지 않도록 뒤에서 자른다.
@@ -157,7 +250,7 @@ private suspend fun buildMarkers(
         val r = rec.record
         val lat = r.latitude ?: return@forEach
         val lng = r.longitude ?: return@forEach
-        val time = markerTimeFmt.format(Date(r.createdAt))
+        val time = markerStamp(r.createdAt)
         val type = RecordType.fromName(r.type)
         val thumbUri = rec.primaryThumb
         val thumb: Bitmap? = if (thumbUri != null) {

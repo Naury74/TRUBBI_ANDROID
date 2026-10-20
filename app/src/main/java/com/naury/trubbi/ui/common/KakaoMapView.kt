@@ -11,6 +11,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,8 +27,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -53,6 +56,7 @@ import com.kakao.vectormap.route.RouteLineStyle
 import com.kakao.vectormap.route.RouteLineStyles
 import com.naury.trubbi.BuildConfig
 import com.naury.trubbi.R
+import com.naury.trubbi.ui.theme.LocalTrubbiColors
 
 /** 위경도 한 점. */
 data class MapPoint(val lat: Double, val lng: Double)
@@ -117,12 +121,15 @@ class MapHandle {
  * 화면 밖에 잘렸다. `KakaoMapSdk.init` 이 선행돼야 한다(TrubbiApp 에서 네이티브 키로 초기화).
  *
  * @param plannedRoute 아직 달린 자취가 없을 때 정차지 순서를 잇는 점선
+ * @param routeBreaks 자취가 끊긴 곳. i 가 들어 있으면 route[i-1]→route[i] 를 실선 대신 점선으로 그린다
  * @param focus 지정하면 호출부가 카메라를 제어하고 자동 프레이밍은 건너뛴다
  * @param myLocation 현재 위치 — 탭할 수 없는 파란 점으로 그린다
  * @param handle 확대·현위치 복귀 버튼이 쓸 손잡이
  * @param gesturesEnabled false 면 지도를 손으로 움직이지 않는다. 스크롤 화면 안의 미리보기 카드에서 쓰며,
  *   이때 손가락은 페이지 스크롤로 넘어가고 탭은 [onMapTap] 으로 간다
  * @param framePadding 자동으로 맞출 때 가장자리 여백. 지도 위에 얹힌 버튼에 핀이 가리지 않게 한다
+ * @param obscured 지도 위에 얹힌 카드·패널이 가리는 영역. 카메라를 맞출 때 이 부분을 피한다
+ * @param onCameraIdle 카메라 이동이 멈췄을 때 화면 가운데 좌표
  * @param onMarkerClick 마커 탭 — [MapMarker.id] 를 돌려준다
  */
 @Composable
@@ -132,12 +139,15 @@ fun KakaoMapView(
     modifier: Modifier = Modifier,
     routeColor: Int = ROUTE_BLUE,
     plannedRoute: List<MapPoint> = emptyList(),
+    routeBreaks: Set<Int> = emptySet(),
     focus: MapFocus? = null,
     myLocation: MapPoint? = null,
     handle: MapHandle? = null,
     gesturesEnabled: Boolean = true,
     framePadding: Dp = 56.dp,
+    obscured: PaddingValues = PaddingValues(0.dp),
     onMapTap: (() -> Unit)? = null,
+    onCameraIdle: ((MapPoint) -> Unit)? = null,
     onMarkerClick: (String) -> Unit = {},
     onReady: (() -> Unit)? = null,
 ) {
@@ -153,6 +163,7 @@ fun KakaoMapView(
     // 같은 비트맵의 스타일을 매번 새로 등록하면 지도 안에 스타일이 계속 쌓인다.
     val styleCache = remember { HashMap<Bitmap, LabelStyles>() }
     val handleRef by rememberUpdatedState(handle)
+    val currentIdle by rememberUpdatedState(onCameraIdle)
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -214,6 +225,9 @@ fun KakaoMapView(
                                 map.setOnCameraMoveStartListener { _, gesture ->
                                     if (gesture != GestureType.Unknown) userMoved = true
                                 }
+                                map.setOnCameraMoveEndListener { _, position, _ ->
+                                    position?.position?.let { currentIdle?.invoke(MapPoint(it.latitude, it.longitude)) }
+                                }
                                 onReady?.invoke()
                             }
                         },
@@ -221,6 +235,12 @@ fun KakaoMapView(
                 }
             },
         )
+
+        // 카카오 지도에는 야간 스타일이 없다. 다크 테마에서는 지도를 살짝 어둡게 덮어 야간 운전 때 눈부심을 줄인다.
+        // 그리기만 하고 터치는 받지 않아 지도 조작은 그대로다.
+        if (LocalTrubbiColors.current.isDark) {
+            Box(Modifier.matchParentSize().background(ComposeColor.Black.copy(alpha = NIGHT_DIM)))
+        }
 
         // 조작을 끈 미리보기: 탭만 받고, 끌기는 받지 않아 바깥 스크롤로 넘어간다.
         if (!gesturesEnabled && onMapTap != null) {
@@ -255,9 +275,24 @@ fun KakaoMapView(
         }
     }
 
-    LaunchedEffect(kakaoMap, route, plannedRoute, routeColor) {
+    val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
+    LaunchedEffect(kakaoMap, obscured) {
         val map = kakaoMap ?: return@LaunchedEffect
-        drawRoute(map, route, plannedRoute, routeColor)
+        with(density) {
+            runCatching {
+                map.setPadding(
+                    obscured.calculateLeftPadding(layoutDirection).roundToPx(),
+                    obscured.calculateTopPadding().roundToPx(),
+                    obscured.calculateRightPadding(layoutDirection).roundToPx(),
+                    obscured.calculateBottomPadding().roundToPx(),
+                )
+            }
+        }
+    }
+    LaunchedEffect(kakaoMap, route, plannedRoute, routeBreaks, routeColor) {
+        val map = kakaoMap ?: return@LaunchedEffect
+        drawRoute(map, route, plannedRoute, routeBreaks, routeColor)
     }
     LaunchedEffect(kakaoMap, markers, myLocation) {
         val map = kakaoMap ?: return@LaunchedEffect
@@ -320,20 +355,28 @@ private val myDotBitmap: Bitmap by lazy {
     bitmap
 }
 
-private fun drawRoute(map: KakaoMap, route: List<MapPoint>, planned: List<MapPoint>, routeColor: Int) {
+private fun drawRoute(map: KakaoMap, route: List<MapPoint>, planned: List<MapPoint>, breaks: Set<Int>, routeColor: Int) {
     runCatching {
         val layer = map.routeLineManager?.layer ?: return
         layer.removeAll()
+        fun line(points: List<MapPoint>, styles: RouteLineStyles) =
+            layer.addRouteLine(RouteLineOptions.from(RouteLineSegment.from(points.map { LatLng.from(it.lat, it.lng) }, styles)))
+        val dotted = RouteLineStyles.from(RouteLineStyle.from(ROUTE_WIDTH, Color.TRANSPARENT, RouteLinePattern.from(dotBitmap(routeColor), DOT_SPACING)))
         // 달린 자취가 없으면 정차지 순서를 점선으로 잇는다. 자취가 생기면 그 위에 실선이 덮는다.
-        if (route.size < 2 && planned.size >= 2) {
-            val dotted = RouteLineStyles.from(RouteLineStyle.from(ROUTE_WIDTH, Color.TRANSPARENT, RouteLinePattern.from(dotBitmap(routeColor), DOT_SPACING)))
-            layer.addRouteLine(RouteLineOptions.from(RouteLineSegment.from(planned.map { LatLng.from(it.lat, it.lng) }, dotted)))
+        if (route.size < 2 && planned.size >= 2) line(planned, dotted)
+        if (route.size < 2) return
+        // 흰 테두리를 둘러 지도 위 파란 도로와 구분되게 한다.
+        val solid = RouteLineStyles.from(RouteLineStyle.from(ROUTE_WIDTH, routeColor, ROUTE_STROKE, Color.WHITE))
+        // 끊긴 곳(터널·추적 중단)은 실제로 달린 길을 모르므로 직선 실선 대신 점선으로 잇는다.
+        var start = 0
+        for (i in 1..route.lastIndex) {
+            if (i in breaks) {
+                if (i - 1 > start) line(route.subList(start, i), solid)
+                line(listOf(route[i - 1], route[i]), dotted)
+                start = i
+            }
         }
-        if (route.size >= 2) {
-            // 흰 테두리를 둘러 지도 위 파란 도로와 구분되게 한다.
-            val style = RouteLineStyles.from(RouteLineStyle.from(ROUTE_WIDTH, routeColor, ROUTE_STROKE, Color.WHITE))
-            layer.addRouteLine(RouteLineOptions.from(RouteLineSegment.from(route.map { LatLng.from(it.lat, it.lng) }, style)))
-        }
+        if (route.lastIndex > start) line(route.subList(start, route.size), solid)
     }
 }
 
@@ -375,6 +418,7 @@ private fun dotBitmap(color: Int): Bitmap = dotBitmaps.getOrPut(color) {
     }
 }
 
+private const val NIGHT_DIM = 0.3f
 private const val ROUTE_WIDTH = 12f
 private const val ROUTE_STROKE = 3f
 private const val DOT_SPACING = 26f

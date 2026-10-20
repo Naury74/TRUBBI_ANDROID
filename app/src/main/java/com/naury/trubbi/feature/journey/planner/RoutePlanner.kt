@@ -13,6 +13,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -47,6 +48,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -129,7 +131,7 @@ fun RoutePlanner(
     LaunchedEffect(Unit) {
         val here = currentPlace()
         // 출발지 이름은 여정 기록에 남으므로 "현재 위치"라는 글자 대신 짧은 주소로 둔다(화면에는 계속 "현재 위치").
-        plan = plan.copy(here = here?.let { PlannedPlace(shortAddress(it.address) ?: hereLabel, it.address, it.latitude, it.longitude) })
+        plan = plan.copy(here = here?.let { PlannedPlace(it.placeLabel ?: hereLabel, it.address, it.latitude, it.longitude) })
         locating = false
     }
 
@@ -228,12 +230,20 @@ private fun PlanMap(plan: RoutePlan, modifier: Modifier) {
     }
     val points = places.map { MapPoint(it.latitude!!, it.longitude!!) }
     val focus = when {
-        points.size >= 2 -> MapFocus.Bounds(points, paddingPx = 220)
+        points.size >= 2 -> MapFocus.Bounds(points, paddingPx = with(LocalDensity.current) { 32.dp.roundToPx() })
         points.size == 1 -> MapFocus.Point(points[0].lat, points[0].lng, zoom = 15)
         else -> null
     }
     val here = plan.here?.let { h -> h.latitude?.let { MapPoint(it, h.longitude!!) } }
-    KakaoMapView(markers = markers, route = points, modifier = modifier, focus = focus, myLocation = here)
+    KakaoMapView(
+        markers = markers,
+        route = points,
+        modifier = modifier,
+        focus = focus,
+        myLocation = here,
+        // 위쪽 입력 카드와 아래 요약 패널에 핀이 가리지 않게 그 영역을 비워 두고 맞춘다.
+        obscured = PaddingValues(top = PLAN_CARD_HEIGHT, bottom = PLAN_PANEL_HEIGHT),
+    )
 }
 
 /** 위쪽 입력 카드. 출발·경유·도착 칸을 세로로 쌓고, 오른쪽에 바꾸기 버튼을 둔다. */
@@ -679,13 +689,6 @@ private fun metersBetween(lat1: Double, lng1: Double, lat2: Double, lng2: Double
     return out[0].toInt()
 }
 
-/** "서울특별시 중구 한강대로 405" → "중구 한강대로 405". 세 토막 미만이면 그대로, 비었으면 null. */
-internal fun shortAddress(address: String?): String? {
-    val tokens = address?.trim()?.split(Regex("\\s+"))?.filter { it.isNotBlank() }.orEmpty()
-    if (tokens.isEmpty()) return null
-    return if (tokens.size >= 3) tokens.drop(1).joinToString(" ") else tokens.joinToString(" ")
-}
-
 /** 1km 미만은 m, 그 위는 소수 한 자리 km(100km 이상은 정수). */
 internal fun formatDistance(meters: Int): String = when {
     meters < 1000 -> "${meters}m"
@@ -694,6 +697,8 @@ internal fun formatDistance(meters: Int): String = when {
 }
 
 private const val SEARCH_DEBOUNCE_MS = 300L
+private val PLAN_CARD_HEIGHT = 190.dp
+private val PLAN_PANEL_HEIGHT = 230.dp
 private const val SKELETON_ROWS = 5
 
 /** 검색 칸에서 쓰는 명령어. 인식기가 비슷한 소리를 이쪽으로 맞추게 미리 알려 준다. */

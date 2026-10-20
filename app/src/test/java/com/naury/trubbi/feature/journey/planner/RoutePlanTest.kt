@@ -99,14 +99,6 @@ class RoutePlanTest {
     }
 
     @Test
-    fun `출발지 이름은 시도를 뗀 짧은 주소`() {
-        assertThat(shortAddress("서울특별시 중구 한강대로 405")).isEqualTo("중구 한강대로 405")
-        assertThat(shortAddress("중구 세종대로")).isEqualTo("중구 세종대로")
-        assertThat(shortAddress("  ")).isNull()
-        assertThat(shortAddress(null)).isNull()
-    }
-
-    @Test
     fun `목적지가 있어야 출발할 수 있다`() {
         assertThat(RoutePlan(here = here).ready).isFalse()
         assertThat(RoutePlan(here = here, destination = port).ready).isTrue()

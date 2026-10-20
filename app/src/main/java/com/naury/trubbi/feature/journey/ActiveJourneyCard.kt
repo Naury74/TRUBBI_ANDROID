@@ -131,6 +131,8 @@ fun ActiveJourneyCard(
             )
         }
 
+        PreciseLocationNotice(Modifier.padding(top = 12.dp))
+
         Spacer(Modifier.height(18.dp))
 
         if (stops.isEmpty()) {
