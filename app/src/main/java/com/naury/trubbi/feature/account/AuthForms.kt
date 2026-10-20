@@ -70,7 +70,7 @@ internal fun EntryContent(viewModel: AccountViewModel, onLogin: () -> Unit, onSi
             Modifier.fillMaxWidth(),
             leading = {
                 Image(
-                    painter = painterResource(R.drawable.trubbi_mascot),
+                    painter = painterResource(R.drawable.ic_stat_logo),
                     contentDescription = null,
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
                     modifier = Modifier.size(22.dp),

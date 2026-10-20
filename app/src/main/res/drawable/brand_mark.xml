@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 2026-10 리브랜딩. tools/brand/make_brand.py 로 만들었다: 도로 위 지평선의 위치 핀. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path
+        android:fillColor="#FF2457F5"
+        android:pathData="M24,0 H76 A24,24 0 0,1 100,24 V76 A24,24 0 0,1 76,100 H24 A24,24 0 0,1 0,76 V24 A24,24 0 0,1 24,0 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M42,44 L58,44 L80,88 L20,88 Z M48.0,50 a2.0,2.0 0 0,1 4.0,0 v4 a2.0,2.0 0 0,1 -4.0,0 z M48.0,60 a2.0,2.0 0 0,1 4.0,0 v7 a2.0,2.0 0 0,1 -4.0,0 z M48.0,74 a2.0,2.0 0 0,1 4.0,0 v10 a2.0,2.0 0 0,1 -4.0,0 z" />
+    <path
+        android:fillColor="#FFF5A524"
+        android:fillType="evenOdd"
+        android:pathData="M50,10 C42.5,10 37,15.5 37,22.5 C37,31.5 50,42 50,42 C50,42 63,31.5 63,22.5 C63,15.5 57.5,10 50,10 Z M45,22.5 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0 z" />
+</vector>

@@ -328,7 +328,7 @@ class JourneyTrackingService : Service() {
         val builder = NotificationCompat.Builder(this, CHANNEL_ONGOING)
             .setSmallIcon(R.drawable.ic_stat_logo)
             .setLargeIcon(NotificationIcons.glyph(this, R.drawable.ic_stat_truck))
-            .setColor(BRAND_ORANGE)
+            .setColor(BRAND_COLOR)
             .setContentTitle(journey?.routeLabel(this) ?: getString(R.string.notif_journey_title))
             .setContentText(text)
             .setOngoing(true)
@@ -380,7 +380,7 @@ class JourneyTrackingService : Service() {
         val notification = NotificationCompat.Builder(this, CHANNEL_ALERT)
             .setSmallIcon(R.drawable.ic_stat_logo)
             .setLargeIcon(NotificationIcons.glyph(this, R.drawable.ic_stat_pin))
-            .setColor(BRAND_ORANGE)
+            .setColor(BRAND_COLOR)
             .setContentTitle(getString(R.string.notif_arrival_title, stop.displayName(this)))
             .setContentText(getString(R.string.notif_arrival_text, stop.kindEnum.label(this)))
             .setAutoCancel(true)
@@ -408,7 +408,7 @@ class JourneyTrackingService : Service() {
         /** 이만큼 움직였을 때만 자취를 저장해 DB 행 수를 줄인다. */
         private const val SAVE_DIST_M = 90f
 
-        private val BRAND_ORANGE = 0xFFF5871F.toInt()
+        private val BRAND_COLOR = com.naury.trubbi.core.ui.BrandPalette.PRIMARY
 
         const val ACTION_STOP = "com.naury.trubbi.tracking.STOP"
         const val ACTION_ARRIVE = "com.naury.trubbi.tracking.ARRIVE"

@@ -9,7 +9,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,7 +37,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -94,10 +92,9 @@ fun WelcomeScreen(onStart: () -> Unit) {
                         }
                         .clip(RoundedCornerShape(percent = 50)).background(Color.White),
                 )
-                Image(
-                    painter = painterResource(R.drawable.trubbi_logo_dark),
-                    contentDescription = "TRUBBI",
-                    modifier = Modifier.fillMaxWidth(0.62f).graphicsLayer {
+                com.naury.trubbi.ui.designsystem.TrubbiLogo(
+                    wordmarkColor = Color.White,
+                    modifier = Modifier.fillMaxWidth(0.56f).graphicsLayer {
                         scaleX = pop.value
                         scaleY = pop.value
                         translationY = floatY

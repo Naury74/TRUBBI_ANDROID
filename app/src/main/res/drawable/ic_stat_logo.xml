@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 상태바/알림 small icon: 앱 마스코트의 실루엣. 상태바 아이콘은 단색(알파)만 표시되므로
-     마스코트 모양이 흰색 실루엣으로 나온다. 컬러 앱 아이콘은 알림 왼쪽 largeIcon으로 따로 표시. -->
-<inset xmlns:android="http://schemas.android.com/apk/res/android"
-    android:inset="12%">
-    <bitmap
-        android:src="@drawable/trubbi_mascot"
-        android:gravity="fill"
-        android:tint="#FFFFFFFF" />
-</inset>
+<!-- 2026-10 리브랜딩. tools/brand/make_brand.py 로 만들었다: 도로 위 지평선의 위치 핀. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M42,44 L58,44 L80,88 L20,88 Z M48.0,50 a2.0,2.0 0 0,1 4.0,0 v4 a2.0,2.0 0 0,1 -4.0,0 z M48.0,60 a2.0,2.0 0 0,1 4.0,0 v7 a2.0,2.0 0 0,1 -4.0,0 z M48.0,74 a2.0,2.0 0 0,1 4.0,0 v10 a2.0,2.0 0 0,1 -4.0,0 z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M50,10 C42.5,10 37,15.5 37,22.5 C37,31.5 50,42 50,42 C50,42 63,31.5 63,22.5 C63,15.5 57.5,10 50,10 Z M45,22.5 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0 z" />
+</vector>

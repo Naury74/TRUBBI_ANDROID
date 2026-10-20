@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 어댑티브 아이콘 안전영역(중앙 원) 안에 마스코트가 들어오도록 여백을 키운다.
-     (여백이 작으면 알림/런처의 원형 마스크에서 마스코트 모서리가 잘려 '확대되어 잘려보임') -->
-<inset xmlns:android="http://schemas.android.com/apk/res/android"
-    android:inset="30dp">
-    <bitmap
-        android:src="@drawable/trubbi_mascot"
-        android:gravity="fill" />
-</inset>
+<!-- 2026-10 리브랜딩. tools/brand/make_brand.py 로 만들었다: 도로 위 지평선의 위치 핀. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="0.6923"
+        android:scaleY="0.6923"
+        android:translateX="19.385"
+        android:translateY="20.077">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:fillType="evenOdd"
+            android:pathData="M42,44 L58,44 L80,88 L20,88 Z M48.0,50 a2.0,2.0 0 0,1 4.0,0 v4 a2.0,2.0 0 0,1 -4.0,0 z M48.0,60 a2.0,2.0 0 0,1 4.0,0 v7 a2.0,2.0 0 0,1 -4.0,0 z M48.0,74 a2.0,2.0 0 0,1 4.0,0 v10 a2.0,2.0 0 0,1 -4.0,0 z" />
+        <path
+            android:fillColor="#FFF5A524"
+            android:fillType="evenOdd"
+            android:pathData="M50,10 C42.5,10 37,15.5 37,22.5 C37,31.5 50,42 50,42 C50,42 63,31.5 63,22.5 C63,15.5 57.5,10 50,10 Z M45,22.5 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0 z" />
+    </group>
+</vector>

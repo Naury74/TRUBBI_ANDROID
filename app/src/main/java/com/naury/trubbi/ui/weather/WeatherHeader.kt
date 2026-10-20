@@ -1,7 +1,6 @@
 package com.naury.trubbi.ui.weather
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -113,13 +111,10 @@ fun WeatherHeader(
 
     Box(modifier.fillMaxWidth().height(bannerHeight + topPadding)) {
         // 접히면 로고가 사라지고 그 자리를 위치가 차지한다.
-        Image(
-            painter = painterResource(R.drawable.trubbi_wordmark_dark),
-            contentDescription = "TRUBBI",
+        com.naury.trubbi.ui.designsystem.TrubbiLogoInline(
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(top = topPadding + 16.dp, start = 20.dp)
-                .height(18.dp)
+                .padding(top = topPadding + 12.dp, start = 20.dp)
                 .graphicsLayer { alpha = 1f - progress },
         )
 

@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import com.naury.trubbi.core.ui.BrandPalette
 
 /**
  * 알림 오른쪽에 들어가는 큰 아이콘을 만든다.
@@ -22,7 +23,7 @@ object NotificationIcons {
     fun glyph(
         context: Context,
         iconRes: Int,
-        background: Int = 0xFFF5871F.toInt(), // 브랜드 앰버 디스크
+        background: Int = BrandPalette.PRIMARY, // 브랜드 파랑 디스크
         foreground: Int = 0xFFFFFFFF.toInt(), // 흰색 글리프(또렷하게)
     ): Bitmap? = runCatching {
         val density = context.resources.displayMetrics.density

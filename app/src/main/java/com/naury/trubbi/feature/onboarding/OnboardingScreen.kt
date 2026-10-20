@@ -5,7 +5,6 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,8 +42,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -252,11 +249,8 @@ private fun WelcomePage() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Image(
-            painter = painterResource(if (c.isDark) R.drawable.trubbi_logo_dark else R.drawable.trubbi_logo),
-            contentDescription = "TRUBBI",
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.fillMaxWidth(0.62f).graphicsLayer {
+        com.naury.trubbi.ui.designsystem.TrubbiLogo(
+            modifier = Modifier.fillMaxWidth(0.56f).graphicsLayer {
                 scaleX = pop.value
                 scaleY = pop.value
             },

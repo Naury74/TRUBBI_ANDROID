@@ -146,7 +146,7 @@ class FloatingLauncherService : Service() {
         val bubble = FrameLayout(this).apply {
             background = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(0xFFFFF7F1.toInt())
+                setColor(0xFFEEF2FF.toInt())
             }
             clipToOutline = true
             outlineProvider = object : android.view.ViewOutlineProvider() {
@@ -156,7 +156,7 @@ class FloatingLauncherService : Service() {
             }
             elevation = dp(14).toFloat()
             val mascot = ImageView(this@FloatingLauncherService).apply {
-                setImageResource(R.drawable.trubbi_mascot)
+                setImageResource(R.drawable.brand_mark)
                 scaleType = ImageView.ScaleType.FIT_CENTER
             }
             val pad = dp(12)
@@ -196,7 +196,7 @@ class FloatingLauncherService : Service() {
             maxLines = 1
         }
         val stageTv = TextView(this).apply {
-            setTextColor(0xFFFFB867.toInt())
+            setTextColor(0xFFA9BEFF.toInt())
             textSize = 12.5f
         }
         jHeader.addView(routeTv)
@@ -206,14 +206,15 @@ class FloatingLauncherService : Service() {
         journeyStageView = stageTv
         card.addView(jHeader)
 
-        val jRow = actionRow(R.drawable.ic_stat_truck, getString(R.string.floating_next_step), 0xFFEC6F0C.toInt()) { onJourneyAction() }
+        val jRow =
+            actionRow(R.drawable.ic_stat_truck, getString(R.string.floating_next_step), com.naury.trubbi.core.ui.BrandPalette.ACCENT) { onJourneyAction() }
         jRow.visibility = View.GONE
         journeyRow = jRow
         journeyLabelView = jRow.findViewWithTag<TextView>("label")
         card.addView(jRow)
 
         card.addView(
-            actionRow(R.drawable.ic_widget_camera, getString(R.string.floating_capture), 0xFFF5871F.toInt()) {
+            actionRow(R.drawable.ic_widget_camera, getString(R.string.floating_capture), com.naury.trubbi.core.ui.BrandPalette.PRIMARY) {
                 launch("trubbi://capture?purpose=ETC")
             },
         )
@@ -589,7 +590,7 @@ class FloatingLauncherService : Service() {
         val notif: Notification = NotificationCompat.Builder(this, CHANNEL)
             .setSmallIcon(R.drawable.ic_stat_logo)
             .setLargeIcon(NotificationIcons.glyph(this, R.drawable.ic_stat_truck))
-            .setColor(0xFFF5871F.toInt())
+            .setColor(com.naury.trubbi.core.ui.BrandPalette.PRIMARY)
             .setContentTitle(getString(R.string.floating_notif_title))
             .setContentText(getString(R.string.floating_notif_text))
             .setOngoing(true)

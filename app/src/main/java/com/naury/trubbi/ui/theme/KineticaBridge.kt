@@ -2,14 +2,12 @@ package com.naury.trubbi.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import com.naury.kinetica.ui.KineticaColors
 import com.naury.kinetica.ui.KineticaDesign
 import com.naury.kinetica.ui.KineticaShapes
 import com.naury.kinetica.ui.KineticaTheme
-import com.naury.kinetica.ui.LocalKineticaFillContrast
 import com.naury.kinetica.ui.SurfaceStyle
 
 /**
@@ -56,11 +54,6 @@ internal fun ProvideKinetica(darkTheme: Boolean, extras: TrubbiColors, content: 
         textStyle = MaterialTheme.typography.bodyLarge,
         indication = null,
         design = design,
-    ) {
-        // 브랜드 주황(#F5871F) 위 흰 글자는 4.5:1 에 못 미친다. 4.5 기준이면 채운 면이 갈색으로 어두워지므로
-        // FrameKit 과 같은 3:1 기준으로 둔다.
-        CompositionLocalProvider(LocalKineticaFillContrast provides FILL_CONTRAST, content = content)
-    }
+        content = content,
+    )
 }
-
-private const val FILL_CONTRAST = 3f

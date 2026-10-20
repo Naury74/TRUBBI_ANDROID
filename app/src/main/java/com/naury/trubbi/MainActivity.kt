@@ -10,7 +10,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -28,8 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.core.util.Consumer
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,7 +39,6 @@ import com.naury.trubbi.navigation.navigateTab
 import com.naury.trubbi.ui.designsystem.LocalAppToast
 import com.naury.trubbi.ui.designsystem.TrubbiToastHost
 import com.naury.trubbi.ui.designsystem.rememberTrubbiToastState
-import com.naury.trubbi.ui.theme.LocalTrubbiColors
 import com.naury.trubbi.ui.theme.TrubbiTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -252,7 +248,6 @@ private fun TrubbiAppRoot(initialIntent: Intent?) {
 /** 첫 프레임을 덮는 스플래시. 관문 판단이 끝나기 전에 화면이 깜빡이는 걸 가린다. */
 @Composable
 private fun SplashOverlay(visible: Boolean) {
-    val dark = LocalTrubbiColors.current.isDark
     AnimatedVisibility(visible = visible, enter = fadeIn(), exit = fadeOut(tween(420))) {
         Box(
             Modifier
@@ -260,12 +255,8 @@ private fun SplashOverlay(visible: Boolean) {
                 .background(MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.Center,
         ) {
-            Image(
-                painter = painterResource(if (dark) R.drawable.trubbi_splash_dark else R.drawable.trubbi_splash),
-                contentDescription = "TRUBBI",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxWidth(0.72f),
-            )
+            // 시스템 스플래시(파란 원 + 마크)에서 이어지도록 같은 마크에 글자를 더해 보여 준다.
+            com.naury.trubbi.ui.designsystem.TrubbiLogo(Modifier.fillMaxWidth(0.46f))
         }
     }
 }

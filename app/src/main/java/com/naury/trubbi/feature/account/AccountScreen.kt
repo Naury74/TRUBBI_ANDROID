@@ -1,7 +1,6 @@
 package com.naury.trubbi.feature.account
 
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -66,11 +64,7 @@ fun LoginGateScreen(viewModel: AccountViewModel = hiltViewModel()) {
             .windowInsetsPadding(WindowInsets.ime.union(WindowInsets.navigationBars)),
     ) {
         Box(Modifier.fillMaxWidth().weight(1f).padding(horizontal = 28.dp), contentAlignment = Alignment.Center) {
-            Image(
-                painter = painterResource(R.drawable.trubbi_logo_dark),
-                contentDescription = "TRUBBI",
-                modifier = Modifier.fillMaxWidth(0.56f),
-            )
+            com.naury.trubbi.ui.designsystem.TrubbiLogo(Modifier.fillMaxWidth(0.5f), wordmarkColor = androidx.compose.ui.graphics.Color.White)
         }
         AuthPanel(viewModel)
         Spacer(Modifier.weight(0.35f))

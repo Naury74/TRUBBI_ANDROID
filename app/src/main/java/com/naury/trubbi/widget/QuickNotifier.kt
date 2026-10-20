@@ -36,7 +36,7 @@ object QuickNotifier {
         val n = NotificationCompat.Builder(context, CHANNEL)
             .setSmallIcon(R.drawable.ic_stat_logo)
             .setLargeIcon(NotificationIcons.glyph(context, R.drawable.ic_stat_camera))
-            .setColor(0xFFF5871F.toInt())
+            .setColor(com.naury.trubbi.core.ui.BrandPalette.PRIMARY)
             .setContentTitle(context.getString(R.string.quick_notif_channel))
             .setContentText(context.getString(R.string.quick_notif_text))
             .setOngoing(true)

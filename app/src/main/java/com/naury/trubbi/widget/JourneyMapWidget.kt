@@ -171,7 +171,7 @@ class JourneyMapWidget : AppWidgetProvider() {
             paint.strokeWidth = 9f
             paint.strokeCap = Paint.Cap.ROUND
             paint.strokeJoin = Paint.Join.ROUND
-            paint.color = Color.parseColor("#F5871F")
+            paint.color = com.naury.trubbi.core.ui.BrandPalette.PRIMARY
             val path = Path().apply {
                 moveTo(line[0].first, line[0].second)
                 line.drop(1).forEach { lineTo(it.first, it.second) }
@@ -182,7 +182,7 @@ class JourneyMapWidget : AppWidgetProvider() {
         stops.forEach { stop ->
             val (x, y) = px(stop.lat, stop.lng)
             val fill = when {
-                stop.current -> Color.parseColor("#F5871F")
+                stop.current -> com.naury.trubbi.core.ui.BrandPalette.PRIMARY
                 stop.done -> Color.parseColor("#9AA0A6")
                 else -> Color.parseColor("#33373D")
             }
