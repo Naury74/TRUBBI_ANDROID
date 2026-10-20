@@ -114,6 +114,9 @@ interface JourneyDao {
     @Insert
     suspend fun insertRoutePoint(point: RoutePointEntity)
 
+    @Query("DELETE FROM journey_route_points WHERE id IN (:ids)")
+    suspend fun deleteRoutePoints(ids: List<Long>)
+
     @Query("SELECT * FROM journey_route_points WHERE journeyId = :journeyId ORDER BY at ASC")
     suspend fun routePointsOnce(journeyId: String): List<RoutePointEntity>
 

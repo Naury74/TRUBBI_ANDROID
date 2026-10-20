@@ -294,7 +294,7 @@ class JourneyRepository @Inject constructor(
                 latitude = fix.latitude,
                 longitude = fix.longitude,
                 address = stop.address ?: fix.address,
-                name = stop.name ?: fix.address?.let(::shortPlaceName),
+                name = stop.name ?: fix.placeLabel,
             ),
         )
     }
@@ -412,6 +412,16 @@ class JourneyRepository @Inject constructor(
         dao.completeJourney(journeyId, now)
         event(journeyId, JourneyEventType.JOURNEY_COMPLETED, now)
         syncWidgets()
+        appScope.launch { compactRoute(journeyId) }
+    }
+
+    /** 끝난 여정의 자취에서 모양에 보탬이 안 되는 점을 지운다. 지도 모양은 그대로이고 행 수만 준다. */
+    private suspend fun compactRoute(journeyId: String) {
+        runCatching {
+            val points = dao.routePointsOnce(journeyId)
+            val keep = RouteSimplifier.keep(points)
+            points.map { it.id }.filterNot(keep::contains).chunked(DELETE_CHUNK).forEach { dao.deleteRoutePoints(it) }
+        }
     }
 
     suspend fun cancelJourney(journeyId: String) {
@@ -660,17 +670,14 @@ class JourneyRepository @Inject constructor(
         )
     }
 
-    /** "경기도 성남시 분당구 삼평동 123" → "삼평동 123" 정도의 짧은 표시명. */
-    private fun shortPlaceName(address: String): String {
-        val parts = address.split(" ").filter { it.isNotBlank() }
-        return if (parts.size <= 2) address else parts.takeLast(2).joinToString(" ")
-    }
-
     private fun syncWidgets() {
         runCatching { notifier.journeyChanged() }
     }
 
     private companion object {
         const val WIDGET_SYNC_INTERVAL_MS = 15_000L
+
+        /** SQLite 변수 개수 한도(999)보다 작게 나눠 지운다. */
+        const val DELETE_CHUNK = 500
     }
 }
