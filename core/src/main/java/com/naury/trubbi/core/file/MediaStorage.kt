@@ -122,6 +122,34 @@ class MediaStorage @Inject constructor(
     }
 
     /**
+     * 앨범 사진에 들어 있는 촬영 위치와 촬영 날짜를 읽는다.
+     *
+     * 안드로이드는 위치 정보를 기본으로 가리고 넘긴다. "사진 위치 정보" 권한(ACCESS_MEDIA_LOCATION)이 있으면
+     * 원본을 요청해 GPS 를 읽고, 없거나 원본을 줄 수 없는 uri 면 가려진 그대로 읽는다(그때는 날짜만 나온다).
+     * 사진 선택기(Photo Picker) uri 는 권한이 있어도 위치가 가려져 온다. 문서 선택기(SAF) uri 는 원본을 준다.
+     *
+     * @return 아무것도 못 읽으면 빈 [PhotoMeta]
+     */
+    suspend fun readPhotoMeta(source: Uri): PhotoMeta = withContext(Dispatchers.IO) {
+        // 문서 선택기(SAF)로 고른 uri 는 미디어 uri 로 바꿔야 원본을 요청할 수 있다.
+        val media = runCatching { android.provider.MediaStore.getMediaUri(context, source) }.getOrNull()
+        val candidates = listOfNotNull(media, source).mapNotNull { runCatching { android.provider.MediaStore.setRequireOriginal(it) }.getOrNull() } + source
+        val exif = candidates.firstNotNullOfOrNull { uri ->
+            // 원본 요청이 거절되는 uri(권한 없음·미디어 uri 접근 불가)는 다음 후보로 넘어간다.
+            runCatching { context.contentResolver.openInputStream(uri)?.use { ExifInterface(it) } }.getOrNull()
+        } ?: return@withContext PhotoMeta()
+        val latLng = FloatArray(2)
+        val gps = if (exif.getLatLong(latLng) && !(latLng[0] == 0f && latLng[1] == 0f)) {
+            latLng[0].toDouble() to latLng[1].toDouble()
+        } else {
+            null
+        }
+        val taken = (exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL) ?: exif.getAttribute(ExifInterface.TAG_DATETIME))
+            ?.let { runCatching { SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.US).parse(it)?.time }.getOrNull() }
+        PhotoMeta(latitude = gps?.first, longitude = gps?.second, takenAt = taken)
+    }
+
+    /**
      * 갤러리 등 외부에서 고른 이미지를 앱 저장소로 들여온다.
      *
      * 단순 복사가 아니라 EXIF 회전을 픽셀에 적용해 다시 인코딩한다. 회전 플래그를 읽지 않는
@@ -568,3 +596,16 @@ class MediaStorage @Inject constructor(
         const val TAG = "MediaStorage"
     }
 }
+
+/**
+ * 앨범 사진에서 읽은 촬영 정보.
+ *
+ * @property latitude 촬영 위도. 사진에 없거나 가려졌으면 null
+ * @property longitude 촬영 경도
+ * @property takenAt 촬영 시각(epoch ms, 기기 시간대 기준으로 해석)
+ */
+data class PhotoMeta(
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val takenAt: Long? = null,
+)

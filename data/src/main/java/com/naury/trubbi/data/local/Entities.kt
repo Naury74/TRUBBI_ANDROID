@@ -28,6 +28,8 @@ import androidx.room.Relation
  * @property latitude 촬영 위도. 위치 저장을 껐으면 null
  * @property longitude 촬영 경도
  * @property locationName 역지오코딩한 주소 문자열
+ * @property locationRegion 행정동 기준 동네 이름("중구 명동"). 도로명 주소에는 동이 없어 따로 둔다. 검색용
+ * @property locationPlace 건물·장소 이름("서울특별시청"). 검색용
  * @property tags 사용자 태그
  * @property barcodeValue 스캔한 바코드 값
  * @property barcodeFormat 바코드 형식 이름
@@ -62,6 +64,8 @@ data class RecordEntity(
     val journeyId: String? = null,
     val stopId: String? = null,
     val evidenceCategory: String? = null,
+    val locationRegion: String? = null,
+    val locationPlace: String? = null,
 )
 
 /**

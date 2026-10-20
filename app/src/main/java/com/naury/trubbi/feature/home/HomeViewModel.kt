@@ -138,6 +138,7 @@ class HomeViewModel @Inject constructor(
     // ── 초기화 ────────────────────────────────────────────────────────────────
 
     init {
+        library.refreshPlaceNames()
         // 날씨 조건을 앱 전역 신호로 흘려보낸다(배경 애니메이션이 구독한다).
         viewModelScope.launch { weather.collect { ambient.weather.value = it?.condition } }
         // 새 측위가 끝나기 전까지는 마지막으로 저장해 둔 날씨를 보여 준다.

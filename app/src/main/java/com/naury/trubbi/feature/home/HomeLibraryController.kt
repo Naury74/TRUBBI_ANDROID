@@ -6,6 +6,7 @@ import com.naury.trubbi.R
 import com.naury.trubbi.core.file.MediaStorage
 import com.naury.trubbi.core.i18n.label
 import com.naury.trubbi.core.i18n.purposeLabel
+import com.naury.trubbi.core.location.LocationProvider
 import com.naury.trubbi.core.ui.StringProvider
 import com.naury.trubbi.core.util.DateUtils
 import com.naury.trubbi.data.local.RecordWithMedia
@@ -16,7 +17,9 @@ import com.naury.trubbi.domain.model.Purpose
 import com.naury.trubbi.domain.model.RecordType
 import com.naury.trubbi.domain.record.HomeState
 import com.naury.trubbi.domain.record.HomeTimelineBuilder
+import com.naury.trubbi.domain.record.NearPlace
 import com.naury.trubbi.domain.record.RecordFilter
+import com.naury.trubbi.domain.record.SearchText
 import com.naury.trubbi.feature.share.ShareComposerItem
 import com.naury.trubbi.feature.share.ShareSelection
 import dagger.assisted.Assisted
@@ -28,6 +31,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -49,6 +56,8 @@ class HomeLibraryController @AssistedInject constructor(
     private val settingsRepo: SettingsRepository,
     private val timeline: HomeTimelineBuilder,
     private val strings: StringProvider,
+    private val location: LocationProvider,
+    private val history: SearchHistory,
 ) {
     /** 스코프를 인자로 받아야 하므로 Hilt 가 직접 만들지 못한다. 뷰모델이 이 팩토리로 만든다. */
     @AssistedFactory
@@ -91,6 +100,47 @@ class HomeLibraryController @AssistedInject constructor(
         update { it.copy(dateRange = if (from <= to) from to to else to to from) }
 
     fun clearDateRange() = update { it.copy(dateRange = null) }
+
+    /** "이 장소 주변 기록"만 보이게 한다. 장소를 고르면 검색어는 비운다(장소 이름이 기록에 없어도 걸리게). */
+    fun setNear(near: NearPlace?) = update { it.copy(near = near, query = if (near != null) "" else it.query) }
+
+    fun setNearRadius(radiusM: Int) = update { it.copy(near = it.near?.copy(radiusM = radiusM)) }
+
+    // ── 검색 도움말 ───────────────────────────────────────────────────────────
+
+    /** 동네·건물 이름이 비어 있는 옛 기록을 좌표로 채운다(장소 이름으로 찾을 수 있게). */
+    fun refreshPlaceNames() = repo.backfillPlaceNamesAsync()
+
+    /** 검색어를 최근 검색에 남긴다. 검색 버튼을 누르거나 결과를 열었을 때 부른다. */
+    fun rememberSearch(query: String) = history.add(query)
+
+    fun forgetSearch(query: String) = history.remove(query)
+
+    fun clearSearchHistory() = history.clear()
+
+    /** 검색어로 찾은 실제 장소들. 칠 때마다 묻지 않게 잠깐 멈춘 뒤에 찾는다. */
+    @OptIn(kotlinx.coroutines.FlowPreview::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    private val foundPlaces = filter
+        .map { it.query.trim() }
+        .distinctUntilChanged()
+        .debounce(PLACE_SEARCH_DEBOUNCE_MS)
+        .mapLatest { q ->
+            if (q.length < PLACE_SEARCH_MIN || SearchText.isChoseongQuery(q)) {
+                emptyList()
+            } else {
+                runCatching { location.searchPlaces(q, max = PLACE_SEARCH_MAX) }.getOrDefault(emptyList())
+            }
+        }
+
+    /** 검색창 아래 도움말 — 최근 검색어, 자주 간 동네, 태그, 내 기록이 있는 장소. */
+    val searchAssist = combine(repo.observeRecords(), filter, history.recent, foundPlaces) { records, current, recent, found ->
+        SearchAssist(
+            recent = recent,
+            frequentPlaces = SearchAssistRules.frequentPlaces(records),
+            tags = SearchAssistRules.tags(records, current.query),
+            places = if (current.query.isBlank()) emptyList() else SearchAssistRules.placeHits(records, found),
+        )
+    }.stateIn(scope, SharingStarted.WhileSubscribed(SUBSCRIBE_KEEP_MS), SearchAssist())
 
     fun clearFilters() {
         filter.value = RecordFilter()
@@ -227,20 +277,39 @@ class HomeLibraryController @AssistedInject constructor(
     // ── 가져오기 ──────────────────────────────────────────────────────────────
 
     /**
-     * 갤러리에서 고른 사진을 앱 기록으로 들여온다.
+     * 갤러리에서 고른 사진들을 앱 기록으로 들여온다. 한 장마다 기록 하나.
      *
-     * @param onSaved 저장된 기록 id. 호출부가 곧바로 상세 화면으로 넘어가는 데 쓴다
+     * 사진에 촬영 위치가 있으면 주소·동네·건물 이름까지 채워 장소로 찾을 수 있게 하고, 업무일은 오늘이 아니라
+     * 찍은 날로 둔다. 지난 사진은 진행 중인 여정에 붙이지 않는다.
+     *
+     * @param onSaved 저장된 기록 id 들(고른 순서). 호출부가 한 장이면 상세로, 여러 장이면 안내만 띄운다
      */
-    fun importPhoto(uri: Uri, onSaved: (String) -> Unit) {
+    fun importPhotos(uris: List<Uri>, onSaved: (List<String>) -> Unit) {
+        if (uris.isEmpty()) return
         scope.launch {
             val purpose = strings[Purpose.ETC.labelRes]
-            val saved = mediaStorage.copyFromUri(uri, purpose)
-            val id = repo.createPhotoRecord(
-                media = saved,
-                purposeLabel = purpose,
-                title = strings[R.string.imported_photo_title],
-            )
-            onSaved(id)
+            val today = DateUtils.todayIso()
+            val ids = uris.mapNotNull { uri ->
+                runCatching {
+                    val meta = mediaStorage.readPhotoMeta(uri)
+                    val saved = mediaStorage.copyFromUri(uri, purpose)
+                    val jobDate = meta.takenAt?.let {
+                        java.time.Instant.ofEpochMilli(it).atZone(java.time.ZoneId.systemDefault()).toLocalDate().toString()
+                    } ?: today
+                    val id = repo.createPhotoRecord(
+                        media = saved,
+                        purposeLabel = purpose,
+                        title = strings[R.string.imported_photo_title],
+                        jobDate = jobDate,
+                        linkToJourney = jobDate == today,
+                    )
+                    val lat = meta.latitude
+                    val lng = meta.longitude
+                    if (lat != null && lng != null) repo.attachLocationAtAsync(id, lat, lng)
+                    id
+                }.getOrNull()
+            }
+            if (ids.isNotEmpty()) onSaved(ids)
         }
     }
 
@@ -275,6 +344,9 @@ class HomeLibraryController @AssistedInject constructor(
 
     private companion object {
         const val SUBSCRIBE_KEEP_MS = 5_000L
+        const val PLACE_SEARCH_DEBOUNCE_MS = 400L
+        const val PLACE_SEARCH_MIN = 2
+        const val PLACE_SEARCH_MAX = 6
         const val MIME_IMAGE_ANY = "image/*"
         const val MIME_JPEG = "image/jpeg"
         const val MIME_ANY = "*/*"

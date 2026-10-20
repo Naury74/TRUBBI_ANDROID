@@ -106,9 +106,11 @@ internal fun SearchField(
     query: String,
     focusRequester: FocusRequester,
     onQuery: (String) -> Unit,
+    onSubmit: (String) -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val keyboard = androidx.compose.ui.platform.LocalSoftwareKeyboardController.current
     OutlinedTextField(
         value = query,
         onValueChange = onQuery,
@@ -122,10 +124,16 @@ internal fun SearchField(
             unfocusedBorderColor = Color.Transparent,
             disabledBorderColor = Color.Transparent,
         ),
-        placeholder = { Text(stringResource(R.string.home_search_hint)) },
+        placeholder = { Text(stringResource(R.string.home_search_hint), maxLines = 1) },
+        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Search),
+        keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = {
+            onSubmit(query)
+            keyboard?.hide()
+        }),
         leadingIcon = { androidx.compose.material3.Icon(AppIcons.Search, contentDescription = null) },
         trailingIcon = {
-            androidx.compose.material3.IconButton(onClick = onClose) {
+            // 글자가 있으면 먼저 지우고, 비어 있을 때 한 번 더 누르면 검색을 닫는다.
+            androidx.compose.material3.IconButton(onClick = { if (query.isNotEmpty()) onQuery("") else onClose() }) {
                 androidx.compose.material3.Icon(AppIcons.Close, contentDescription = stringResource(R.string.home_close_search))
             }
         },

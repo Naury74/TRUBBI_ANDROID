@@ -160,16 +160,21 @@ fun HomeScreen(
         }
     }
 
-    val picker = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia(),
-    ) { uri -> if (uri != null) viewModel.library.importPhoto(uri) { id -> onRecordClick(id) } }
+    // 앨범에서 여러 장을 한 번에 가져온다(촬영 위치·날짜까지).
+    val launchImport = rememberPhotoImport(viewModel.library, onOpenRecord = onRecordClick)
     val profilePicker = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia(),
     ) { uri -> if (uri != null) viewModel.changeProfilePhoto(uri) }
 
     val cellClick: (RecordWithMedia) -> Unit = { record ->
         val id = record.record.recordId
-        if (selectionMode) viewModel.selection.toggleRecord(id) else onRecordClick(id)
+        if (selectionMode) {
+            viewModel.selection.toggleRecord(id)
+        } else {
+            // 검색 결과를 열었다면 그 검색어는 쓸모가 있었던 것 — 최근 검색에 남긴다.
+            viewModel.library.filter.value.query.takeIf { it.isNotBlank() }?.let(viewModel.library::rememberSearch)
+            onRecordClick(id)
+        }
     }
 
     val shareChooserTitle = stringResource(R.string.action_share)
@@ -185,7 +190,7 @@ fun HomeScreen(
         if (section != HomeSection.TODAY) return@LaunchedEffect
         when (pendingAction) {
             HomeAction.PLAN_ROUTE -> if (activeJourney == null) showStartSheet = true else showAddStopSheet = true
-            HomeAction.IMPORT_PHOTO -> picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            HomeAction.IMPORT_PHOTO -> launchImport()
             null -> return@LaunchedEffect
         }
         viewModel.pendingAction.value = null
@@ -230,13 +235,16 @@ fun HomeScreen(
     androidx.activity.compose.BackHandler(enabled = searchMode) {
         searchMode = false
         viewModel.library.clearSearch()
+        viewModel.library.setNear(null)
     }
     val typeFilter = filter.type
     val purposeFilter = filter.purpose
     val dateRange = filter.dateRange
+    val near = filter.near
+    val searchAssist by viewModel.library.searchAssist.collectAsStateWithLifecycle()
     // 검색·선택 중이 아닐 때 뒤로가기는 화면을 벗어나기 전에 걸린 필터를 먼저 해제한다.
     androidx.activity.compose.BackHandler(
-        enabled = !selectionMode && !searchMode && (typeFilter != null || purposeFilter != null || dateRange != null),
+        enabled = !selectionMode && !searchMode && (typeFilter != null || purposeFilter != null || dateRange != null || near != null),
     ) {
         viewModel.library.clearFilters()
     }
@@ -256,7 +264,7 @@ fun HomeScreen(
         }
     }
     // 검색 중이거나 필터가 하나라도 걸리면 상단 섹션을 감추고 결과 목록만 표시한다.
-    val filtering = searchMode || typeFilter != null || purposeFilter != null || dateRange != null
+    val filtering = searchMode || typeFilter != null || purposeFilter != null || dateRange != null || near != null
     // 검색 진입 시 입력칸에 포커스를 주고 목록을 맨 위로 이동시킨다.
     LaunchedEffect(searchMode) {
         if (searchMode) {
@@ -342,9 +350,11 @@ fun HomeScreen(
                                 query = query,
                                 focusRequester = searchFocus,
                                 onQuery = viewModel.library::setSearch,
+                                onSubmit = viewModel.library::rememberSearch,
                                 onClose = {
                                     searchMode = false
                                     viewModel.library.clearSearch()
+                                    viewModel.library.setNear(null)
                                 },
                                 modifier = Modifier.fillMaxWidth(),
                             )
@@ -364,6 +374,9 @@ fun HomeScreen(
                     section = section,
                     filtering = filtering,
                     searchMode = searchMode,
+                    query = query,
+                    near = near,
+                    searchAssist = searchAssist,
                     signedIn = signedIn,
                     typeFilter = typeFilter,
                     purposeFilter = purposeFilter,
@@ -489,6 +502,7 @@ private fun RecordsHeader(topPadding: androidx.compose.ui.unit.Dp, onSearch: () 
 }
 
 /** 홈 탭 하늘(히어로) 높이. 헤더 아래 첫 카드까지 하늘이 비친다. */
+
 private val HERO_HEIGHT = 330.dp
 
 /** 기록 탭은 제목만 있어 하늘을 짧게 둔다. */

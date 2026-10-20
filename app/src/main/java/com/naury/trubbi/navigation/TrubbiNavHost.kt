@@ -275,6 +275,13 @@ fun TrubbiNavHost(
                                 onEditImage = { recordId, uri -> navController.navigate(Routes.editor(recordId, uri)) },
                                 onEditVideo = { recordId, uri -> navController.navigate(Routes.videoEditor(recordId, uri)) },
                                 onEditMemo = { recordId -> navController.navigate(Routes.memo(recordId)) },
+                                onOpenRecord = { id -> navController.navigate(Routes.detail(id)) },
+                                onShowNearby = { near ->
+                                    homeVm.library.setNear(near)
+                                    // 기록 탭에서 들어왔으면 그 탭까지 되돌아간다. navigateTab 은 탭의 저장된 스택(이 상세 포함)을
+                                    // 되살려 같은 상세로 돌아오므로, 스택에 기록 탭이 없을 때만 쓴다.
+                                    if (!navController.popBackStack(Routes.RECORDS, inclusive = false)) navController.navigateTab(Routes.RECORDS)
+                                },
                             )
                         }
                     }

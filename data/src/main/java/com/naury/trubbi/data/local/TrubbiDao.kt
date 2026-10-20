@@ -50,6 +50,8 @@ interface TrubbiDao {
             OR memo LIKE '%' || :q || '%'
             OR tags LIKE '%' || :q || '%'
             OR locationName LIKE '%' || :q || '%'
+            OR locationRegion LIKE '%' || :q || '%'
+            OR locationPlace LIKE '%' || :q || '%'
             OR barcodeValue LIKE '%' || :q || '%'
             OR purpose LIKE '%' || :q || '%'
             OR ocrText LIKE '%' || :q || '%'
@@ -72,8 +74,23 @@ interface TrubbiDao {
     @Query("UPDATE records SET isFavorite = :fav, updatedAt = :now WHERE recordId = :id")
     suspend fun setFavorite(id: String, fav: Boolean, now: Long)
 
-    @Query("UPDATE records SET latitude = :lat, longitude = :lng, locationName = :name, updatedAt = :now WHERE recordId = :id")
-    suspend fun updateLocation(id: String, lat: Double?, lng: Double?, name: String?, now: Long)
+    @Query(
+        "UPDATE records SET latitude = :lat, longitude = :lng, locationName = :name, locationRegion = :region, " +
+            "locationPlace = :place, updatedAt = :now WHERE recordId = :id",
+    )
+    suspend fun updateLocation(id: String, lat: Double?, lng: Double?, name: String?, region: String?, place: String?, now: Long)
+
+    /** 좌표는 있는데 동네 이름이 비어 있는 기록(이름 칸이 생기기 전에 저장된 것). 조금씩 채운다. */
+    @Query("SELECT * FROM records WHERE latitude IS NOT NULL AND longitude IS NOT NULL AND locationRegion IS NULL ORDER BY createdAt DESC LIMIT :limit")
+    suspend fun recordsMissingPlaceNames(limit: Int): List<RecordEntity>
+
+    /**
+     * 동네·건물 이름만 채운다. 사용자가 고친 것이 아니므로 수정 시각은 건드리지 않는다.
+     *
+     * 동네를 못 구했으면 빈 문자열을 넣어 다음 번에 다시 묻지 않게 한다.
+     */
+    @Query("UPDATE records SET locationRegion = :region, locationPlace = COALESCE(locationPlace, :place) WHERE recordId = :id")
+    suspend fun fillPlaceNames(id: String, region: String, place: String?)
 
     @Query("UPDATE records SET memo = :memo, updatedAt = :now WHERE recordId = :id")
     suspend fun updateMemo(id: String, memo: String?, now: Long)

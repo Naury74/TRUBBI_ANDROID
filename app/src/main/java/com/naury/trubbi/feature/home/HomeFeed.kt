@@ -77,6 +77,9 @@ internal fun HomeFeed(
     section: HomeSection,
     filtering: Boolean,
     searchMode: Boolean,
+    query: String,
+    near: com.naury.trubbi.domain.record.NearPlace?,
+    searchAssist: SearchAssist,
     signedIn: Boolean,
     typeFilter: String?,
     purposeFilter: String?,
@@ -219,6 +222,19 @@ internal fun HomeFeed(
                         onPurpose = viewModel.library::setPurposeFilter,
                     )
                 }
+                item(key = "searchAssist") {
+                    SearchAssistPanel(
+                        query = query,
+                        assist = searchAssist,
+                        near = near,
+                        resultCount = if (query.isNotBlank() || near != null) state.dateSections.sumOf { it.items.size } else null,
+                        onQuery = viewModel.library::setSearch,
+                        onNear = viewModel.library::setNear,
+                        onRadius = viewModel.library::setNearRadius,
+                        onForget = viewModel.library::forgetSearch,
+                        onClearHistory = viewModel.library::clearSearchHistory,
+                    )
+                }
             } else if (records) {
                 item {
                     LazyRow(
@@ -237,6 +253,17 @@ internal fun HomeFeed(
                 }
             }
 
+            // 상세 화면의 "이 근처 기록 보기"로 들어오면 검색창 없이 장소 조건만 걸린다.
+            if (records && !searchMode && near != null) {
+                item(key = "nearBar") {
+                    NearPlaceBar(
+                        near,
+                        onRadius = viewModel.library::setNearRadius,
+                        onClear = { viewModel.library.setNear(null) },
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
+            }
             if (records && !searchMode && (typeFilter != null || purposeFilter != null)) {
                 item {
                     Row(

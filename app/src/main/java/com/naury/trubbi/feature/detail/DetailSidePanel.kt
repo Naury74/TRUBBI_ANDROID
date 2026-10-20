@@ -278,7 +278,13 @@ internal fun ImmersiveCircle(
 }
 
 @Composable
-internal fun InfoSheet(item: RecordWithMedia, viewModel: DetailViewModel, onSaved: () -> Unit) {
+internal fun InfoSheet(
+    item: RecordWithMedia,
+    viewModel: DetailViewModel,
+    onSaved: () -> Unit,
+    onOpenRecord: (String) -> Unit = {},
+    onShowNearby: (com.naury.trubbi.domain.record.NearPlace) -> Unit = {},
+) {
     val r = item.record
     val c = LocalTrubbiColors.current
     var memo by remember(r.recordId) { mutableStateOf(r.memo.orEmpty()) }
@@ -289,6 +295,7 @@ internal fun InfoSheet(item: RecordWithMedia, viewModel: DetailViewModel, onSave
             .fillMaxWidth()
             .glass(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp), elevation = 0.dp)
             .navigationBarsPadding()
+            .verticalScroll(androidx.compose.foundation.rememberScrollState())
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -353,7 +360,8 @@ internal fun InfoSheet(item: RecordWithMedia, viewModel: DetailViewModel, onSave
             com.naury.trubbi.ui.common.LocationMapCard(
                 latitude = lat,
                 longitude = lng,
-                address = r.locationName,
+                // 건물 이름이 있으면 주소 앞에 붙인다("서울특별시청 · 서울 중구 세종대로 110").
+                address = listOfNotNull(r.locationPlace?.ifBlank { null }, r.locationName).distinct().joinToString(" · ").ifBlank { null },
                 onEdit = { pickingLocation = true },
             )
         } else {
@@ -378,12 +386,16 @@ internal fun InfoSheet(item: RecordWithMedia, viewModel: DetailViewModel, onSave
                 search = viewModel::searchPlaces,
                 describe = viewModel::describePlace,
                 onPick = { place ->
-                    viewModel.setLocation(r.recordId, place.latitude, place.longitude, place.building ?: place.address)
+                    viewModel.setLocation(r.recordId, place)
                     pickingLocation = false
                 },
                 onDismiss = { pickingLocation = false },
             )
         }
+
+        val all by viewModel.allRecords.collectAsState()
+        val related = remember(item, all) { com.naury.trubbi.domain.record.RelatedRecords.of(item, all) }
+        RelatedSection(item, related, onOpenRecord = onOpenRecord, onShowNearby = onShowNearby)
 
         Text(stringResource(RecordType.MEMO.labelRes), style = MaterialTheme.typography.labelMedium, color = c.secondaryLabel)
         OutlinedTextField(

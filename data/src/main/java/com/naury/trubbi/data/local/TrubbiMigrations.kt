@@ -20,7 +20,7 @@ object TrubbiMigrations {
      *
      * 버전을 여기서만 올리면 마이그레이션·스키마 검증이 같은 값을 보게 된다.
      */
-    const val CURRENT_VERSION = 7
+    const val CURRENT_VERSION = 8
 
     /**
      * 스키마를 `app/schemas` 에 내보내기 시작한 버전.
@@ -54,11 +54,24 @@ object TrubbiMigrations {
     }
 
     /**
+     * 기록에 동네 이름과 건물 이름을 따로 저장한다.
+     *
+     * 그전에는 도로명 주소 한 줄만 남겨, 헤더에 보이는 "명동"이나 건물 이름("서울특별시청")으로
+     * 검색하면 찾지 못했다. 이미 저장된 행은 비워 두고, 앱이 좌표로 천천히 채운다.
+     */
+    private val MIGRATION_7_8 = object : Migration(7, 8) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE records ADD COLUMN locationRegion TEXT")
+            db.execSQL("ALTER TABLE records ADD COLUMN locationPlace TEXT")
+        }
+    }
+
+    /**
      * [androidx.room.RoomDatabase.Builder.addMigrations] 에 넘길 전체 목록.
      *
      * [FIRST_EXPORTED_VERSION] 부터 현재 버전까지 끊김 없이 이어져야 한다.
      * 그 연결은 `TrubbiMigrationsTest` 가 검증한다 — 버전만 올리고 마이그레이션을 빠뜨리면
      * 기기에서 크래시로 발견하기 전에 테스트가 먼저 막는다.
      */
-    val ALL: Array<Migration> = arrayOf(MIGRATION_6_7)
+    val ALL: Array<Migration> = arrayOf(MIGRATION_6_7, MIGRATION_7_8)
 }

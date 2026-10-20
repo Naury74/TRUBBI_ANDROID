@@ -96,6 +96,8 @@ import kotlinx.coroutines.launch
  * @param onEditVideo 영상 편집으로 갈 때 (기록 id, 미디어 uri)
  * @param onEditMemo 메모 편집으로 갈 때 (기록 id)
  * @param onShareBarcode 바코드 공유를 누를 때
+ * @param onOpenRecord 정보 시트의 관련 자료를 누를 때 (기록 id)
+ * @param onShowNearby "이 근처 기록 모두 보기"를 누를 때
  * @param viewModel 상세 화면 상태
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -109,6 +111,8 @@ fun ImmersiveDetailScreen(
     onEditMemo: (recordId: String) -> Unit,
     onShareBarcode: (item: RecordWithMedia) -> Unit,
     viewModel: DetailViewModel,
+    onOpenRecord: (recordId: String) -> Unit = {},
+    onShowNearby: (com.naury.trubbi.domain.record.NearPlace) -> Unit = {},
 ) {
     val context = LocalContext.current
     // 폴더블 펼침·태블릿에서는 2단으로 나눈다. 왼쪽에 사진과 필름스트립, 오른쪽에 정보와 버튼.
@@ -627,6 +631,8 @@ fun ImmersiveDetailScreen(
         toast = toast,
         onBack = onBack,
         onShareBarcode = onShareBarcode,
+        onOpenRecord = onOpenRecord,
+        onShowNearby = onShowNearby,
     )
 }
 
@@ -653,6 +659,8 @@ private fun DetailDialogs(
     toast: com.naury.trubbi.ui.designsystem.TrubbiToastState,
     onBack: () -> Unit,
     onShareBarcode: (RecordWithMedia) -> Unit,
+    onOpenRecord: (String) -> Unit,
+    onShowNearby: (com.naury.trubbi.domain.record.NearPlace) -> Unit,
 ) {
     val context = LocalContext.current
     val curRW = current
@@ -760,10 +768,22 @@ private fun DetailDialogs(
             sheetState = sheetState,
             containerColor = Color.Transparent,
         ) {
-            InfoSheet(curRW, viewModel, onSaved = {
-                sheets.showInfo = false
-                toast.show(msgSaved)
-            })
+            InfoSheet(
+                curRW,
+                viewModel,
+                onSaved = {
+                    sheets.showInfo = false
+                    toast.show(msgSaved)
+                },
+                onOpenRecord = { id ->
+                    sheets.showInfo = false
+                    onOpenRecord(id)
+                },
+                onShowNearby = { near ->
+                    sheets.showInfo = false
+                    onShowNearby(near)
+                },
+            )
         }
     }
 

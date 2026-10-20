@@ -212,6 +212,31 @@ class BackupManager @Inject constructor(
         }.getOrElse { BackupResult.Failed(it) }
     }
 
+    /** 기록 한 행을 백업 JSON 으로. 비어 있는 칸은 JSON null 로 남긴다. */
+    private fun recordJson(r: RecordEntity): JSONObject = JSONObject().apply {
+        fun putOrNull(key: String, value: Any?) = put(key, value ?: JSONObject.NULL)
+        put("recordId", r.recordId)
+        put("type", r.type)
+        put("title", r.title)
+        put("purpose", r.purpose)
+        putOrNull("memo", r.memo)
+        put("jobDate", r.jobDate)
+        put("createdAt", r.createdAt)
+        put("updatedAt", r.updatedAt)
+        putOrNull("latitude", r.latitude)
+        putOrNull("longitude", r.longitude)
+        putOrNull("locationName", r.locationName)
+        putOrNull("locationRegion", r.locationRegion)
+        putOrNull("locationPlace", r.locationPlace)
+        put("tags", JSONArray(r.tags))
+        putOrNull("barcodeValue", r.barcodeValue)
+        putOrNull("barcodeFormat", r.barcodeFormat)
+        put("isFavorite", r.isFavorite)
+        put("isDeleted", r.isDeleted)
+        putOrNull("ocrText", r.ocrText)
+        putOrNull("aiLabels", r.aiLabels)
+    }
+
     /** 세 테이블을 `version` 이 붙은 JSON 한 덩어리로 만든다. */
     private fun buildJson(
         records: List<RecordEntity>,
@@ -220,35 +245,7 @@ class BackupManager @Inject constructor(
     ): JSONObject {
         val root = JSONObject()
         root.put("version", 1)
-        root.put(
-            "records",
-            JSONArray().apply {
-                records.forEach { r ->
-                    put(
-                        JSONObject().apply {
-                            put("recordId", r.recordId)
-                            put("type", r.type)
-                            put("title", r.title)
-                            put("purpose", r.purpose)
-                            put("memo", r.memo ?: JSONObject.NULL)
-                            put("jobDate", r.jobDate)
-                            put("createdAt", r.createdAt)
-                            put("updatedAt", r.updatedAt)
-                            put("latitude", r.latitude ?: JSONObject.NULL)
-                            put("longitude", r.longitude ?: JSONObject.NULL)
-                            put("locationName", r.locationName ?: JSONObject.NULL)
-                            put("tags", JSONArray(r.tags))
-                            put("barcodeValue", r.barcodeValue ?: JSONObject.NULL)
-                            put("barcodeFormat", r.barcodeFormat ?: JSONObject.NULL)
-                            put("isFavorite", r.isFavorite)
-                            put("isDeleted", r.isDeleted)
-                            put("ocrText", r.ocrText ?: JSONObject.NULL)
-                            put("aiLabels", r.aiLabels ?: JSONObject.NULL)
-                        },
-                    )
-                }
-            },
-        )
+        root.put("records", JSONArray().apply { records.forEach { put(recordJson(it)) } })
         root.put(
             "media",
             JSONArray().apply {
@@ -312,6 +309,8 @@ class BackupManager @Inject constructor(
                     latitude = if (o.isNull("latitude")) null else o.getDouble("latitude"),
                     longitude = if (o.isNull("longitude")) null else o.getDouble("longitude"),
                     locationName = o.optStringOrNull("locationName"),
+                    locationRegion = o.optStringOrNull("locationRegion"),
+                    locationPlace = o.optStringOrNull("locationPlace"),
                     tags = o.optJSONArray("tags").toStringList(),
                     barcodeValue = o.optStringOrNull("barcodeValue"),
                     barcodeFormat = o.optStringOrNull("barcodeFormat"),

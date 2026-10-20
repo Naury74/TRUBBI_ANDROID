@@ -1,10 +1,12 @@
 package com.naury.trubbi.domain.record
 
+import com.naury.trubbi.core.i18n.label
 import com.naury.trubbi.core.i18n.purposeLabel
 import com.naury.trubbi.core.ui.StringProvider
 import com.naury.trubbi.data.local.RecordWithMedia
 import com.naury.trubbi.domain.memo.MemoContent
 import com.naury.trubbi.domain.model.RecordType
+import com.naury.trubbi.domain.tracking.distanceM
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -41,9 +43,37 @@ data class RecordFilter(
     val purpose: String? = null,
     /** 업무일 범위 (시작, 끝). 양끝을 포함한다. */
     val dateRange: Pair<String, String>? = null,
+    /** 이 장소 주변에서 남긴 기록만. */
+    val near: NearPlace? = null,
 ) {
     val isEmpty: Boolean
-        get() = query.isBlank() && type == null && purpose == null && dateRange == null
+        get() = query.isBlank() && type == null && purpose == null && dateRange == null && near == null
+}
+
+/**
+ * "이 장소 주변" 조건.
+ *
+ * @property label 칩에 보일 이름("서울특별시청")
+ * @property latitude 중심 위도
+ * @property longitude 중심 경도
+ * @property radiusM 반경(m)
+ */
+data class NearPlace(
+    val label: String,
+    val latitude: Double,
+    val longitude: Double,
+    val radiusM: Int = DEFAULT_RADIUS_M,
+) {
+    /** 좌표가 반경 안에 있는지. 좌표가 없는 기록은 걸리지 않는다. */
+    fun contains(lat: Double?, lng: Double?): Boolean =
+        lat != null && lng != null && distanceM(latitude, longitude, lat, lng) <= radiusM
+
+    companion object {
+        const val DEFAULT_RADIUS_M = 1000
+
+        /** 칩에서 고를 수 있는 반경. */
+        val RADII = listOf(300, 1000, 3000)
+    }
 }
 
 /**
@@ -96,26 +126,35 @@ class HomeTimelineBuilder @Inject constructor(
         filter.dateRange?.let { (from, to) ->
             if (rec.record.jobDate < from || rec.record.jobDate > to) return false
         }
+        if (filter.near != null && !filter.near.contains(rec.record.latitude, rec.record.longitude)) return false
         return filter.query.isBlank() || matchesQuery(rec, filter.query)
     }
 
     /**
-     * 공백으로 나눈 검색어가 모두 들어 있어야 통과하는 AND 검색.
+     * 검색어 대조. 규칙(띄어쓰기 무시·초성·낱말별 AND)은 [SearchText] 에 있다.
      *
-     * 제목·용도·메모 본문·바코드 값·장소명·태그를 한 문자열로 이어 붙여 훑는다.
-     * 메모는 서식 정보를 뺀 평문만 본다.
+     * 제목·용도·종류·메모 본문·바코드 값·주소·동네·건물 이름·태그·사진 속 글자(OCR)·사진 내용(라벨)·
+     * 파일 이름을 한 문자열로 이어 붙여 훑는다. 메모는 서식 정보를 뺀 평문만 본다.
      */
-    fun matchesQuery(rec: RecordWithMedia, query: String): Boolean {
+    fun matchesQuery(rec: RecordWithMedia, query: String): Boolean = SearchText.matches(haystack(rec), query)
+
+    /** 기록 하나의 검색 대상 글자 전부. */
+    fun haystack(rec: RecordWithMedia): String {
         val r = rec.record
-        val hay = buildString {
+        return buildString {
             append(r.title).append(' ')
             append(purposeLabel(strings, r.purpose)).append(' ')
+            append(RecordType.fromName(r.type).label(strings)).append(' ')
             r.memo?.let { append(MemoContent.plainText(MemoContent.decode(it))).append(' ') }
             r.barcodeValue?.let { append(it).append(' ') }
             r.locationName?.let { append(it).append(' ') }
-            append(r.tags.joinToString(" "))
-        }.lowercase()
-        return query.lowercase().split(" ").filter { it.isNotBlank() }.all { hay.contains(it) }
+            r.locationRegion?.let { append(it).append(' ') }
+            r.locationPlace?.let { append(it).append(' ') }
+            append(r.tags.joinToString(" ")).append(' ')
+            r.ocrText?.let { append(it).append(' ') }
+            r.aiLabels?.let { append(it).append(' ') }
+            rec.media.forEach { m -> m.name?.let { append(it).append(' ') } }
+        }
     }
 
     /**

@@ -29,6 +29,8 @@ fun DetailScreen(
     onEditImage: (recordId: String, mediaUri: String) -> Unit,
     onEditVideo: (recordId: String, mediaUri: String) -> Unit,
     onEditMemo: (recordId: String) -> Unit,
+    onOpenRecord: (recordId: String) -> Unit = {},
+    onShowNearby: (com.naury.trubbi.domain.record.NearPlace) -> Unit = {},
     viewModel: DetailViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -72,6 +74,8 @@ fun DetailScreen(
         onEditImage = { recordId, uri -> onEditImage(recordId, uri) },
         onEditVideo = { recordId, uri -> onEditVideo(recordId, uri) },
         onEditMemo = { recordId -> onEditMemo(recordId) },
+        onOpenRecord = onOpenRecord,
+        onShowNearby = onShowNearby,
         onShareBarcode = { rw ->
             val intent = viewModel.shareBarcodeIntent(rw) ?: viewModel.shareIntent(rw)
             context.startActivity(Intent.createChooser(intent, shareTitle))

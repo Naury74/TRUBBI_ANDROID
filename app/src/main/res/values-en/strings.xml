@@ -861,4 +861,42 @@ You can keep the original scan images too.</string>
     <string name="location_pick_hint">Move the map to place the pin, or search for a place</string>
     <string name="location_pick_confirm">Use this location</string>
     <string name="location_pick_search">Search places or addresses</string>
+    <string name="search_recent">Recent searches</string>
+    <string name="search_clear_history">Clear all</string>
+    <string name="search_forget">Remove %1$s from history</string>
+    <string name="search_frequent_places">Frequent places</string>
+    <string name="search_place_chip">%1$s · %2$d</string>
+    <string name="search_tips">Searches titles, memos, addresses, neighborhoods, building names and text in photos. Spaces don\'t matter, and Korean initial consonants (ㅅㅇㅅㅊ) work too.</string>
+    <string name="search_places_title">Records near this place</string>
+    <string name="search_tags">Tags</string>
+    <string name="search_near_label">Near %1$s</string>
+    <string name="search_near_clear">Clear place filter</string>
+    <string name="search_radius_m">%1$dm</string>
+    <string name="search_radius_km">%1$dkm</string>
+    <string name="related_same_journey">Same journey</string>
+    <string name="related_same_place">Same place</string>
+    <string name="related_linked">Same barcode or tag</string>
+    <string name="related_title_count">%1$s · %2$d</string>
+    <string name="related_here">This location</string>
+    <plurals name="import_photos_done">
+        <item quantity="one">Imported %1$d photo</item>
+        <item quantity="other">Imported %1$d photos</item>
+    </plurals>
+    <plurals name="search_result_count">
+        <item quantity="one">%1$d found</item>
+        <item quantity="other">%1$d found</item>
+    </plurals>
+    <plurals name="related_show_nearby">
+        <item quantity="one">See %1$d record nearby</item>
+        <item quantity="other">See all %1$d records nearby</item>
+    </plurals>
+    <plurals name="search_place_records">
+        <item quantity="one">%1$d of your records</item>
+        <item quantity="other">%1$d of your records</item>
+    </plurals>
+    <string name="import_location_title">Also import where photos were taken?</string>
+    <string name="import_location_body">Reading the location stored in a photo lets us attach the address, neighborhood and building name so you can find it by place later.
+If you allow it in the next window, we only read the location of the photos you pick, never your whole album.</string>
+    <string name="import_location_allow">Include location</string>
+    <string name="import_location_skip">Photos only</string>
 </resources>

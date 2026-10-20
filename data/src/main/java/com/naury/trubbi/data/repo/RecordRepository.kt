@@ -2,6 +2,7 @@ package com.naury.trubbi.data.repo
 
 import com.naury.trubbi.core.file.MediaStorage
 import com.naury.trubbi.core.file.SavedMedia
+import com.naury.trubbi.core.location.CapturedLocation
 import com.naury.trubbi.core.location.LocationProvider
 import com.naury.trubbi.core.log.logFailure
 import com.naury.trubbi.core.ml.MediaAnalyzer
@@ -20,8 +21,10 @@ import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 
 /**
  * 기록 저장·조회의 단일 창구.
@@ -66,13 +69,70 @@ class RecordRepository @Inject constructor(
             val loc = runCatching { locationProvider.capture() }
                 .logFailure(TAG, "저장 후 위치 보강 실패")
                 .getOrNull() ?: return@launch
-            dao.updateLocation(recordId, loc.latitude, loc.longitude, loc.address, DateUtils.now())
+            saveLocation(recordId, loc)
         }
     }
 
-    /** 기록 위치를 사용자가 고친 값으로 바꾼다. */
-    suspend fun setLocation(recordId: String, latitude: Double, longitude: Double, address: String?) =
-        dao.updateLocation(recordId, latitude, longitude, address, DateUtils.now())
+    /**
+     * 이미 아는 좌표(앨범 사진의 GPS 등)로 주소·동네·건물 이름을 찾아 기록에 채운다.
+     *
+     * 주소를 못 구해도 좌표는 남긴다. 그래야 "이 근처 기록" 검색에 걸린다.
+     */
+    fun attachLocationAtAsync(recordId: String, latitude: Double, longitude: Double) {
+        appScope.launch {
+            val loc = runCatching { locationProvider.describe(latitude, longitude) }
+                .logFailure(TAG, "사진 위치 주소 찾기 실패")
+                .getOrNull() ?: CapturedLocation(latitude, longitude, null)
+            saveLocation(recordId, loc)
+        }
+    }
+
+    /** 기록 위치를 사용자가 고친 값으로 바꾼다. 주소·동네·건물 이름을 모두 남겨 어느 이름으로도 찾을 수 있게 한다. */
+    suspend fun setLocation(recordId: String, location: CapturedLocation) = saveLocation(recordId, location)
+
+    private suspend fun saveLocation(recordId: String, loc: CapturedLocation) {
+        dao.updateLocation(
+            recordId,
+            loc.latitude,
+            loc.longitude,
+            loc.address ?: loc.building,
+            loc.regionLabel,
+            loc.building,
+            DateUtils.now(),
+        )
+    }
+
+    private val backfill = Mutex()
+
+    /**
+     * 동네·건물 이름 칸이 생기기 전에 저장된 기록을 좌표로 채운다.
+     *
+     * 앱을 열 때 한 번씩 부른다. 한 번에 [BACKFILL_MAX] 건까지만, 사이사이 쉬면서 묻는다.
+     * 주소 조회가 통째로 실패하면(오프라인·키 없음) 그 회차는 바로 멈추고 다음에 다시 한다.
+     */
+    fun backfillPlaceNamesAsync() {
+        appScope.launch {
+            if (!backfill.tryLock()) return@launch
+            try {
+                var done = 0
+                while (done < BACKFILL_MAX) {
+                    val batch = dao.recordsMissingPlaceNames(BACKFILL_BATCH)
+                    if (batch.isEmpty()) break
+                    for (r in batch) {
+                        val lat = r.latitude ?: continue
+                        val lng = r.longitude ?: continue
+                        val loc = runCatching { locationProvider.describe(lat, lng) }.getOrNull()
+                        if (loc == null || (loc.address == null && loc.region == null)) return@launch
+                        dao.fillPlaceNames(r.recordId, loc.regionLabel.orEmpty(), loc.building)
+                        done++
+                        delay(BACKFILL_GAP_MS)
+                    }
+                }
+            } finally {
+                backfill.unlock()
+            }
+        }
+    }
 
     fun observeRecords(): Flow<List<RecordWithMedia>> = dao.observeRecords()
     fun observeBarcodes(): Flow<List<RecordWithMedia>> = dao.observeBarcodes()
@@ -83,6 +143,7 @@ class RecordRepository @Inject constructor(
     fun observeDateCounts(start: String, end: String): Flow<List<DateCount>> =
         dao.observeDateCounts(start, end)
 
+    /** 사진 한 장짜리 기록. [linkToJourney] 가 false 면 진행 중 여정에 붙이지 않는다(앨범에서 가져온 지난 사진). */
     suspend fun createPhotoRecord(
         media: SavedMedia,
         purposeLabel: String,
@@ -93,6 +154,7 @@ class RecordRepository @Inject constructor(
         locationName: String? = null,
         latitude: Double? = null,
         longitude: Double? = null,
+        linkToJourney: Boolean = true,
     ): String {
         val now = DateUtils.now()
         val recordId = UUID.randomUUID().toString()
@@ -116,7 +178,7 @@ class RecordRepository @Inject constructor(
         )
         dao.insertMedia(media.toEntity(recordId, now))
         triggerAnalysis(recordId, media.uri, tags)
-        journeyRepo.onRecordSaved(recordId, title)
+        if (linkToJourney) journeyRepo.onRecordSaved(recordId, title)
         return recordId
     }
 
@@ -420,5 +482,8 @@ class RecordRepository @Inject constructor(
 
     private companion object {
         const val TAG = "RecordRepository"
+        const val BACKFILL_MAX = 120
+        const val BACKFILL_BATCH = 20
+        const val BACKFILL_GAP_MS = 150L
     }
 }

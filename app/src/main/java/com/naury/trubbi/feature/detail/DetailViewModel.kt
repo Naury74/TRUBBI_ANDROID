@@ -201,6 +201,10 @@ class DetailViewModel @Inject constructor(
         source.flatMap { it.toDetailPages() }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    /** 삭제되지 않은 전체 기록 — 정보 시트의 "관련 자료"를 고르는 데 쓴다. */
+    val allRecords = repo.observeRecords()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     fun toggleFavorite(item: RecordWithMedia) = viewModelScope.launch {
         repo.toggleFavorite(item.record.recordId, !item.record.isFavorite)
     }
@@ -211,8 +215,8 @@ class DetailViewModel @Inject constructor(
     /** 고른 좌표의 주소. */
     suspend fun describePlace(lat: Double, lng: Double) = location.describe(lat, lng)
 
-    /** 기록 위치를 고친다. */
-    fun setLocation(id: String, lat: Double, lng: Double, address: String?) = viewModelScope.launch { repo.setLocation(id, lat, lng, address) }
+    /** 기록 위치를 고친다. 주소·동네·건물 이름을 모두 남긴다. */
+    fun setLocation(id: String, place: com.naury.trubbi.core.location.CapturedLocation) = viewModelScope.launch { repo.setLocation(id, place) }
 
     fun saveMemo(id: String, memo: String) = viewModelScope.launch { repo.updateMemo(id, memo.ifBlank { null }) }
     fun saveTags(id: String, tags: List<String>) = viewModelScope.launch { repo.updateTags(id, tags) }

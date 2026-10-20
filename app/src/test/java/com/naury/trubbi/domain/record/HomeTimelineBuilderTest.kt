@@ -223,4 +223,36 @@ class HomeTimelineBuilderTest {
         assertThat(RecordFilter().isEmpty).isTrue()
         assertThat(RecordFilter(query = "x").isEmpty).isFalse()
     }
+
+    // ── 장소·사진 글자 검색 ─────────────────────────────────────────────────────
+
+    private fun RecordWithMedia.with(transform: (RecordEntity) -> RecordEntity) = copy(record = transform(record))
+
+    @Test
+    fun `동네 이름과 건물 이름으로도 찾는다`() {
+        val a = record("a", location = "서울 중구 세종대로 110").with { it.copy(locationRegion = "중구 명동", locationPlace = "서울특별시청") }
+        val b = record("b", location = "부산 강서구 신항로 1")
+        val byRegion = builder.build(listOf(a, b), RecordFilter(query = "명동"), today)
+        val byPlace = builder.build(listOf(a, b), RecordFilter(query = "시청"), today)
+        assertThat(byRegion.timelineIds()).containsExactly("a")
+        assertThat(byPlace.timelineIds()).containsExactly("a")
+    }
+
+    @Test
+    fun `사진 속 글자와 사진 내용 라벨로도 찾는다`() {
+        val a = record("a").with { it.copy(ocrText = "인수증 수령인 홍길동") }
+        val b = record("b").with { it.copy(aiLabels = "팔레트 pallet") }
+        assertThat(builder.build(listOf(a, b), RecordFilter(query = "수령인"), today).timelineIds()).containsExactly("a")
+        assertThat(builder.build(listOf(a, b), RecordFilter(query = "팔레트"), today).timelineIds()).containsExactly("b")
+    }
+
+    @Test
+    fun `장소 주변 조건은 좌표로 거른다`() {
+        val here = record("here").with { it.copy(latitude = 37.5665, longitude = 126.9780) }
+        val far = record("far").with { it.copy(latitude = 35.1, longitude = 129.0) }
+        val noCoord = record("none", location = "서울 중구")
+        val state = builder.build(listOf(here, far, noCoord), RecordFilter(near = NearPlace("시청", 37.5668, 126.9781)), today)
+        assertThat(state.timelineIds()).containsExactly("here")
+        assertThat(RecordFilter(near = NearPlace("x", 0.0, 0.0)).isEmpty).isFalse()
+    }
 }
