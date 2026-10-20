@@ -30,7 +30,6 @@ import com.naury.trubbi.data.local.JourneyStopEntity
 import com.naury.trubbi.data.local.JourneyWithStops
 import com.naury.trubbi.data.repo.JourneyRepository
 import com.naury.trubbi.data.settings.SettingsRepository
-import com.naury.trubbi.domain.model.JourneyEventType
 import com.naury.trubbi.domain.model.StopPhase
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -340,8 +339,8 @@ class JourneyTrackingService : Service() {
             val kind = stop.kindEnum.label(this)
             val actionLabel = when (stop.phase) {
                 StopPhase.MOVING -> getString(R.string.notif_action_arrive)
-                StopPhase.WAITING -> getString(JourneyEventType.WORK_STARTED.titleRes, kind)
-                StopPhase.WORKING -> getString(JourneyEventType.STOP_COMPLETED.titleRes, kind)
+                StopPhase.WAITING -> getString(R.string.action_start_kind, kind)
+                StopPhase.WORKING -> getString(R.string.action_finish_kind, kind)
                 StopPhase.DONE -> null
             }
             actionLabel?.let { builder.addAction(0, it, advancePendingIntent()) }

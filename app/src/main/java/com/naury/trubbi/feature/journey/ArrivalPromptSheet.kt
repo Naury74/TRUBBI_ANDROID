@@ -9,7 +9,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,7 +39,6 @@ import androidx.core.content.ContextCompat
 import com.naury.trubbi.R
 import com.naury.trubbi.core.voice.SpeechInputState
 import com.naury.trubbi.core.voice.rememberSpeechInput
-import com.naury.trubbi.domain.model.JourneyEventType
 import com.naury.trubbi.ui.designsystem.AppIcons
 import com.naury.trubbi.ui.designsystem.PillButton
 import com.naury.trubbi.ui.designsystem.TrubbiSheet
@@ -176,20 +174,21 @@ fun ArrivalPromptSheet(
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(20.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+            // 세로로 쌓는다. 반반 너비에서는 영어 문구가 잘렸고, 운전석에서는 큰 주 버튼 하나가 누르기 쉽다.
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                PillButton(
+                    stringResource(R.string.action_start_kind, kindLabel),
+                    { finishStart() },
+                    Modifier.fillMaxWidth(),
+                    icon = AppIcons.PlayArrow,
+                )
                 PillButton(
                     stringResource(R.string.action_wait),
                     { finishWait() },
-                    Modifier.weight(1f),
+                    Modifier.fillMaxWidth(),
                     icon = AppIcons.Pause,
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     contentColor = MaterialTheme.colorScheme.onSurface,
-                )
-                PillButton(
-                    stringResource(JourneyEventType.WORK_STARTED.titleRes, kindLabel),
-                    { finishStart() },
-                    Modifier.weight(1f),
-                    icon = AppIcons.PlayArrow,
                 )
             }
             Spacer(Modifier.height(10.dp))

@@ -39,7 +39,6 @@ import com.naury.trubbi.data.i18n.routeLabel
 import com.naury.trubbi.data.local.JourneyWithStops
 import com.naury.trubbi.data.repo.JourneyRepository
 import com.naury.trubbi.data.settings.SettingsRepository
-import com.naury.trubbi.domain.model.JourneyEventType
 import com.naury.trubbi.domain.model.StopPhase
 import com.naury.trubbi.domain.tracking.JourneyTrackingService
 import dagger.hilt.android.AndroidEntryPoint
@@ -521,8 +520,8 @@ class FloatingLauncherService : Service() {
             current == null -> getString(R.string.action_complete_journey)
             else -> when (current.phase) {
                 StopPhase.MOVING -> getString(R.string.floating_arrive_at, current.displayName(this))
-                StopPhase.WAITING -> getString(JourneyEventType.WORK_STARTED.titleRes, current.kindEnum.label(this))
-                StopPhase.WORKING -> getString(JourneyEventType.STOP_COMPLETED.titleRes, current.kindEnum.label(this))
+                StopPhase.WAITING -> getString(R.string.action_start_kind, current.kindEnum.label(this))
+                StopPhase.WORKING -> getString(R.string.action_finish_kind, current.kindEnum.label(this))
                 StopPhase.DONE -> getString(R.string.floating_next_step)
             }
         }

@@ -853,4 +853,6 @@ You can keep the original scan images too.</string>
     <string name="ad_label">Ad</string>
     <string name="settings_ad_privacy">Ad privacy settings</string>
     <string name="settings_ad_privacy_sub">Change your personalized ads consent</string>
+    <string name="action_start_kind">Start %1$s</string>
+    <string name="action_finish_kind">Finish %1$s</string>
 </resources>

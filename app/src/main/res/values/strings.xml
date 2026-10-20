@@ -845,4 +845,6 @@
     <string name="ad_label">광고</string>
     <string name="settings_ad_privacy">광고 개인정보 설정</string>
     <string name="settings_ad_privacy_sub">맞춤 광고 동의를 다시 고를 수 있어요</string>
+    <string name="action_start_kind">%1$s 시작</string>
+    <string name="action_finish_kind">%1$s 완료</string>
 </resources>

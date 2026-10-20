@@ -42,7 +42,6 @@ import com.naury.trubbi.data.i18n.displayName
 import com.naury.trubbi.data.i18n.routeLabel
 import com.naury.trubbi.data.local.JourneyStopEntity
 import com.naury.trubbi.domain.model.EvidenceCategory
-import com.naury.trubbi.domain.model.JourneyEventType
 import com.naury.trubbi.domain.model.StopKind
 import com.naury.trubbi.domain.model.StopPhase
 import com.naury.trubbi.ui.designsystem.AppIcons
@@ -184,8 +183,8 @@ fun JourneyDetailScreen(
                             else -> PillButton(
                                 text = when (current.phase) {
                                     StopPhase.MOVING -> stringResource(R.string.action_arrive_at, current.displayName())
-                                    StopPhase.WAITING -> stringResource(JourneyEventType.WORK_STARTED.titleRes, current.kindEnum.label())
-                                    StopPhase.WORKING -> stringResource(JourneyEventType.STOP_COMPLETED.titleRes, current.kindEnum.label())
+                                    StopPhase.WAITING -> stringResource(R.string.action_start_kind, current.kindEnum.label())
+                                    StopPhase.WORKING -> stringResource(R.string.action_finish_kind, current.kindEnum.label())
                                     StopPhase.DONE -> stringResource(R.string.action_next_stop)
                                 },
                                 onClick = viewModel::advanceCurrentStop,
