@@ -63,6 +63,11 @@
 echo "KAKAO_REST_KEY=..."   >> local.properties
 echo "KAKAO_NATIVE_KEY=..." >> local.properties
 
+# AdMob 실제 ID (release 전용, 없으면 광고를 띄우지 않음. debug 는 Google 테스트 ID)
+echo "ADMOB_APP_ID=ca-app-pub-...~..."   >> local.properties
+echo "ADMOB_NATIVE_UNIT=ca-app-pub-.../..." >> local.properties
+echo "ADMOB_BANNER_UNIT=ca-app-pub-.../..." >> local.properties
+
 ./gradlew ktlintFormat              # 정렬
 ./gradlew ktlintCheck detekt        # 스타일 + 정적 분석
 ./gradlew test                      # 전 모듈 단위 테스트

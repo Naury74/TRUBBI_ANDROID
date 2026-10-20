@@ -37,6 +37,8 @@ richeditor = "1.2.1"
 # 직접 만든 SDK — 편집기·문서 스캐너(FrameKit), UI 키트(Kinetica). FrameKit이 쓰는 Kinetica보다 낮으면 안 된다.
 framekit = "1.0.0-alpha08"
 kinetica = "1.0.0-alpha05"
+playServicesAds = "25.5.0"
+ump = "4.0.0"
 
 # 테스트
 coroutinesTest = "1.11.0"
@@ -137,6 +139,8 @@ hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testi
 
 framekit = { group = "com.naurylab", name = "framekit", version.ref = "framekit" }
 kinetica-ui = { group = "com.naurylab", name = "kinetica-ui", version.ref = "kinetica" }
+play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
+ump = { group = "com.google.android.ump", name = "user-messaging-platform", version.ref = "ump" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

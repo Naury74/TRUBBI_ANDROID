@@ -30,6 +30,16 @@ val keyPasswordValue = secret("TRUBBI_KEY_PASSWORD")
 val hasReleaseSigning =
     keystoreFile != null && keystorePassword != null && keyAliasName != null && keyPasswordValue != null
 
+// AdMob. debug 는 Google 공식 테스트 ID 로 돈다(실제 광고가 아니라 클릭해도 무효 트래픽이 아니다).
+// release 는 local.properties 나 CI 환경 변수의 실제 ID 를 쓰고, 광고 단위 ID 가 없으면 광고를 띄우지 않는다.
+// 앱 ID 는 SDK 가 시작할 때 반드시 있어야 해서, 없으면 테스트 앱 ID 로 채운다(광고 단위가 비어 있어 요청은 나가지 않는다).
+val admobTestAppId = "ca-app-pub-3940256099942544~3347511713"
+val admobTestNative = "ca-app-pub-3940256099942544/2247696110"
+val admobTestBanner = "ca-app-pub-3940256099942544/9214589741"
+val admobAppId = secret("ADMOB_APP_ID") ?: admobTestAppId
+val admobNative = secret("ADMOB_NATIVE_UNIT").orEmpty()
+val admobBanner = secret("ADMOB_BANNER_UNIT").orEmpty()
+
 android {
     namespace = "com.naury.trubbi"
     compileSdk = 37
@@ -46,6 +56,10 @@ android {
         // 미설정이면 빈 문자열 — 앱은 Geocoder 폴백으로 계속 동작한다.
         buildConfigField("String", "KAKAO_REST_KEY", "\"$kakaoRestKey\"")
         buildConfigField("String", "KAKAO_NATIVE_KEY", "\"$kakaoNativeKey\"")
+
+        manifestPlaceholders["admobAppId"] = admobAppId
+        buildConfigField("String", "ADMOB_NATIVE_UNIT", "\"$admobNative\"")
+        buildConfigField("String", "ADMOB_BANNER_UNIT", "\"$admobBanner\"")
     }
 
     signingConfigs {
@@ -60,6 +74,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            manifestPlaceholders["admobAppId"] = admobTestAppId
+            buildConfigField("String", "ADMOB_NATIVE_UNIT", "\"$admobTestNative\"")
+            buildConfigField("String", "ADMOB_BANNER_UNIT", "\"$admobTestBanner\"")
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -183,6 +202,10 @@ dependencies {
     // 직접 만든 SDK: 사진·영상 편집기와 문서 스캐너(FrameKit), UI 키트(Kinetica)
     implementation(libs.framekit)
     implementation(libs.kinetica.ui)
+
+    // 광고(AdMob)와 개인정보 동의(UMP)
+    implementation(libs.play.services.ads)
+    implementation(libs.ump)
 
     // Lottie — premium animated weather backgrounds (loaded from assets, falls back to the
     // built-in illustrated background when an animation file is missing)

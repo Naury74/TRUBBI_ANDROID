@@ -35,6 +35,17 @@
         android:localeConfig="@xml/locales_config"
         android:theme="@style/Theme.Trubbi">
 
+        <!-- AdMob 앱 ID(빌드 설정이 채운다). 초기화와 광고 불러오기를 백그라운드 스레드로 미뤄 앱 시작을 막지 않는다. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+        <meta-data
+            android:name="com.google.android.gms.ads.flag.OPTIMIZE_INITIALIZATION"
+            android:value="true" />
+        <meta-data
+            android:name="com.google.android.gms.ads.flag.OPTIMIZE_AD_LOADING"
+            android:value="true" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -39,6 +39,9 @@ jobs:
           {
             echo "KAKAO_REST_KEY=${{ secrets.KAKAO_REST_KEY }}"
             echo "KAKAO_NATIVE_KEY=${{ secrets.KAKAO_NATIVE_KEY }}"
+            echo "ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }}"
+            echo "ADMOB_NATIVE_UNIT=${{ secrets.ADMOB_NATIVE_UNIT }}"
+            echo "ADMOB_BANNER_UNIT=${{ secrets.ADMOB_BANNER_UNIT }}"
           } > local.properties
 
       - name: gradlew 실행 권한
