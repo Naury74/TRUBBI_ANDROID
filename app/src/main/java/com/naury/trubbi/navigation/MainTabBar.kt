@@ -2,7 +2,7 @@ package com.naury.trubbi.navigation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -71,11 +71,24 @@ fun MainTabBar(
         tabs = tabs,
         selectedIndex = current.ordinal,
         onSelect = { onSelect(MainTab.entries[it]) },
-        modifier = modifier.navigationBarsPadding().padding(bottom = 8.dp),
+        // 시스템 내비게이션 여백과 바깥 여백은 KFloatingTabBar 가 직접 넣는다(겹쳐 넣으면 탭 바가 떠 보인다).
+        modifier = modifier,
         accessory = {
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-                KButton(stringResource(R.string.floating_capture), onCapture, icon = AppIcons.CameraAlt)
-                KIconButton(AppIcons.Add, stringResource(R.string.tab_quick_more), onClick = { quickOpen = true }, variant = KVariant.Filled)
+            // 이 칸은 탭 바와 같은 56dp 캡슐이고 내용을 여백 없이 왼쪽에 붙인다. 안쪽 여백을 두고
+            // 촬영 버튼이 남는 폭을 채우게 해 캡슐 안에서 좌우 균형이 맞게 한다.
+            Row(
+                Modifier.fillMaxSize().padding(horizontal = ACCESSORY_INSET),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                KButton(
+                    stringResource(R.string.floating_capture),
+                    onCapture,
+                    icon = AppIcons.CameraAlt,
+                    fullWidth = true,
+                    modifier = Modifier.weight(1f),
+                )
+                KIconButton(AppIcons.Add, stringResource(R.string.tab_quick_more), onClick = { quickOpen = true }, variant = KVariant.Tonal)
             }
         },
     )
@@ -104,3 +117,6 @@ fun MainTabBar(
         } + KDialogAction(stringResource(R.string.action_cancel), com.naury.kinetica.ui.KDialogActionStyle.Cancel),
     )
 }
+
+/** 탭 바 위 캡슐(56dp) 안에서 버튼 둘레에 두는 여백. 버튼(44dp)이 캡슐 모서리에 닿지 않게 한다. */
+private val ACCESSORY_INSET = 6.dp
