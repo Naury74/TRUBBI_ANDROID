@@ -1,6 +1,9 @@
 package com.naury.trubbi.core.voice
 
 import android.content.Context
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.util.Base64
 import com.google.firebase.functions.FirebaseFunctions
@@ -33,6 +36,17 @@ class CloudTts @Inject constructor(
 ) {
     private val functions by lazy { FirebaseFunctions.getInstance() }
     private val cacheDir: File by lazy { File(context.cacheDir, "tts").apply { mkdirs() } }
+    private val audioManager by lazy { context.getSystemService(AudioManager::class.java) }
+
+    // 길 안내 음성으로 낸다. 음악을 틀어 둔 채 운전하면 안내하는 동안만 음악 소리를 줄였다가 되돌리고,
+    // 차량 블루투스에서도 길 안내 음량으로 나온다.
+    private val guidanceAttributes = AudioAttributes.Builder()
+        .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
+        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+        .build()
+    private val guidanceFocus = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+        .setAudioAttributes(guidanceAttributes)
+        .build()
 
     @Volatile private var player: MediaPlayer? = null
 
@@ -96,8 +110,10 @@ class CloudTts @Inject constructor(
             suspendCancellableCoroutine { cont ->
                 val mp = MediaPlayer()
                 player = mp
+                mp.setAudioAttributes(guidanceAttributes)
                 fun finish(ok: Boolean) {
                     runCatching { mp.release() }
+                    runCatching { audioManager.abandonAudioFocusRequest(guidanceFocus) }
                     if (player === mp) player = null
                     if (cont.isActive) cont.resume(ok)
                 }
@@ -106,12 +122,21 @@ class CloudTts @Inject constructor(
                     finish(false)
                     true
                 }
-                cont.invokeOnCancellation { runCatching { mp.release() } }
+                cont.invokeOnCancellation {
+                    runCatching { mp.release() }
+                    runCatching { audioManager.abandonAudioFocusRequest(guidanceFocus) }
+                }
                 runCatching {
                     mp.setDataSource(file.path)
                     mp.setOnPreparedListener {
                         // 준비 완료 시점에 이미 다른 음성으로 교체/중단됐으면 재생하지 않는다.
-                        if (gen != mine) finish(false) else it.start()
+                        if (gen != mine) {
+                            finish(false)
+                        } else {
+                            // 포커스를 못 받아도(통화 중 등) 안내는 낸다. 줄여 달라는 요청일 뿐이다.
+                            runCatching { audioManager.requestAudioFocus(guidanceFocus) }
+                            it.start()
+                        }
                     }
                     mp.prepareAsync()
                 }.onFailure { finish(false) }
