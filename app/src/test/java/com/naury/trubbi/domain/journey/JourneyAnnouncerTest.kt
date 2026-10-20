@@ -129,10 +129,11 @@ class JourneyAnnouncerTest {
             stops = listOf(stop(StopKind.DROPOFF, "부산항")),
             driverName = null,
             weather = weather(WeatherCondition.CLEAR),
-            here = CapturedLocation(37.5, 127.0, "서울특별시 중구 세종대로 110"),
+            // 도로명 주소에는 동이 없어, 위치를 잡을 때 받아 둔 행정동 이름을 읽는다.
+            here = CapturedLocation(37.5, 127.0, "서울특별시 중구 세종대로 110", region = "중구 명동"),
         )
 
-        val locationPart = strings[R.string.announce_location, "중구 세종대로"]
+        val locationPart = strings[R.string.announce_location, "중구 명동"]
         assertThat(bare).doesNotContain(locationPart)
         assertThat(full).contains(locationPart)
         assertThat(full).contains("12")
@@ -152,13 +153,13 @@ class JourneyAnnouncerTest {
     // ── 주소 줄이기 ───────────────────────────────────────────────────────────
 
     @Test
-    fun `긴 주소는 읽기 좋게 두 토막만 남긴다`() {
-        assertThat(announcer.shortAddress("경기도 성남시 분당구 삼평동 123")).isEqualTo("성남시 분당구")
+    fun `긴 주소는 구와 동만 읽는다`() {
+        assertThat(announcer.shortAddress("경기도 성남시 분당구 삼평동 123")).isEqualTo("분당구 삼평동")
     }
 
     @Test
-    fun `이미 짧은 주소는 그대로 둔다`() {
-        assertThat(announcer.shortAddress("서울 중구 을지로")).isEqualTo("서울 중구 을지로")
+    fun `동이 없는 주소는 구만, 한 토막은 그대로 읽는다`() {
+        assertThat(announcer.shortAddress("서울 중구 을지로")).isEqualTo("중구")
         assertThat(announcer.shortAddress("부산항")).isEqualTo("부산항")
     }
 }

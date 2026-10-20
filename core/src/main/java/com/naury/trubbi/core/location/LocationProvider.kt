@@ -24,12 +24,25 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.json.JSONObject
 
-/** 잡아 온 위치 — 좌표와, 가능하면 역지오코딩한 주소. */
+/**
+ * 잡아 온 위치 — 좌표와, 가능하면 역지오코딩한 주소.
+ *
+ * @property region 행정동 기준 동네 이름("중구 명동"). 도로명 주소에는 동이 없어 따로 받는다
+ * @property building 건물 이름(있으면). 정차지 이름으로 쓰면 주소보다 알아보기 쉽다
+ */
 data class CapturedLocation(
     val latitude: Double,
     val longitude: Double,
     val address: String?,
-)
+    val region: String? = null,
+    val building: String? = null,
+) {
+    /** 홈 헤더·안내에 쓰는 동네 이름. */
+    val regionLabel: String? get() = region ?: PlaceNames.region(address)
+
+    /** 출발지·정차지 이름으로 쓰는 짧은 이름. 건물 이름이 있으면 그것. */
+    val placeLabel: String? get() = building ?: PlaceNames.street(address)
+}
 
 /**
  * 장소 검색 결과 한 건. 입력·음성으로 들어온 장소명을 확인시켜 줄 때 쓴다.
@@ -75,12 +88,18 @@ class LocationProvider @Inject constructor(
         val location = live.fresh()?.let { LatLng(it.latitude, it.longitude) }
             ?: currentLocation()?.let { LatLng(it.latitude, it.longitude) }
             ?: return null
-        val address = withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
             // 카카오 역지오코딩이 한글 도로명 주소를 더 정확히 준다. 키가 없으면 Geocoder.
-            kakaoCoord2Address(location.latitude, location.longitude)
-                ?: runCatching { reverseGeocode(location.latitude, location.longitude) }.getOrNull()
+            val kakao = kakaoCoord2Address(location.latitude, location.longitude)
+            val address = kakao?.first ?: runCatching { reverseGeocode(location.latitude, location.longitude) }.getOrNull()
+            CapturedLocation(
+                latitude = location.latitude,
+                longitude = location.longitude,
+                address = address,
+                region = kakaoRegion(location.latitude, location.longitude),
+                building = kakao?.second,
+            )
         }
-        return CapturedLocation(location.latitude, location.longitude, address)
     }
 
     @Suppress("MissingPermission")
@@ -232,23 +251,8 @@ class LocationProvider @Inject constructor(
             .trim()
     }
 
-    /**
-     * 표시용 주소 축약 — 도/시 같은 상위 행정구역을 떼고 동/리/로/길 + 번지부터 보여준다.
-     * 예: "경남 양산시 동면 금산리 1457-14" → "금산리 1457-14", "서울 강남구 테헤란로 152" → "테헤란로 152".
-     * 건물명/상호가 없는 주소 결과의 '이름'으로 사용(인식된 문장을 이름으로 쓰지 않기 위함).
-     */
-    private fun abbreviateAddress(addr: String): String {
-        val tokens = addr.trim().split(Regex("\\s+")).filter { it.isNotBlank() }
-        if (tokens.size <= 2) return addr.trim()
-        val anchor = tokens.indexOfLast { t ->
-            t.endsWith("동") || t.endsWith("리") || t.endsWith("로") || t.endsWith("길") || t.endsWith("가")
-        }
-        return if (anchor in 0 until tokens.size) {
-            tokens.subList(anchor, tokens.size).joinToString(" ")
-        } else {
-            tokens.takeLast(2).joinToString(" ")
-        }
-    }
+    /** 건물명·상호가 없는 결과의 이름. 인식된 문장 대신 찾아갈 수 있는 짧은 주소를 쓴다. */
+    private fun abbreviateAddress(addr: String): String = PlaceNames.street(addr) ?: addr.trim()
 
     private fun geocoderSearch(query: String, max: Int): List<PlaceCandidate> =
         runCatching {
@@ -347,12 +351,51 @@ class LocationProvider @Inject constructor(
         }.getOrNull()
     }
 
-    /** 카카오 좌표 → 도로명 주소. 키가 없거나 실패하면 null. */
-    private fun kakaoCoord2Address(lat: Double, lng: Double): String? {
+    /**
+     * 좌표의 주소·동네·건물 이름. 위치를 손으로 고를 때 고른 곳이 어디인지 보여 주는 데 쓴다.
+     *
+     * @return 주소를 못 구해도 좌표는 담아 돌려준다
+     */
+    suspend fun describe(lat: Double, lng: Double): CapturedLocation = withContext(Dispatchers.IO) {
+        val kakao = kakaoCoord2Address(lat, lng)
+        CapturedLocation(
+            latitude = lat,
+            longitude = lng,
+            address = kakao?.first ?: runCatching { reverseGeocode(lat, lng) }.getOrNull(),
+            region = kakaoRegion(lat, lng),
+            building = kakao?.second,
+        )
+    }
+
+    /** 카카오 좌표 → (도로명 주소, 건물 이름). 키가 없거나 실패하면 null. */
+    private fun kakaoCoord2Address(lat: Double, lng: Double): Pair<String, String?>? {
+        val d = kakaoGet("https://dapi.kakao.com/v2/local/geo/coord2address.json?x=$lng&y=$lat")?.firstOrNull() ?: return null
+        val road = d.optJSONObject("road_address")
+        val roadName = road?.optString("address_name")?.ifBlank { null }
+        val jibun = d.optJSONObject("address")?.optString("address_name")?.ifBlank { null }
+        val building = road?.optString("building_name")?.trim()?.ifBlank { null }
+        return (roadName ?: jibun ?: return null) to building
+    }
+
+    /**
+     * 카카오 좌표 → 행정동 기준 동네 이름("중구 명동"). 키가 없거나 실패하면 null.
+     *
+     * 도로명 주소에는 동이 없어 홈 헤더에 '중구'만 나오던 것을 바로잡는다.
+     */
+    private fun kakaoRegion(lat: Double, lng: Double): String? {
+        val docs = kakaoGet("https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=$lng&y=$lat") ?: return null
+        // H = 행정동(사람들이 부르는 이름), B = 법정동. 행정동이 없으면 법정동.
+        val d = docs.firstOrNull { it.optString("region_type") == "H" } ?: docs.firstOrNull() ?: return null
+        val second = d.optString("region_2depth_name").trim()
+        val third = d.optString("region_3depth_name").trim()
+        return listOf(second, third).filter { it.isNotBlank() }.joinToString(" ").ifBlank { null }
+    }
+
+    /** 카카오 로컬 GET → documents. 키가 없거나 실패하면 null. */
+    private fun kakaoGet(url: String): List<JSONObject>? {
         if (!kakaoEnabled) return null
         return runCatching {
-            val url = URL("https://dapi.kakao.com/v2/local/geo/coord2address.json?x=$lng&y=$lat")
-            val conn = (url.openConnection() as HttpURLConnection).apply {
+            val conn = (URL(url).openConnection() as HttpURLConnection).apply {
                 requestMethod = "GET"
                 setRequestProperty("Authorization", "KakaoAK $kakaoKey")
                 connectTimeout = 5000
@@ -360,12 +403,8 @@ class LocationProvider @Inject constructor(
             }
             if (conn.responseCode != 200) return@runCatching null
             val body = conn.inputStream.bufferedReader().use { it.readText() }
-            val docs = JSONObject(body).optJSONArray("documents") ?: return@runCatching null
-            if (docs.length() == 0) return@runCatching null
-            val d = docs.getJSONObject(0)
-            val road = d.optJSONObject("road_address")?.optString("address_name")?.ifBlank { null }
-            val jibun = d.optJSONObject("address")?.optString("address_name")?.ifBlank { null }
-            road ?: jibun
+            val docs = JSONObject(body).optJSONArray("documents") ?: return@runCatching emptyList()
+            (0 until docs.length()).map { docs.getJSONObject(it) }
         }.getOrNull()
     }
 
@@ -376,7 +415,13 @@ class LocationProvider @Inject constructor(
      */
     suspend fun geocode(query: String): CapturedLocation? = withContext(Dispatchers.IO) {
         // 키워드·주소를 모두 조회하는 통합 검색을 재사용한다. 지번 주소도 좌표가 반환된다.
-        searchPlaces(query, 1).firstOrNull()?.let {
+        // 최근 위치를 기준점으로 넘긴다. 같은 이름의 다른 지역 장소가 정차지 좌표로 들어가면 도착 알림이 영영 오지 않는다.
+        val near = live.fresh(maxAgeMs = NEAR_HINT_MAX_AGE_MS)
+        val found = searchPlaces(query, GEOCODE_CANDIDATES, near?.latitude, near?.longitude)
+        val top = found.firstOrNull()
+        // 이름이 같은 지점(예: 여러 지역의 "○○ 물류센터")이 여럿이면 가장 가까운 곳을 고른다.
+        val sameName = top?.let { t -> found.filter { it.name.replace(" ", "") == t.name.replace(" ", "") } }.orEmpty()
+        (sameName.mapNotNull { p -> p.distanceM?.let { p to it } }.minByOrNull { it.second }?.first ?: top)?.let {
             return@withContext CapturedLocation(it.latitude, it.longitude, it.address)
         }
         legacyGeocode(query)
@@ -401,12 +446,20 @@ class LocationProvider @Inject constructor(
         @Suppress("DEPRECATION")
         val results = geocoder.getFromLocation(lat, lng, 1) ?: return null
         val a = results.firstOrNull() ?: return null
+        // 에뮬레이터·해외에서는 '미국' 같은 값이 온다. 한국 주소가 아니면 표시하지 않는다.
+        if (a.countryCode != null && a.countryCode != "KR") return null
         val line = a.getAddressLine(0)
         return line?.removePrefix("대한민국 ")?.trim()?.ifBlank { null }
     }
 }
 
 private data class LatLng(val latitude: Double, val longitude: Double)
+
+/** 공유받은 장소를 좌표로 바꿀 때 살펴보는 후보 수. */
+private const val GEOCODE_CANDIDATES = 5
+
+/** 공유받은 장소를 좌표로 바꿀 때 기준점으로 쓰는 위치의 최대 나이. */
+private const val NEAR_HINT_MAX_AGE_MS = 30 * 60_000L
 
 /** 마지막 위치를 받아들이는 최대 나이. 차는 2분이면 2~3km 를 가지만, 위치가 아예 없는 것보다는 낫다. */
 private const val LAST_KNOWN_MAX_AGE_MS = 120_000L

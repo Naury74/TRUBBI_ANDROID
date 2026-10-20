@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import com.naury.trubbi.R
+import com.naury.trubbi.core.location.PlaceNames
 import com.naury.trubbi.core.weather.Weather
 import com.naury.trubbi.core.weather.WeatherCondition
 import com.naury.trubbi.ui.common.ProfileAvatar
@@ -42,23 +43,8 @@ import com.naury.trubbi.ui.designsystem.GlassIconButton
 import com.naury.trubbi.ui.designsystem.pressable
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
 
-/**
- * 전체 주소를 구/군 + 동/읍 수준으로 줄인다 (예: "강남구 역삼동").
- *
- * 헤더 폭에 전체 주소가 들어가지 않으므로 뒤쪽 행정 단위만 남긴다.
- */
-private fun shortAddress(place: String?, fallback: String): String {
-    if (place.isNullOrBlank()) return fallback
-    val tokens = place.split(" ", ",").map { it.trim() }.filter { it.isNotBlank() }
-    val dong = tokens.lastOrNull { it.endsWith("동") || it.endsWith("읍") || it.endsWith("면") || it.endsWith("리") }
-    val gu = tokens.lastOrNull { it.endsWith("구") || it.endsWith("군") }
-    return when {
-        gu != null && dong != null -> "$gu $dong"
-        dong != null -> dong
-        gu != null -> gu
-        else -> tokens.lastOrNull { it.endsWith("시") } ?: tokens.lastOrNull() ?: place
-    }
-}
+/** 헤더에 넣을 동네 이름("중구 명동"). 헤더 폭에 전체 주소가 들어가지 않는다. */
+private fun shortAddress(place: String?, fallback: String): String = PlaceNames.region(place) ?: fallback
 
 private fun headerIcon(condition: WeatherCondition) = when (condition) {
     WeatherCondition.CLEAR -> AppIcons.WeatherClear

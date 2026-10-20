@@ -2,6 +2,7 @@ package com.naury.trubbi.domain.journey
 
 import com.naury.trubbi.R
 import com.naury.trubbi.core.location.CapturedLocation
+import com.naury.trubbi.core.location.PlaceNames
 import com.naury.trubbi.core.ui.StringProvider
 import com.naury.trubbi.core.weather.Weather
 import com.naury.trubbi.core.weather.WeatherCondition
@@ -66,7 +67,7 @@ class JourneyAnnouncer @Inject constructor(
             .takeIf { it.isNotEmpty() }
             ?.let { strings[R.string.announce_via, it.joinToString(", ")] }
             .orEmpty()
-        val place = here?.address?.let { strings[R.string.announce_location, shortAddress(it)] }.orEmpty()
+        val place = (here?.region ?: here?.address?.let(::shortAddress))?.let { strings[R.string.announce_location, it] }.orEmpty()
         val sky = weather
             ?.let { strings[R.string.announce_weather, strings[it.labelRes], it.temperatureC] }
             .orEmpty()
@@ -92,15 +93,11 @@ class JourneyAnnouncer @Inject constructor(
     }
 
     /**
-     * 전체 주소에서 읽어 줄 두 토막만 남긴다.
+     * 전체 주소에서 읽어 줄 동네 이름만 남긴다.
      *
      * 예: "경기도 성남시 분당구 삼평동 123" → "분당구 삼평동".
-     * 토막이 셋 이하면 이미 짧으므로 그대로 돌려준다.
      */
-    fun shortAddress(address: String): String {
-        val parts = address.split(" ").filter { it.isNotBlank() }
-        return if (parts.size <= 3) address else parts.subList(1, 3).joinToString(" ")
-    }
+    fun shortAddress(address: String): String = PlaceNames.region(address) ?: address
 
     private fun namePrefix(driverName: String?): String =
         driverName?.takeIf { it.isNotBlank() }?.let { strings[R.string.name_prefix, it] }.orEmpty()

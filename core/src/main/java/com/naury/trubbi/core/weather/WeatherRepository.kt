@@ -30,7 +30,7 @@ class WeatherRepository @Inject constructor(
      */
     suspend fun current(): Weather? = withContext(Dispatchers.IO) {
         val loc = runCatching { locationProvider.capture() }.getOrNull() ?: return@withContext null
-        runCatching { fetch(loc.latitude, loc.longitude, loc.address) }.getOrNull()
+        runCatching { fetch(loc.latitude, loc.longitude, loc.regionLabel ?: loc.address) }.getOrNull()
     }
 
     private fun fetch(lat: Double, lng: Double, place: String?): Weather? {

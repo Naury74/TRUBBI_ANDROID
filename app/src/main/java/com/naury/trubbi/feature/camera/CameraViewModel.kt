@@ -56,19 +56,8 @@ class CameraViewModel @Inject constructor(
         viewModelScope.launch {
             val save = runCatching { settingsRepo.settings.map { it.saveLocation }.first() }.getOrDefault(false)
             if (save) {
-                val addr = runCatching { locationProvider.capture()?.address }.getOrNull()
-                locationLabel.value = addr?.let { shortPlace(it) }
+                locationLabel.value = runCatching { locationProvider.capture()?.regionLabel }.getOrNull()
             }
-        }
-    }
-
-    /** 주소에서 의미 있는 토막만 (시/도 제외 구·동 정도). */
-    private fun shortPlace(address: String): String? {
-        val parts = address.split(" ").filter { it.isNotBlank() }
-        return when {
-            parts.isEmpty() -> null
-            parts.size <= 2 -> parts.joinToString(" ")
-            else -> parts.subList(1, minOf(3, parts.size)).joinToString(" ")
         }
     }
 
