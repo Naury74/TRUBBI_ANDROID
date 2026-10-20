@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.naury.trubbi.R
 import com.naury.trubbi.core.i18n.label
+import com.naury.trubbi.core.voice.PlaceUtterance
 import com.naury.trubbi.core.voice.VoiceAction
 import com.naury.trubbi.core.voice.VoiceContext
 import com.naury.trubbi.core.voice.VoiceIntent
@@ -47,7 +49,9 @@ import com.naury.trubbi.domain.model.StopKind
 import com.naury.trubbi.ui.designsystem.AppIcons
 import com.naury.trubbi.ui.designsystem.DragReorderColumn
 import com.naury.trubbi.ui.designsystem.PillButton
+import com.naury.trubbi.ui.designsystem.messageRes
 import com.naury.trubbi.ui.designsystem.pressable
+import com.naury.trubbi.ui.designsystem.rememberMicStarter
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -72,7 +76,7 @@ fun StopReorderSheet(
     onDismiss: () -> Unit,
     speakAwait: suspend (String) -> Unit = {},
     interpret: suspend (String, VoiceContext) -> VoiceIntent = { _, _ -> VoiceIntent(VoiceAction.NONE) },
-    transcribe: (suspend (ByteArray, Int) -> List<String>)? = null,
+    transcribe: (suspend (ByteArray, Int, List<String>) -> List<String>)? = null,
 ) {
     val colors = LocalTrubbiColors.current
     val context = LocalContext.current
@@ -93,7 +97,23 @@ fun StopReorderSheet(
         onDismiss()
     }
 
+    fun moveFirst(index: Int) {
+        scope.launch {
+            if (index == 0) {
+                speakAwait(resources.getString(R.string.reorder_already_first, pending[0].displayName(context)))
+            } else {
+                val moved = pending.removeAt(index)
+                pending.add(0, moved)
+                speakAwait(resources.getString(R.string.reorder_moved_first, moved.displayName(context)))
+            }
+        }
+    }
+
     fun onVoice(text: String) {
+        val heard = speech.alternatives.ifEmpty { listOf(text) }
+        // 정차지 이름은 화면에 있는 몇 개뿐이다. 인식 후보 어느 것이든 이름과 맞으면 그걸로 끝낸다(가장 정확하다).
+        heard.firstNotNullOfOrNull { matchStop(pending, PlaceUtterance.query(it)) { s -> s.displayName(context) } }
+            ?.let { return moveFirst(it) }
         scope.launch {
             val intent = interpret(
                 text,
@@ -102,42 +122,35 @@ fun StopReorderSheet(
             when (intent.action) {
                 VoiceAction.CANCEL -> onDismiss()
                 VoiceAction.START -> apply()
-                VoiceAction.ADD_STOP, VoiceAction.PLACE -> onAddStops()
-                VoiceAction.MOVE, VoiceAction.SELECT -> {
-                    val target = (intent.place ?: text).trim()
-                    // 인식 결과와 정차지 이름이 정확히 같기를 기대할 수 없어 양방향 부분 일치로 찾는다.
-                    val index = pending.indexOfFirst { stop ->
-                        val name = stop.displayName(context)
-                        name.contains(target) ||
-                            target.contains(name) ||
-                            stop.name?.let { target.contains(it) || it.contains(target) } == true
-                    }
-                    when {
-                        index > 0 -> {
-                            val moved = pending.removeAt(index)
-                            pending.add(0, moved)
-                            speakAwait(resources.getString(R.string.reorder_moved_first, moved.displayName(context)))
-                        }
-
-                        index == 0 ->
-                            speakAwait(resources.getString(R.string.reorder_already_first, pending[0].displayName(context)))
-
-                        else -> speakAwait(resources.getString(R.string.reorder_not_found, target))
+                VoiceAction.ADD_STOP -> onAddStops()
+                VoiceAction.MOVE, VoiceAction.SELECT, VoiceAction.PLACE, VoiceAction.CORRECT -> {
+                    // "세 번째 먼저"처럼 순번으로 말했으면 화면 번호(이미 다녀온 곳 포함)로 찾는다.
+                    val byOrdinal = intent.ordinal?.let { it - 1 - fixed.size }?.takeIf { it in pending.indices }
+                    val byName = intent.place?.let { matchStop(pending, it) { s -> s.displayName(context) } }
+                    val index = byOrdinal ?: byName
+                    if (index != null) {
+                        moveFirst(index)
+                    } else {
+                        speakAwait(resources.getString(R.string.reorder_not_found, intent.place ?: text))
                     }
                 }
 
-                else -> Unit
+                else -> speakAwait(resources.getString(R.string.voice_retry))
             }
         }
     }
 
-    fun listen() {
+    val listen = rememberMicStarter(onDenied = { scope.launch { speakAwait(resources.getString(R.string.voice_need_mic)) } }) {
         scope.launch {
             speakAwait(resources.getString(R.string.reorder_voice_prompt))
             // 안내가 끝나자마자 마이크를 열면 TTS 꼬리가 그대로 인식된다.
             delay(200)
-            speech.start(::onVoice)
+            val hints = pending.map { it.displayName(context) } + listOf("먼저", "취소", "완료")
+            speech.start(hints, ::onVoice)
         }
+    }
+    LaunchedEffect(speech.error) {
+        if (speech.error) speech.failure?.let { speakAwait(resources.getString(it.messageRes())) }
     }
 
     Box(Modifier.fillMaxSize()) {
@@ -228,7 +241,7 @@ fun StopReorderSheet(
                             PillButton(
                                 text = stringResource(if (speech.listening) R.string.action_listening else R.string.action_by_voice),
                                 icon = AppIcons.Mic,
-                                onClick = ::listen,
+                                onClick = listen,
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
                                 contentColor = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.weight(1f).height(56.dp),
@@ -255,6 +268,25 @@ fun StopReorderSheet(
         }
     }
 }
+
+/**
+ * 말한 이름에 맞는 정차지를 찾는다.
+ *
+ * 인식 결과와 정차지 이름이 정확히 같기를 기대할 수 없어 띄어쓰기를 무시한 양방향 부분 일치로 본다.
+ * 그래도 없으면 "물류센터"처럼 흔한 꼬리를 뺀 앞부분(두 글자 이상)으로 한 번 더 본다.
+ *
+ * @return 첫 번째로 맞는 위치. 없으면 null
+ */
+internal fun <T> matchStop(stops: List<T>, spoken: String, nameOf: (T) -> String): Int? {
+    val target = spoken.replace(" ", "")
+    if (target.length < 2) return null
+    val names = stops.map { nameOf(it).replace(" ", "") }
+    names.indexOfFirst { it.contains(target) || target.contains(it) }.takeIf { it >= 0 }?.let { return it }
+    val head = target.take(target.length.coerceAtMost(HEAD_CHARS))
+    return names.indexOfFirst { head.length >= 2 && it.startsWith(head) }.takeIf { it >= 0 }
+}
+
+private const val HEAD_CHARS = 3
 
 @Composable
 private fun ReorderRow(

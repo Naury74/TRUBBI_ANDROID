@@ -842,7 +842,6 @@ You can keep the original scan images too.</string>
     <string name="planner_no_results">No places found</string>
     <string name="planner_no_results_body">Try a shorter name or a street address.</string>
     <string name="planner_voice">Search by voice</string>
-    <string name="planner_voice_prompt">Say where you\'re headed</string>
     <string name="planner_star">Add to favorites</string>
     <string name="planner_unstar">Remove from favorites</string>
     <string name="planner_distance_straight">%1$s straight-line</string>
@@ -855,4 +854,14 @@ You can keep the original scan images too.</string>
     <string name="settings_ad_privacy_sub">Change your personalized ads consent</string>
     <string name="action_start_kind">Start %1$s</string>
     <string name="action_finish_kind">Finish %1$s</string>
+    <string name="voice_retry">Sorry, I didn\'t catch that. Please say it again.</string>
+    <string name="voice_need_mic">Microphone permission is needed for voice input.</string>
+    <string name="voice_unavailable">Speech recognition isn\'t available on this device.</string>
+    <string name="voice_network">The connection is unstable, so I couldn\'t recognize that. Please try again.</string>
+    <string name="voice_language">Korean speech recognition isn\'t installed. Download Korean voice data in Settings.</string>
+    <string name="voice_listening">Listening…</string>
+    <string name="voice_stop">Stop</string>
+    <string name="planner_voice_examples">e.g. Busan New Port, Pyeongtaek logistics center, current location</string>
+    <string name="planner_did_you_mean">Did you mean</string>
+    <string name="planner_voice_searching">Searching for “%1$s”…</string>
 </resources>

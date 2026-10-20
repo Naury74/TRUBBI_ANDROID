@@ -6,8 +6,10 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.AudioTrack
 import android.media.MediaRecorder
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
+import android.media.audiofx.AudioEffect
+import android.media.audiofx.AutomaticGainControl
+import android.media.audiofx.NoiseSuppressor
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -44,12 +46,16 @@ import kotlinx.coroutines.launch
  * 두 경로 모두 `RECORD_AUDIO` 권한이 허용된 상태를 전제한다. 권한 요청은 호출부가 처리한다.
  *
  * @property context 인식기·오디오 장치·네트워크 상태 접근용
- * @property cloudTranscribe (PCM, 샘플레이트) → 후보 텍스트. null 이면 기기 인식만 쓴다
+ * 인식률은 두 가지로 끌어올린다. 지금 화면에서 나올 법한 말(후보 장소 이름, 명령어)을 [start] 의 `hints` 로
+ * 받아 인식기에 미리 알려 주고(클라우드는 phrase hint, 기기 인식은 Android 13+ biasing), 1순위 문장만이 아니라
+ * 차순위 후보([alternatives])까지 남겨 호출부가 장소 검색 결과와 맞춰 보며 고르게 한다.
+ *
+ * @property cloudTranscribe (PCM, 샘플레이트, 힌트) → 후보 텍스트. null 이면 기기 인식만 쓴다
  */
 @Stable
 class SpeechInputState(
     private val context: Context,
-    private val cloudTranscribe: (suspend (ByteArray, Int) -> List<String>)? = null,
+    private val cloudTranscribe: (suspend (ByteArray, Int, List<String>) -> List<String>)? = null,
 ) {
     val available: Boolean
         get() = cloudTranscribe != null || SpeechRecognizer.isRecognitionAvailable(context)
@@ -78,12 +84,19 @@ class SpeechInputState(
     var error by mutableStateOf(false)
         private set
 
+    /** 마지막 실패의 종류. 화면이 "다시 말해 주세요"와 "권한이 필요해요"를 구분해 안내하는 데 쓴다. */
+    var failure by mutableStateOf<SpeechFailure?>(null)
+        private set
+
     private var recognizer: SpeechRecognizer? = null
+    private var hints: List<String> = emptyList()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     @Volatile private var recording = false
 
     @Volatile private var audioRecord: AudioRecord? = null
+
+    @Volatile private var effects: List<AudioEffect> = emptyList()
 
     // 세션 토큰. 취소·재시작 시 증가하며, 늦게 도착한 결과는 이 값이 다르면 폐기된다.
     @Volatile private var session = 0
@@ -162,17 +175,20 @@ class SpeechInputState(
      *
      * 클라우드 콜백이 있고 온라인이면 녹음 방식, 아니면 기기 인식기를 쓴다.
      *
-     * @param onResult 최종 텍스트로 **한 번만** 불린다. 인식 실패 시에는 불리지 않고
-     *   [error] 가 true 가 된다. 메인 스레드에서 호출할 것
+     * @param hints 지금 나올 법한 낱말(화면의 후보 이름, 명령어). 인식기가 비슷한 소리를 이쪽으로 맞춘다
+     * @param onResult 최종 텍스트로 **한 번만** 불린다. 차순위 후보는 이때 [alternatives] 에 들어 있다. 인식 실패
+     *   시에는 불리지 않고 [error] 가 true 가 된다. 메인 스레드에서 호출할 것
      */
-    fun start(onResult: (String) -> Unit) {
+    fun start(hints: List<String> = emptyList(), onResult: (String) -> Unit) {
         if (listening) return
         releaseRecognizer()
         stopRecording()
         error = false
+        failure = null
         alternatives = emptyList()
         partial = ""
         val s = ++session
+        this.hints = hints.map(String::trim).filter(String::isNotEmpty).distinct().take(MAX_HINTS)
         val cloud = cloudTranscribe
         if (cloud != null && isOnline()) {
             startCloud(onResult, cloud, s)
@@ -191,6 +207,7 @@ class SpeechInputState(
         partial = ""
         level = 0f
         error = false
+        failure = null
     }
 
     /** 컴포지션 종료 시 호출한다. 녹음 코루틴 스코프까지 취소한다. */
@@ -210,7 +227,7 @@ class SpeechInputState(
      * 종료 조건(무음 지속, 최대 길이, 세션 무효화)이 서로 얽혀 있어 한 함수에 모아 둔다.
      */
     @Suppress("CyclomaticComplexMethod")
-    private fun startCloud(onResult: (String) -> Unit, transcribe: suspend (ByteArray, Int) -> List<String>, sess: Int) {
+    private fun startCloud(onResult: (String) -> Unit, transcribe: suspend (ByteArray, Int, List<String>) -> List<String>, sess: Int) {
         recording = true
         scope.launch {
             val sr = 16000
@@ -237,6 +254,7 @@ class SpeechInputState(
                 return@launch
             }
             audioRecord = rec
+            effects = attachVoiceEffects(rec.audioSessionId)
             // 준비음 재생 후 간격을 두고 녹음을 시작한다. 준비음이 마이크에 섞이는 것을 막는다.
             earconReady()
             delay(340)
@@ -314,13 +332,14 @@ class SpeechInputState(
             if (!spoke || pcm.size < sr / 2) { // 발화 없음/너무 짧음 → 실패음 + 에러(위저드가 다시 안내).
                 earconFail()
                 processing = false
+                failure = SpeechFailure.NO_SPEECH
                 error = true
                 return@launch
             }
             // 입력을 받아 듣기를 멈춤 → 확인음 후 받아쓰기 진행.
             earconDone()
             processing = true
-            val alts = runCatching { transcribe(pcm, sr) }.getOrDefault(emptyList())
+            val alts = runCatching { transcribe(pcm, sr, hints) }.getOrDefault(emptyList())
             if (sess != session) {
                 processing = false
                 return@launch
@@ -337,7 +356,29 @@ class SpeechInputState(
         }
     }
 
+    /**
+     * 화물차 실내는 엔진·노면 소음이 크다. 기기가 지원하면 잡음 억제와 자동 음량을 켜 녹음 품질을 올린다.
+     *
+     * @return 정리할 때 함께 해제할 효과들
+     */
+    private fun attachVoiceEffects(sessionId: Int): List<AudioEffect> = buildList {
+        if (NoiseSuppressor.isAvailable()) {
+            runCatching { NoiseSuppressor.create(sessionId) }.getOrNull()?.let {
+                it.enabled = true
+                add(it)
+            }
+        }
+        if (AutomaticGainControl.isAvailable()) {
+            runCatching { AutomaticGainControl.create(sessionId) }.getOrNull()?.let {
+                it.enabled = true
+                add(it)
+            }
+        }
+    }
+
     private fun cleanupRecord() {
+        effects.forEach { runCatching { it.release() } }
+        effects = emptyList()
         val r = audioRecord
         runCatching { r?.stop() }
         runCatching { r?.release() }
@@ -351,39 +392,45 @@ class SpeechInputState(
 
     // ───────────────────────── 기기 내 경로 (SpeechRecognizer) ─────────────────────────
 
-    private fun startOnDevice(onResult: (String) -> Unit) {
+    private fun startOnDevice(onResult: (String) -> Unit, retriesLeft: Int = 1) {
         if (!SpeechRecognizer.isRecognitionAvailable(context)) {
-            error = true
-            listening = false
+            fail(SpeechFailure.UNAVAILABLE, sound = false)
             return
         }
         releaseRecognizer()
         error = false
+        failure = null
         alternatives = emptyList()
+        val sess = session
         val r = SpeechRecognizer.createSpeechRecognizer(context)
         recognizer = r
         r.setRecognitionListener(object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle?) {
+                if (sess != session) return
                 listening = true
                 partial = ""
-                earconReady()
             }
             override fun onBeginningOfSpeech() {}
             override fun onRmsChanged(rmsdB: Float) {
-                level = ((rmsdB + 2f) / 12f).coerceIn(0f, 1f)
+                if (sess == session) level = ((rmsdB + 2f) / 12f).coerceIn(0f, 1f)
             }
             override fun onBufferReceived(buffer: ByteArray?) {}
             override fun onEndOfSpeech() {
                 level = 0f
             }
             override fun onError(error: Int) {
-                listening = false
-                partial = ""
-                level = 0f
-                this@SpeechInputState.error = true
-                earconFail()
+                // 취소한 뒤 늦게 오는 ERROR_CLIENT 같은 것은 이미 끝난 세션의 소식이라 버린다.
+                if (sess != session) return
+                if (error == SpeechRecognizer.ERROR_RECOGNIZER_BUSY && retriesLeft > 0) {
+                    // 직전 세션이 아직 정리되는 중이다. 잠깐 기다렸다 한 번만 다시 연다.
+                    releaseRecognizer()
+                    mainHandler.postDelayed({ if (sess == session) startOnDevice(onResult, retriesLeft - 1) }, BUSY_RETRY_MS)
+                    return
+                }
+                fail(failureOf(error), sound = true)
             }
             override fun onResults(results: Bundle?) {
+                if (sess != session) return
                 listening = false
                 level = 0f
                 partial = ""
@@ -396,33 +443,51 @@ class SpeechInputState(
                     earconDone()
                     onResult(text)
                 } else {
-                    this@SpeechInputState.error = true
-                    earconFail()
+                    fail(SpeechFailure.NO_MATCH, sound = true)
                 }
             }
             override fun onPartialResults(partialResults: Bundle?) {
+                if (sess != session) return
                 partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                     ?.firstOrNull()?.let { partial = it }
             }
             override fun onEvent(eventType: Int, params: Bundle?) {}
         })
-        runCatching {
-            r.startListening(
-                Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
-                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "ko-KR")
-                    putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
-                    putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, false)
-                    putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 6)
-                    putExtra("android.speech.extra.GET_AUDIO", false)
-                    putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 5000L)
-                    putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 3000L)
-                    putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 2500L)
-                },
-            )
-            listening = true
-        }.onFailure { listening = false }
+        // 준비음을 먼저 울리고 끝난 뒤에 마이크를 연다. 듣는 중에 울리면 신호음이 첫 음절을 덮거나 인식된다.
+        // 기다리는 동안에도 화면은 바로 '듣는 중'으로 바꿔 버튼이 두 번 눌리지 않게 한다.
+        listening = true
+        earconReady()
+        mainHandler.postDelayed({
+            if (sess != session || recognizer !== r) return@postDelayed
+            runCatching { r.startListening(recognizerIntent()) }
+                .onFailure { fail(SpeechFailure.UNAVAILABLE, sound = true) }
+        }, EARCON_LEAD_MS)
+    }
+
+    private fun recognizerIntent() = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "ko-KR")
+        putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+        putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, false)
+        putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 6)
+        putExtra("android.speech.extra.GET_AUDIO", false)
+        if (hints.isNotEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            putStringArrayListExtra(RecognizerIntent.EXTRA_BIASING_STRINGS, ArrayList(hints))
+        }
+        // 짧은 대답("네", "두 번째")이 대부분이라 최소 길이는 두지 않는다. 예전 5초 하한은 "네" 한마디에도
+        // 5초를 붙잡아 운전 중 답답했다. 침묵 기준만 짧게 줘 말이 끝나면 곧바로 닫는다.
+        putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 1500L)
+        putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 1200L)
+    }
+
+    private fun fail(kind: SpeechFailure, sound: Boolean) {
+        listening = false
+        partial = ""
+        level = 0f
+        failure = kind
+        error = true
+        if (sound) earconFail()
     }
 
     private fun releaseRecognizer() {
@@ -433,11 +498,53 @@ class SpeechInputState(
         recognizer = null
     }
 
-    private fun isOnline(): Boolean = runCatching {
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val caps = cm.getNetworkCapabilities(cm.activeNetwork)
-        caps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
-    }.getOrDefault(false)
+    private fun isOnline(): Boolean = context.hasValidatedNetwork()
+
+    private companion object {
+        /** 준비음(약 310ms)이 끝나고 마이크를 여는 시점. */
+        const val EARCON_LEAD_MS = 360L
+
+        /** 인식기에 넘기는 힌트 수 상한. 너무 많으면 힌트끼리 경쟁해 오히려 흐려진다. */
+        const val MAX_HINTS = 60
+
+        /** 인식기가 바쁠 때 다시 열기까지 기다리는 시간. */
+        const val BUSY_RETRY_MS = 400L
+
+        fun failureOf(code: Int): SpeechFailure = when (code) {
+            SpeechRecognizer.ERROR_NO_MATCH -> SpeechFailure.NO_MATCH
+            SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> SpeechFailure.NO_SPEECH
+            SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> SpeechFailure.NO_PERMISSION
+            SpeechRecognizer.ERROR_NETWORK,
+            SpeechRecognizer.ERROR_NETWORK_TIMEOUT,
+            SpeechRecognizer.ERROR_SERVER,
+            -> SpeechFailure.NETWORK
+            SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED,
+            SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE,
+            -> SpeechFailure.LANGUAGE
+            else -> SpeechFailure.UNAVAILABLE
+        }
+    }
+}
+
+/** 음성 입력이 실패한 이유. */
+enum class SpeechFailure {
+    /** 아무 말도 들리지 않았다. */
+    NO_SPEECH,
+
+    /** 들렸지만 알아듣지 못했다. */
+    NO_MATCH,
+
+    /** 마이크 권한이 없다. */
+    NO_PERMISSION,
+
+    /** 인식 서버에 닿지 못했다. */
+    NETWORK,
+
+    /** 한국어 인식 모델이 없거나 지원되지 않는다. */
+    LANGUAGE,
+
+    /** 이 기기에서 음성 인식을 쓸 수 없다. */
+    UNAVAILABLE,
 }
 
 /**
@@ -447,7 +554,7 @@ class SpeechInputState(
  */
 @Composable
 fun rememberSpeechInput(
-    cloudTranscribe: (suspend (ByteArray, Int) -> List<String>)? = null,
+    cloudTranscribe: (suspend (ByteArray, Int, List<String>) -> List<String>)? = null,
 ): SpeechInputState {
     val context = LocalContext.current
     val state = remember { SpeechInputState(context, cloudTranscribe) }

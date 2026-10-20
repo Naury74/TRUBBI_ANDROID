@@ -98,14 +98,23 @@ exports.checkEmail = functions.onCall(async (request) => {
 
 /**
  * 고정밀 한국어 받아쓰기 (Google Cloud Speech-to-Text). 로그인 사용자만.
- * 앱에서 data: { audio: base64(LINEAR16 16kHz mono PCM), sampleRate? } 로 호출.
+ * 앱에서 data: { audio: base64(LINEAR16 16kHz mono PCM), sampleRate?, hints?: string[] } 로 호출.
+ * hints 는 지금 화면에 있는 정차지 이름처럼 나올 법한 말이다. 고유명사 인식률을 크게 올린다.
  * → { transcript, alternatives:[...] }. 사전 준비: GCP에서 "Cloud Speech-to-Text API" 사용 설정.
  */
 exports.transcribeSpeech = functions.onCall(async (request) => {
   if (!request.auth) throw new functions.HttpsError("unauthenticated", "로그인이 필요해요");
   const audio = (request.data && request.data.audio) || "";
   if (!audio) throw new functions.HttpsError("invalid-argument", "audio 필요");
+  // 16kHz 모노 16bit 기준 15초 ≈ 480KB → base64 ≈ 640KB. 그보다 크면 앱이 보낼 수 없는 길이라 거절한다.
+  if (audio.length > 700000) throw new functions.HttpsError("invalid-argument", "녹음이 너무 길어요");
   const sampleRate = Number((request.data && request.data.sampleRate) || 16000) || 16000;
+  // 앱이 보낸 힌트. 개수와 길이를 제한해 남용을 막는다(Cloud STT 한도: 문구 100자).
+  const hints = (Array.isArray(request.data && request.data.hints) ? request.data.hints : [])
+    .filter((h) => typeof h === "string")
+    .map((h) => h.trim().slice(0, 100))
+    .filter(Boolean)
+    .slice(0, 60);
   try {
     const [resp] = await speechClient.recognize({
       config: {
@@ -121,6 +130,7 @@ exports.transcribeSpeech = functions.onCall(async (request) => {
           { phrases: ["첫번째", "두번째", "세번째", "네번째", "다섯번째", "여섯번째", "일곱번째", "마지막", "이거", "그거", "맞아", "다시"], boost: 16 },
           { phrases: ["여정 시작", "출발하자", "취소", "현재 위치", "경유지 추가", "상차지 추가", "하차지 추가", "없어요"], boost: 12 },
           { phrases: ["상차", "하차", "물류센터", "신항", "터미널", "공장", "창고", "휴게소"], boost: 8 },
+          ...(hints.length ? [{ phrases: hints, boost: 14 }] : []),
         ],
       },
       audio: { content: audio },

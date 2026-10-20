@@ -69,7 +69,9 @@ class JourneyVoice @Inject constructor(
      *
      * @param pcm 16-bit little-endian 모노 PCM
      * @param sampleRate 녹음 샘플레이트(Hz)
+     * @param hints 지금 나올 법한 낱말. 인식기가 비슷한 소리를 이쪽으로 맞춘다
      * @return 신뢰도 순 후보 문장. 오프라인이면 빈 리스트이고, 호출부가 기기 인식으로 내려간다
      */
-    suspend fun transcribe(pcm: ByteArray, sampleRate: Int): List<String> = stt.transcribe(pcm, sampleRate)
+    suspend fun transcribe(pcm: ByteArray, sampleRate: Int, hints: List<String>): List<String> =
+        stt.transcribe(pcm, sampleRate, hints)
 }

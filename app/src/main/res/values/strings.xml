@@ -835,7 +835,6 @@
     <string name="planner_no_results">찾는 곳이 없어요</string>
     <string name="planner_no_results_body">이름을 줄이거나 도로명·지번 주소로 찾아보세요.</string>
     <string name="planner_voice">말로 찾기</string>
-    <string name="planner_voice_prompt">어디로 갈지 말해 주세요</string>
     <string name="planner_star">즐겨찾기에 넣기</string>
     <string name="planner_unstar">즐겨찾기에서 빼기</string>
     <string name="planner_distance_straight">직선 %1$s</string>
@@ -847,4 +846,14 @@
     <string name="settings_ad_privacy_sub">맞춤 광고 동의를 다시 고를 수 있어요</string>
     <string name="action_start_kind">%1$s 시작</string>
     <string name="action_finish_kind">%1$s 완료</string>
+    <string name="voice_retry">잘 못 알아들었어요. 다시 말씀해 주세요.</string>
+    <string name="voice_need_mic">음성으로 하려면 마이크 권한이 필요해요.</string>
+    <string name="voice_unavailable">이 기기에서는 음성 인식을 쓸 수 없어요.</string>
+    <string name="voice_network">인터넷이 불안정해 알아듣지 못했어요. 다시 말씀해 주세요.</string>
+    <string name="voice_language">한국어 음성 인식이 설치되어 있지 않아요. 설정에서 한국어 음성 데이터를 받아 주세요.</string>
+    <string name="voice_listening">듣고 있어요</string>
+    <string name="voice_stop">그만 듣기</string>
+    <string name="planner_voice_examples">예) 부산 신항, 평택 물류센터, 현재 위치</string>
+    <string name="planner_did_you_mean">혹시 이곳인가요?</string>
+    <string name="planner_voice_searching">‘%1$s’ 찾는 중…</string>
 </resources>

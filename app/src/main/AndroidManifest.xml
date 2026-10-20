@@ -23,6 +23,13 @@
     <!-- 다른 앱 위에 떠 있는 '다음 단계' 플로팅 컨트롤 (사용자가 설정에서 허용 시) -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
+    <!-- Android 11+ 패키지 가시성: 이게 없으면 기기 음성 인식 서비스를 찾지 못해 마이크가 열리지 않는다. -->
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
     <application
         android:name=".TrubbiApp"
         android:allowBackup="true"

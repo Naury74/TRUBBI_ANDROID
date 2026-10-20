@@ -99,7 +99,9 @@ fun ArrivalPromptSheet(
      */
     fun handle(answer: String) {
         if (done) return
-        when (parseStartWait(answer)) {
+        // 1순위가 "대게"처럼 엉뚱해도 2·3순위에 "대기"가 있는 일이 많아 후보를 차례로 본다.
+        val heard = if (answer.isBlank()) emptyList() else speech.alternatives.ifEmpty { listOf(answer) }
+        when (heard.firstNotNullOfOrNull(::parseStartWait)) {
             true -> finishStart()
             false -> finishWait()
             else -> {
@@ -121,7 +123,7 @@ fun ArrivalPromptSheet(
 
     val audioPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
-    ) { granted -> if (granted && !done) speech.start { handle(it) } }
+    ) { granted -> if (granted && !done) speech.start(ARRIVAL_HINTS) { handle(it) } }
 
     // 클라우드 TTS 는 지연이 있어, 안내가 끝난 뒤에 마이크를 열어야 자기 말을 되받지 않는다.
     LaunchedEffect(Unit) {
@@ -131,7 +133,7 @@ fun ArrivalPromptSheet(
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED
             ) {
-                speech.start { handle(it) }
+                speech.start(ARRIVAL_HINTS) { handle(it) }
             } else {
                 audioPermission.launch(Manifest.permission.RECORD_AUDIO)
             }
@@ -217,36 +219,45 @@ private fun startListenSafely(
     if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
         == PackageManager.PERMISSION_GRANTED
     ) {
-        speech.start(onResult)
+        speech.start(ARRIVAL_HINTS, onResult)
     }
 }
 
 /**
  * 도착 물음의 음성 답을 해석한다.
  *
+ * 긴 낱말("대기", "시작")은 어미가 붙어 와도 되도록 부분 일치로 본다. 짧은 대답("네", "어", "고", "no", "go")은
+ * 다른 말 속에 너무 자주 들어 있어(예: "now" 안의 "no", "그래도" 안의 "어") 낱말 전체가 같을 때만 인정한다.
+ *
  * @return true=시작, false=대기, null=알아듣지 못함
  */
-private fun parseStartWait(text: String): Boolean? {
-    val spoken = text.replace(" ", "").lowercase()
-    if (spoken.isBlank()) return null
+internal fun parseStartWait(text: String): Boolean? {
+    val lower = text.lowercase().trim()
+    if (lower.isBlank()) return null
+    val spoken = lower.replace(" ", "")
+    val words = lower.split(Regex("[\\s,.!?]+")).filter(String::isNotEmpty).toSet()
+    fun hit(stems: List<String>, alone: Set<String>) = stems.any(spoken::contains) || words.any { it in alone } || spoken in alone
     return when {
-        WAIT_WORDS.any { spoken.contains(it) } -> false
-        START_WORDS.any { spoken.contains(it) } -> true
+        hit(WAIT_STEMS, WAIT_ALONE) -> false
+        hit(START_STEMS, START_ALONE) -> true
         else -> null
     }
 }
 
-// 받아쓰기 결과가 조사·어미까지 붙어 오므로 완전 일치가 아니라 부분 일치로 본다.
-private val WAIT_WORDS = listOf(
-    "대기", "아니", "이따", "나중", "잠깐", "잠시", "기다", "쉬", "휴식", "안해", "안할",
-    "조금있다", "멈춰", "노", "스탑", "정지", "보류",
-    "wait", "later", "not yet", "no", "stop", "hold",
+// 받아쓰기 결과가 조사·어미까지 붙어 오므로 긴 낱말은 부분 일치로 본다.
+private val WAIT_STEMS = listOf(
+    "대기", "아니", "이따", "나중", "잠깐", "잠시", "기다", "휴식", "안해", "안할", "조금있다", "멈춰", "스탑", "정지", "보류",
+    "wait", "later", "notyet", "hold",
 )
+private val WAIT_ALONE = setOf("노", "no", "nope", "stop", "쉴게", "쉬자", "쉬어", "아뇨", "아니요")
 
-private val START_WORDS = listOf(
-    "시작", "바로", "네", "예", "응", "어", "그래", "좋", "출발", "할게", "하자", "해줘",
-    "지금", "고고", "오케이", "맞아", "고",
-    "start", "yes", "yeah", "yep", "ok", "okay", "go", "sure", "now",
+private val START_STEMS = listOf(
+    "시작", "바로", "그래", "좋아", "좋아요", "출발", "할게", "하자", "해줘", "지금", "고고", "오케이", "맞아",
+    "start", "yes", "yeah", "okay", "sure", "letsgo",
 )
+private val START_ALONE = setOf("네", "예", "응", "어", "엉", "웅", "좋", "고", "ok", "go", "yep", "now")
+
+/** 인식기에 미리 알려 줄 대답. */
+private val ARRIVAL_HINTS = listOf("시작", "대기", "바로 시작", "나중에", "네", "아니요")
 
 private const val MAX_VOICE_RETRIES = 2
