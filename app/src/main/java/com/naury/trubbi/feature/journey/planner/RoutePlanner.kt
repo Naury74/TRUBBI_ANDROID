@@ -1,18 +1,15 @@
 package com.naury.trubbi.feature.journey.planner
 
 import android.app.Activity
-import android.content.Intent
 import android.location.Location
-import android.speech.RecognizerIntent
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +27,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +47,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -71,6 +72,8 @@ import com.naury.kinetica.ui.KVariant
 import com.naury.trubbi.R
 import com.naury.trubbi.core.location.CapturedLocation
 import com.naury.trubbi.core.location.PlaceCandidate
+import com.naury.trubbi.core.voice.PlaceUtterance
+import com.naury.trubbi.core.voice.rememberSpeechInput
 import com.naury.trubbi.data.local.FavoritePlaceEntity
 import com.naury.trubbi.data.local.JourneyStopEntity
 import com.naury.trubbi.data.repo.JourneyRepository.StopDraft
@@ -81,8 +84,12 @@ import com.naury.trubbi.ui.common.MapMarker
 import com.naury.trubbi.ui.common.MapPoint
 import com.naury.trubbi.ui.common.pinBitmap
 import com.naury.trubbi.ui.designsystem.AppIcons
+import com.naury.trubbi.ui.designsystem.VoiceListeningCard
+import com.naury.trubbi.ui.designsystem.messageRes
+import com.naury.trubbi.ui.designsystem.rememberMicStarter
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * 티맵처럼 지도 위에서 출발지·도착지를 고르는 화면. 새 여정을 시작하거나 진행 중인 여정에 정차지를 더한다.
@@ -404,11 +411,19 @@ private fun SearchPanel(
     var query by remember(field) { mutableStateOf("") }
     var results by remember(field) { mutableStateOf<List<PlaceCandidate>?>(null) }
     var searching by remember(field) { mutableStateOf(false) }
+    // 음성 검색이 이미 찾아 둔 결과. 검색어를 바꿔 넣을 때 같은 검색을 두 번 하지 않게 한다.
+    var voiceHit by remember(field) { mutableStateOf<VoicePick?>(null) }
+    var voiceNote by remember(field) { mutableStateOf<String?>(null) }
 
     // 치는 대로 찾는다. 0.3초 안에 다음 글자가 오면 앞 검색은 버린다.
     LaunchedEffect(query, here) {
         if (query.isBlank()) {
             results = null
+            searching = false
+            return@LaunchedEffect
+        }
+        voiceHit?.takeIf { it.query == query }?.let {
+            results = it.results
             searching = false
             return@LaunchedEffect
         }
@@ -418,13 +433,57 @@ private fun SearchPanel(
         searching = false
     }
 
-    val voicePrompt = stringResource(R.string.planner_voice_prompt)
-    val voice = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
-        if (r.resultCode == Activity.RESULT_OK) {
-            r.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()?.let { query = it }
+    val resources = LocalResources.current
+    val scope = rememberCoroutineScope()
+    val keyboard = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+    val speech = rememberSpeechInput()
+    // 인식기에 미리 알려 줄 말. 기사가 자주 가는 곳 이름과 이 화면의 명령어다.
+    val voiceHints = remember(favorites, recentStops) {
+        favorites.map { it.name } + recentStops.mapNotNull { it.name } + VOICE_COMMAND_HINTS
+    }
+
+    fun onSpoken(top: String) {
+        val heard = speech.alternatives.ifEmpty { listOf(top) }
+        when (val meaning = PlaceUtterance.meaning(heard.first())) {
+            PlaceUtterance.Meaning.Cancel -> onClose()
+            PlaceUtterance.Meaning.Here -> if (field == PlanField.Origin) {
+                onPick(null)
+            } else {
+                voiceNote = resources.getString(R.string.voice_retry)
+            }
+            else -> {
+                val queries = PlaceUtterance.queries(heard).ifEmpty { listOfNotNull((meaning as? PlaceUtterance.Meaning.Search)?.query) }
+                if (queries.isEmpty()) {
+                    voiceNote = resources.getString(R.string.voice_retry)
+                    return
+                }
+                voiceNote = null
+                searching = true
+                query = queries.first()
+                scope.launch {
+                    val pick = pickVoiceQuery(queries) { q -> searchPlaces(q, here?.latitude, here?.longitude) } ?: return@launch
+                    voiceHit = pick
+                    if (query == pick.query) {
+                        results = pick.results
+                        searching = false
+                    } else {
+                        query = pick.query
+                    }
+                }
+            }
         }
     }
-    val resources = LocalResources.current
+
+    val listen = rememberMicStarter(onDenied = { voiceNote = resources.getString(R.string.voice_need_mic) }) {
+        keyboard?.hide()
+        focusManager.clearFocus()
+        voiceNote = null
+        speech.start(voiceHints, ::onSpoken)
+    }
+    LaunchedEffect(speech.error) {
+        if (speech.error) voiceNote = speech.failure?.let { resources.getString(it.messageRes()) }
+    }
     // 칸을 누르면 바로 칠 수 있게 검색창에 포커스를 준다(키보드가 같이 올라온다).
     val focus = remember { FocusRequester() }
     LaunchedEffect(field) { runCatching { focus.requestFocus() } }
@@ -441,7 +500,10 @@ private fun SearchPanel(
             KIconButton(AppIcons.ArrowBackIos, stringResource(R.string.action_back), onClose, variant = KVariant.Text, size = 44.dp)
             KSearchBar(
                 query = query,
-                onQueryChange = { query = it },
+                onQueryChange = {
+                    query = it
+                    voiceNote = null
+                },
                 onSearch = { query = it },
                 placeholder = stringResource(
                     when (field) {
@@ -456,18 +518,45 @@ private fun SearchPanel(
             KIconButton(
                 AppIcons.Mic,
                 stringResource(R.string.planner_voice),
-                onClick = {
-                    runCatching {
-                        voice.launch(
-                            Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-                                .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                                .putExtra(RecognizerIntent.EXTRA_PROMPT, voicePrompt),
-                        )
-                    }
-                },
-                variant = KVariant.Text,
+                onClick = { if (speech.listening) speech.cancel() else listen() },
+                variant = if (speech.listening) KVariant.Tonal else KVariant.Text,
                 size = 44.dp,
             )
+        }
+
+        if (speech.listening) {
+            VoiceListeningCard(
+                speech = speech,
+                hint = stringResource(R.string.planner_voice_examples),
+                onStop = speech::cancel,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+            )
+        }
+        voiceNote?.let { note ->
+            Text(
+                note,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp),
+            )
+        }
+        // 인식기가 다르게 들은 후보. 틀리게 들렸으면 다시 말하지 않고 눌러서 바꾼다.
+        val others = voiceHit?.takeIf { it.query == query }?.others.orEmpty()
+        if (others.isNotEmpty() && !speech.listening) {
+            Row(
+                Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    stringResource(R.string.planner_did_you_mean),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = LocalTrubbiColors.current.secondaryLabel,
+                )
+                others.forEach { alt ->
+                    KButton(alt, { query = alt }, size = KButtonSize.Small, variant = KVariant.Tonal)
+                }
+            }
         }
 
         LazyColumn(Modifier.fillMaxSize(), contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 24.dp)) {
@@ -606,3 +695,6 @@ internal fun formatDistance(meters: Int): String = when {
 
 private const val SEARCH_DEBOUNCE_MS = 300L
 private const val SKELETON_ROWS = 5
+
+/** 검색 칸에서 쓰는 명령어. 인식기가 비슷한 소리를 이쪽으로 맞추게 미리 알려 준다. */
+private val VOICE_COMMAND_HINTS = listOf("현재 위치", "취소", "물류센터", "신항", "터미널", "휴게소", "공장", "창고", "IC", "JC")
