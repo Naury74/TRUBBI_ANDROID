@@ -238,14 +238,15 @@ private fun CameraContent(
     // 위치 저장을 켜 둔 사용자에게는 촬영 전에 권한을 먼저 묻는다. 찍고 나서 물으면
     // 그 장면의 위치는 이미 놓친 뒤다.
     val locationLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission(),
+        ActivityResultContracts.RequestMultiplePermissions(),
     ) { }
     LaunchedEffect(saveLocation) {
         if (saveLocation &&
             ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) !=
             PackageManager.PERMISSION_GRANTED
         ) {
-            locationLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            // 정밀 위치는 대략적 위치와 함께 물어야 한다(Android 12+).
+            locationLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
         }
     }
 

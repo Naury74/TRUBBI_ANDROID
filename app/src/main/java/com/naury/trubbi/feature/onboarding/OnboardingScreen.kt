@@ -100,7 +100,9 @@ fun OnboardingScreen(
     fun requestCorePermissions() {
         permRequested = true
         val perms = buildList {
+            // Android 12+ 는 정밀 위치를 대략적 위치와 함께 물어야 한다. 정밀만 물으면 요청이 무시될 수 있다.
             add(android.Manifest.permission.ACCESS_FINE_LOCATION)
+            add(android.Manifest.permission.ACCESS_COARSE_LOCATION)
             if (android.os.Build.VERSION.SDK_INT >= 33) add(android.Manifest.permission.POST_NOTIFICATIONS)
         }
         runCatching { permLauncher.launch(perms.toTypedArray()) }

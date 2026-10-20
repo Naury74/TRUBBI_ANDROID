@@ -15,11 +15,19 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.IBinder
+import android.os.SystemClock
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.naury.trubbi.R
 import com.naury.trubbi.core.i18n.label
+import com.naury.trubbi.core.location.Fix
+import com.naury.trubbi.core.location.LiveLocation
 import com.naury.trubbi.core.notification.NotificationIcons
 import com.naury.trubbi.core.voice.VoicePrompter
 import com.naury.trubbi.data.AdvanceEvent
@@ -35,9 +43,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 
 /**
  * 여정이 진행되는 동안만 살아 있는 포그라운드 서비스.
@@ -45,8 +57,10 @@ import kotlinx.coroutines.launch
  * GPS 자취를 남겨 경로선과 주행 거리를 만들고, 다음 정차지를 보여 주는 상시 알림을 띄우며,
  * 도착 반경에 들어오면 알림과 음성으로 알린다.
  *
- * 배터리를 아끼려고 위치 요청 자체를 [MIN_TIME_MS]/[MIN_DIST_M] 로 성기게 잡고, 저장은
- * 다시 [SAVE_DIST_M] 만큼 움직였을 때만 한다. 여정 시작~완료 사이에만 동작한다.
+ * 좌표는 Fused(GPS·와이파이·센서 융합)로 받고, Play 서비스가 없으면 [LocationManager] 로 내려간다. 받은 좌표는
+ * [FixFilter] 로 튀는 점을 걸러 낸 뒤 [SAVE_DIST_M] 만큼 움직였을 때만 저장한다. 도착은 [ArrivalDetector] 가
+ * 머문 시간과 정확도까지 보고 판정한다. 여정 시작~완료 사이에만 동작하며, 시스템이 프로세스를 내렸다가 다시
+ * 띄우면 진행 중인 여정을 찾아 이어서 기록한다.
  */
 @AndroidEntryPoint
 class JourneyTrackingService : Service() {
@@ -59,20 +73,26 @@ class JourneyTrackingService : Service() {
 
     @Inject lateinit var controlSignal: JourneyControlSignal
 
+    @Inject lateinit var liveLocation: LiveLocation
+
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    // 좌표 처리는 순서가 중요하다(직전 점과 비교). 한 번에 하나씩 돌도록 묶는다.
+    private val fixLock = Mutex()
     private var journeyId: String? = null
-    private var lastSaved: Location? = null
-    private var lastFix: Location? = null
+    private var lastSaved: Fix? = null
+    private var lastFix: Fix? = null
     private var latestJourney: JourneyWithStops? = null
     private var radiusM = DEFAULT_ARRIVAL_RADIUS_M
     private var voiceOn = true
+    private var watchJob: Job? = null
     private var listener: LocationListener? = null
+    private var fusedCallback: LocationCallback? = null
+    private var filter = FixFilter()
+    private val arrival = ArrivalDetector()
 
-    /** 이미 도착 알림을 보낸 정차지 — 한 곳당 한 번만 알린다. */
-    private val alerted = mutableSetOf<String>()
-
-    /** 이미 "곧 도착" 예고를 보낸 정차지. */
-    private val approaching = mutableSetOf<String>()
+    /** 알림을 마지막으로 그린 때의 남은 거리. 좌표마다 다시 그리지 않고 의미 있게 바뀌었을 때만 그린다. */
+    private var notifiedRemainingM: Float? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -92,6 +112,7 @@ class JourneyTrackingService : Service() {
             }
 
             ACTION_ARRIVE -> {
+                ensureTracking()
                 intent.getStringExtra(EXTRA_STOP_ID)?.let { stopId ->
                     scope.launch {
                         journeyRepo.arriveAtStop(stopId)
@@ -101,26 +122,66 @@ class JourneyTrackingService : Service() {
                 notificationManager().cancel(NOTIF_ID_ARRIVAL)
             }
 
-            ACTION_ADVANCE -> advanceCurrent()
+            ACTION_ADVANCE -> {
+                ensureTracking()
+                advanceCurrent()
+            }
 
             else -> {
                 val id = intent?.getStringExtra(EXTRA_JOURNEY_ID)
-                if (id != null && id != journeyId) {
-                    journeyId = id
-                    if (!startForegroundSafely()) {
-                        stopSelf()
-                        return START_NOT_STICKY
-                    }
-                    startLocationUpdates()
-                    watchJourney(id)
+                when {
+                    id != null && id != journeyId -> if (!begin(id)) return START_NOT_STICKY
+                    // 시스템이 프로세스를 내렸다가 START_STICKY 로 다시 띄우면 intent 가 없다. 진행 중인 여정을 찾아 잇는다.
+                    id == null && journeyId == null -> ensureTracking()
                 }
             }
         }
         return START_STICKY
     }
 
+    /** 여정 [id] 의 추적을 처음부터 시작한다. 다른 여정을 추적 중이었으면 그 상태를 모두 비운다. */
+    private fun begin(id: String): Boolean {
+        stopTracking()
+        if (!startForegroundSafely()) {
+            stopSelf()
+            return false
+        }
+        journeyId = id
+        startLocationUpdates()
+        watchJourney(id)
+        return true
+    }
+
+    /**
+     * 추적 중인 여정이 없으면 진행 중인 여정을 찾아 이어서 추적한다.
+     *
+     * 알림 버튼이나 재시작으로 서비스가 새로 떴을 때 여정을 모르면 버튼이 아무 일도 하지 않던 문제를 막는다.
+     */
+    private fun ensureTracking() {
+        if (journeyId != null) return
+        // 포그라운드 서비스는 시작 직후 곧바로 알림을 올려야 한다. 여정을 찾는 동안 기본 알림을 먼저 띄운다.
+        if (!startForegroundSafely()) {
+            stopSelf()
+            return
+        }
+        scope.launch {
+            val active = runCatching { journeyRepo.activeJourneyOnce() }.getOrNull()
+            withContext(Dispatchers.Main) {
+                when {
+                    journeyId != null -> Unit
+                    active == null -> stopSelf()
+                    else -> {
+                        latestJourney = active
+                        begin(active.journey.journeyId)
+                    }
+                }
+            }
+        }
+    }
+
     override fun onDestroy() {
         stopTracking()
+        liveLocation.clear()
         scope.cancel()
         super.onDestroy()
     }
@@ -157,8 +218,11 @@ class JourneyTrackingService : Service() {
 
     // ── 수명주기 ──────────────────────────────────────────────────────────────
 
+    private fun hasFineLocation(): Boolean =
+        ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
     private fun hasLocationPermission(): Boolean =
-        ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+        hasFineLocation() ||
             ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     /** 안드로이드 14+ 는 위치 권한 없이 location 타입 FGS 를 거부하므로 미리 막는다. */
@@ -176,62 +240,140 @@ class JourneyTrackingService : Service() {
 
     /** 어디에서든 여정이 끝나면 서비스도 함께 내린다. */
     private fun watchJourney(id: String) {
-        scope.launch {
+        watchJob?.cancel()
+        watchJob = scope.launch {
             journeyRepo.observeJourney(id).collect { journey ->
+                // 다른 여정으로 바뀐 뒤 늦게 온 소식이면 무시한다(새 여정 추적까지 꺼 버리던 문제).
+                if (id != journeyId) return@collect
                 if (journey == null || !journey.journey.isActive) {
-                    stopTracking()
-                    stopSelf()
+                    withContext(Dispatchers.Main) {
+                        stopTracking()
+                        stopSelf()
+                    }
                 } else {
                     latestJourney = journey
-                    notificationManager().notify(NOTIF_ID_ONGOING, buildOngoingNotification(journey))
+                    notifyOngoing(journey)
                 }
             }
         }
     }
 
+    /**
+     * 위치 갱신을 시작한다.
+     *
+     * 정밀 위치 권한이 없으면(대략적 위치만 허용) GPS 를 요청할 수 없으므로 BALANCED 로 낮춘다. 예전에는 이때
+     * GPS 를 요청하다 보안 예외가 나고 그대로 삼켜져 경로가 한 점도 남지 않았다.
+     */
     @Suppress("MissingPermission")
     private fun startLocationUpdates() {
         if (!hasLocationPermission()) return
-        val manager = getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return
-        val provider = when {
-            manager.isProviderEnabled(LocationManager.GPS_PROVIDER) -> LocationManager.GPS_PROVIDER
-            manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) -> LocationManager.NETWORK_PROVIDER
-            else -> return
+        val fine = hasFineLocation()
+        // 대략적 위치는 반경이 수백 m~수 km 라 정밀 기준(50m)으로는 모두 버려진다. 거친 경로라도 남긴다.
+        filter = FixFilter(maxAccuracyM = if (fine) MAX_ACCURACY_M else COARSE_MAX_ACCURACY_M)
+        val request = LocationRequest.Builder(if (fine) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY, INTERVAL_MS)
+            .setMinUpdateIntervalMillis(FASTEST_INTERVAL_MS)
+            .setMinUpdateDistanceMeters(MIN_DIST_M)
+            .setWaitForAccurateLocation(fine)
+            .build()
+        val callback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+                result.locations.forEach(::onFix)
+            }
         }
+        fusedCallback = callback
+        val started = runCatching {
+            LocationServices.getFusedLocationProviderClient(this)
+                .requestLocationUpdates(request, callback, mainLooper)
+                .addOnFailureListener {
+                    fusedCallback = null
+                    startLegacyUpdates(fine)
+                }
+        }.isSuccess
+        if (!started) {
+            fusedCallback = null
+            startLegacyUpdates(fine)
+        }
+    }
+
+    /** Play 서비스가 없는 기기용. GPS 와 네트워크를 둘 다 듣고 필터가 정확한 쪽을 고르게 한다. */
+    @Suppress("MissingPermission")
+    private fun startLegacyUpdates(fine: Boolean) {
+        val manager = getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return
         val newListener = LocationListener { onFix(it) }
         listener = newListener
-        runCatching { manager.requestLocationUpdates(provider, MIN_TIME_MS, MIN_DIST_M, newListener, mainLooper) }
+        val providers = buildList {
+            if (fine) add(LocationManager.GPS_PROVIDER)
+            add(LocationManager.NETWORK_PROVIDER)
+        }
+        providers.forEach { p ->
+            runCatching { manager.requestLocationUpdates(p, INTERVAL_MS, MIN_DIST_M, newListener, mainLooper) }
+        }
     }
 
     private fun stopTracking() {
+        fusedCallback?.let { cb -> runCatching { LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(cb) } }
+        fusedCallback = null
         val manager = getSystemService(Context.LOCATION_SERVICE) as? LocationManager
         listener?.let { runCatching { manager?.removeUpdates(it) } }
         listener = null
+        watchJob?.cancel()
+        watchJob = null
         journeyId = null
         latestJourney = null
+        // 이전 여정의 마지막 점과 새 여정 첫 점 사이 거리가 주행 거리에 더해지지 않도록 비운다.
+        lastSaved = null
+        lastFix = null
+        notifiedRemainingM = null
+        filter.reset()
+        arrival.reset()
     }
 
     // ── 위치 갱신마다 하는 일 ─────────────────────────────────────────────────
 
-    private fun onFix(fix: Location) {
-        lastFix = fix
+    private fun onFix(location: Location) {
         val id = journeyId ?: return
+        val fix = Fix(
+            latitude = location.latitude,
+            longitude = location.longitude,
+            accuracyM = location.accuracy.takeIf { location.hasAccuracy() },
+            timeMs = location.time,
+            speedMps = location.speed.takeIf { location.hasSpeed() },
+            bearing = location.bearing.takeIf { location.hasBearing() },
+        )
+        val ageMs = (SystemClock.elapsedRealtimeNanos() - location.elapsedRealtimeNanos) / 1_000_000
         scope.launch {
-            val previous = lastSaved
-            val moved = previous?.distanceTo(fix)
-            if (previous == null || moved == null || moved >= SAVE_DIST_M) {
-                journeyRepo.addRoutePoint(
-                    journeyId = id,
-                    latitude = fix.latitude,
-                    longitude = fix.longitude,
-                    speedKmh = if (fix.hasSpeed()) fix.speed * 3.6f else null,
-                    deltaM = moved?.toLong() ?: 0L,
-                )
-                lastSaved = fix
+            fixLock.withLock {
+                if (id != journeyId || !filter.accept(fix, ageMs)) return@withLock
+                lastFix = fix
+                liveLocation.publish(fix)
+                val previous = lastSaved
+                val moved = previous?.let { distanceM(it, fix) }
+                if (moved == null || moved >= SAVE_DIST_M) {
+                    journeyRepo.addRoutePoint(
+                        journeyId = id,
+                        latitude = fix.latitude,
+                        longitude = fix.longitude,
+                        speedKmh = fix.speedMps?.times(3.6f),
+                        deltaM = moved?.toLong() ?: 0L,
+                    )
+                    lastSaved = fix
+                }
+                checkProximity(fix)
+                latestJourney?.let { journey -> if (remainingChanged(journey)) notifyOngoing(journey) }
             }
-            checkProximity(fix)
-            latestJourney?.let { notificationManager().notify(NOTIF_ID_ONGOING, buildOngoingNotification(it)) }
         }
+    }
+
+    /** 남은 거리가 [NOTIFY_STEP_M] 이상 바뀌었는지. 좌표마다 알림을 다시 그리면 배터리를 쓰고 깜박인다. */
+    private fun remainingChanged(journey: JourneyWithStops): Boolean {
+        val now = journey.currentStop?.let(::remainingMeters) ?: return false
+        val before = notifiedRemainingM
+        return before == null || kotlin.math.abs(before - now) >= NOTIFY_STEP_M
+    }
+
+    private fun notifyOngoing(journey: JourneyWithStops) {
+        notifiedRemainingM = journey.currentStop?.let(::remainingMeters)
+        notificationManager().notify(NOTIF_ID_ONGOING, buildOngoingNotification(journey))
     }
 
     /**
@@ -240,28 +382,21 @@ class JourneyTrackingService : Service() {
      * 예고를 따로 두는 이유: 반경(기본 300m)에서 알리면 큰 물류센터에서는 이미 진입로를
      * 지나친 뒤라 늦다.
      */
-    private fun checkProximity(fix: Location) {
+    private fun checkProximity(fix: Fix) {
         val stop = latestJourney?.currentStop ?: return
         if (stop.arrivedAt != null) return
         val lat = stop.latitude ?: return
         val lng = stop.longitude ?: return
-
-        val out = FloatArray(1)
-        Location.distanceBetween(fix.latitude, fix.longitude, lat, lng, out)
-        val distance = out[0]
-
-        val headsUpM = (radiusM * 4).coerceAtLeast(1000)
-        if (distance <= headsUpM && stop.stopId !in approaching && stop.stopId !in alerted) {
-            approaching += stop.stopId
-            if (voiceOn) {
+        val distance = distanceM(fix.latitude, fix.longitude, lat, lng)
+        when (arrival.update(stop.stopId, distance, radiusM, fix)) {
+            ArrivalDetector.Event.APPROACHING -> if (voiceOn) {
                 voice.speak(getString(R.string.voice_approaching, stop.displayName(this), formatDistance(distance)))
             }
-        }
-
-        if (distance <= radiusM && stop.stopId !in alerted) {
-            alerted += stop.stopId
-            notifyArrival(stop)
-            if (voiceOn) voice.speak(getString(R.string.voice_near_stop, stop.displayName(this)))
+            ArrivalDetector.Event.ARRIVED -> {
+                notifyArrival(stop)
+                if (voiceOn) voice.speak(getString(R.string.voice_near_stop, stop.displayName(this)))
+            }
+            ArrivalDetector.Event.NONE -> Unit
         }
     }
 
@@ -354,13 +489,13 @@ class JourneyTrackingService : Service() {
         return builder.build()
     }
 
-    private fun remainingDistance(stop: JourneyStopEntity): String? {
+    private fun remainingDistance(stop: JourneyStopEntity): String? = remainingMeters(stop)?.let(::formatDistance)
+
+    private fun remainingMeters(stop: JourneyStopEntity): Float? {
         val fix = lastFix ?: return null
         val lat = stop.latitude ?: return null
         val lng = stop.longitude ?: return null
-        val out = FloatArray(1)
-        Location.distanceBetween(fix.latitude, fix.longitude, lat, lng, out)
-        return formatDistance(out[0])
+        return distanceM(fix.latitude, fix.longitude, lat, lng)
     }
 
     private fun formatDistance(meters: Float): String =
@@ -401,11 +536,23 @@ class JourneyTrackingService : Service() {
         private const val REQ_ADVANCE = 2
 
         private const val DEFAULT_ARRIVAL_RADIUS_M = 300
-        private const val MIN_TIME_MS = 20_000L
-        private const val MIN_DIST_M = 60f
+
+        /** 위치를 받는 간격. 시속 90km 에서 10초면 250m 라 경로선이 도로를 따라 그려진다. */
+        private const val INTERVAL_MS = 10_000L
+        private const val FASTEST_INTERVAL_MS = 5_000L
+        private const val MIN_DIST_M = 25f
 
         /** 이만큼 움직였을 때만 자취를 저장해 DB 행 수를 줄인다. */
-        private const val SAVE_DIST_M = 90f
+        private const val SAVE_DIST_M = 60f
+
+        /** 정밀 위치에서 이보다 반경이 큰 좌표는 경로에 넣지 않는다. */
+        private const val MAX_ACCURACY_M = 50f
+
+        /** 대략적 위치만 허용됐을 때의 기준. */
+        private const val COARSE_MAX_ACCURACY_M = 2_000f
+
+        /** 남은 거리가 이만큼 바뀌었을 때만 상시 알림을 다시 그린다. */
+        private const val NOTIFY_STEP_M = 50f
 
         private val BRAND_COLOR = com.naury.trubbi.core.ui.BrandPalette.PRIMARY
 

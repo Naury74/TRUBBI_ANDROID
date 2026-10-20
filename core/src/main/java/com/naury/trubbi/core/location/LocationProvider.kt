@@ -7,6 +7,7 @@ import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
+import android.os.SystemClock
 import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.net.HttpURLConnection
@@ -56,6 +57,7 @@ data class PlaceCandidate(
 class LocationProvider @Inject constructor(
     @ApplicationContext private val context: Context,
     private val keys: LocationKeys,
+    private val live: LiveLocation,
 ) {
     fun hasPermission(): Boolean =
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
@@ -69,7 +71,10 @@ class LocationProvider @Inject constructor(
     /** 현재 위치와 주소. 못 구하면 null. */
     suspend fun capture(): CapturedLocation? {
         if (!hasPermission()) return null
-        val location = currentLocation() ?: return null
+        // 여정 추적 중이면 몇 초 전에 받은 정확한 좌표가 있다. 새로 측위하면 몇 초 늦어 그사이 차가 움직인다.
+        val location = live.fresh()?.let { LatLng(it.latitude, it.longitude) }
+            ?: currentLocation()?.let { LatLng(it.latitude, it.longitude) }
+            ?: return null
         val address = withContext(Dispatchers.IO) {
             // 카카오 역지오코딩이 한글 도로명 주소를 더 정확히 준다. 키가 없으면 Geocoder.
             kakaoCoord2Address(location.latitude, location.longitude)
@@ -85,8 +90,11 @@ class LocationProvider @Inject constructor(
         // Play 서비스가 없는 기기용 폴백 — 단발 측위 + 마지막 위치 중 정확한 쪽.
         val lm = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return null
         val fresh = withTimeoutOrNull(8000) { requestSingle(lm) }
+        // 마지막 위치는 몇 시간·며칠 전 것일 수 있다. 최근 것만 쓰고, 그중 정확한 쪽을 고른다.
+        // (예전에는 나이를 보지 않아 어제 GPS 좌표가 오늘 네트워크 좌표를 이겼다.)
         val lastKnown = listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER, LocationManager.PASSIVE_PROVIDER)
             .mapNotNull { p -> runCatching { lm.getLastKnownLocation(p) }.getOrNull() }
+            .filter(::isRecent)
             .minByOrNull { it.accuracy.takeIf { a -> a > 0f } ?: Float.MAX_VALUE }
         return when {
             fresh == null -> lastKnown
@@ -113,8 +121,12 @@ class LocationProvider @Inject constructor(
             }.getOrNull()
         }
         if (fresh == null) cts.cancel()
-        fresh ?: runCatching { client.lastLocation.await() }.getOrNull()
+        fresh ?: runCatching { client.lastLocation.await() }.getOrNull()?.takeIf(::isRecent)
     }.getOrNull()
+
+    /** 마지막 위치를 지금 위치로 써도 될 만큼 최근인지. */
+    private fun isRecent(location: Location): Boolean =
+        (SystemClock.elapsedRealtimeNanos() - location.elapsedRealtimeNanos) / 1_000_000 <= LAST_KNOWN_MAX_AGE_MS
 
     @Suppress("MissingPermission")
     private suspend fun requestSingle(lm: LocationManager): Location? = suspendCancellableCoroutine { cont ->
@@ -393,3 +405,8 @@ class LocationProvider @Inject constructor(
         return line?.removePrefix("대한민국 ")?.trim()?.ifBlank { null }
     }
 }
+
+private data class LatLng(val latitude: Double, val longitude: Double)
+
+/** 마지막 위치를 받아들이는 최대 나이. 차는 2분이면 2~3km 를 가지만, 위치가 아예 없는 것보다는 낫다. */
+private const val LAST_KNOWN_MAX_AGE_MS = 120_000L

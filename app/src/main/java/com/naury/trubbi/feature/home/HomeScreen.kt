@@ -137,9 +137,11 @@ fun HomeScreen(
     BackHandler(enabled = selectionMode) { viewModel.selection.clear() }
 
     // 날씨에 쓸 위치 권한 — 이미 있으면 갱신만, 없으면 처음 들어올 때 한 번만 묻는다.
+    // 날씨만 보면 대략적 위치로 충분하지만, 같은 권한이 여정 경로 기록에도 쓰인다. 대략적 위치만 받아 두면
+    // 나중에 경로가 거칠게 남으므로 처음부터 정밀 위치를 함께 묻는다(사용자가 대략적 위치를 고를 수는 있다).
     val weatherPermission = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission(),
-    ) { granted -> if (granted) viewModel.refreshWeather() }
+        ActivityResultContracts.RequestMultiplePermissions(),
+    ) { granted -> if (granted.values.any { it }) viewModel.refreshWeather() }
     LaunchedEffect(Unit) {
         val granted = androidx.core.content.ContextCompat.checkSelfPermission(
             context,
@@ -148,7 +150,9 @@ fun HomeScreen(
         if (granted) {
             viewModel.refreshWeather()
         } else {
-            weatherPermission.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+            weatherPermission.launch(
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION),
+            )
         }
     }
 
