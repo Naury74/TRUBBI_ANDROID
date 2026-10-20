@@ -3,7 +3,7 @@
     android:id="@+id/map_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/widget_bg_white">
+    android:background="@drawable/widget_bg_surface">
 
     <ImageView
         android:id="@+id/map_image"

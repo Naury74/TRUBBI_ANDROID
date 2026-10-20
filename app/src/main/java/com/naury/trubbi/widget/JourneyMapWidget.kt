@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
 import android.view.View
@@ -67,6 +68,7 @@ class JourneyMapWidget : AppWidgetProvider() {
         val currentStop = active.currentStop
         val bitmap = runCatching {
             renderMap(
+                background = context.getColor(R.color.widget_map_bg),
                 route = route.map { it.latitude to it.longitude },
                 stops = active.orderedStops.mapNotNull { stop ->
                     val lat = stop.latitude ?: return@mapNotNull null
@@ -115,6 +117,7 @@ class JourneyMapWidget : AppWidgetProvider() {
      * 위도에 따라 경도 간격이 좁아지므로 cos 보정을 넣어야 남북으로 긴 경로가 찌그러지지 않는다.
      */
     private fun renderMap(
+        background: Int,
         route: List<Pair<Double, Double>>,
         stops: List<StopDot>,
         current: Pair<Double, Double>?,
@@ -124,7 +127,7 @@ class JourneyMapWidget : AppWidgetProvider() {
         val pad = 56f
         val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bmp)
-        canvas.drawColor(Color.parseColor("#EEF1F4"))
+        canvas.drawColor(background)
 
         val all = route + stops.map { it.lat to it.lng } + listOfNotNull(current)
         if (all.isEmpty()) return bmp
@@ -172,11 +175,14 @@ class JourneyMapWidget : AppWidgetProvider() {
             paint.strokeCap = Paint.Cap.ROUND
             paint.strokeJoin = Paint.Join.ROUND
             paint.color = com.naury.trubbi.core.ui.BrandPalette.PRIMARY
+            // 자취 없이 정차지 순서만 이을 때는 앱 지도처럼 점선으로 그려 실제 경로가 아님을 보인다.
+            paint.pathEffect = if (route.size >= 2) null else DashPathEffect(floatArrayOf(DASH_PX, DASH_PX), 0f)
             val path = Path().apply {
                 moveTo(line[0].first, line[0].second)
                 line.drop(1).forEach { lineTo(it.first, it.second) }
             }
             canvas.drawPath(path, paint)
+            paint.pathEffect = null
         }
 
         stops.forEach { stop ->
@@ -213,6 +219,8 @@ class JourneyMapWidget : AppWidgetProvider() {
     }
 
     companion object {
+        private const val DASH_PX = 14f
+
         private fun repoOf(context: Context): JourneyRepository =
             EntryPointAccessors
                 .fromApplication(context.applicationContext, WidgetEntryPoint::class.java)

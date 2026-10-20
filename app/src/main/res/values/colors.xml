@@ -2,4 +2,12 @@
 <resources>
     <color name="trubbi_bg">#FFF3F5FA</color>
     <color name="trubbi_brand">#FF2457F5</color>
+    <!-- 여정 위젯. 다크 테마에서는 values-night 값으로 바뀐다(바코드 위젯은 인식을 위해 늘 흰 배경). -->
+    <color name="widget_surface">#FFFFFFFF</color>
+    <color name="widget_outline">#22000000</color>
+    <color name="widget_text_primary">#FF16181C</color>
+    <color name="widget_text_secondary">#FF6B7280</color>
+    <color name="widget_text_tertiary">#FF9097A0</color>
+    <color name="widget_btn_neutral">#FFE8EDF7</color>
+    <color name="widget_map_bg">#FFEEF1F4</color>
 </resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 야간 운전 때 위젯이 눈부시지 않게. -->
+    <color name="widget_surface">#FF161B26</color>
+    <color name="widget_outline">#33FFFFFF</color>
+    <color name="widget_text_primary">#FFF1F3F7</color>
+    <color name="widget_text_secondary">#FFA3ABB8</color>
+    <color name="widget_text_tertiary">#FF7D8593</color>
+    <color name="widget_btn_neutral">#FF262D3B</color>
+    <color name="widget_map_bg">#FF1E2532</color>
+</resources>
