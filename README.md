@@ -63,6 +63,11 @@
 echo "KAKAO_REST_KEY=..."   >> local.properties
 echo "KAKAO_NATIVE_KEY=..." >> local.properties
 
+# Firebase 설정 — 저장소에 없다(공개 저장소라 키를 올리지 않음).
+# Firebase 콘솔 > 프로젝트 설정 > Android 앱에서 google-services.json 을 받아 app/ 에 둔다.
+# 없으면 가짜 값으로라도 빌드하려면: cp app/google-services.example.json app/google-services.json
+# Cloud Functions 배포용 .firebaserc 도 .firebaserc.example 을 복사해 프로젝트 ID 를 넣는다.
+
 # AdMob 실제 ID (release 전용, 없으면 광고를 띄우지 않음. debug 는 Google 테스트 ID)
 echo "ADMOB_APP_ID=ca-app-pub-...~..."   >> local.properties
 echo "ADMOB_NATIVE_UNIT=ca-app-pub-.../..." >> local.properties

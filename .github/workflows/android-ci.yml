@@ -44,6 +44,18 @@ jobs:
             echo "ADMOB_BANNER_UNIT=${{ secrets.ADMOB_BANNER_UNIT }}"
           } > local.properties
 
+      - name: Firebase 설정 파일 생성
+        # 실제 파일은 저장소에 없다. Secret(GOOGLE_SERVICES_JSON, base64)이 있으면 그걸로,
+        # 없으면 가짜 예시 파일로 빌드·테스트만 돌린다(로그인·백업은 실제 파일이 있어야 동작).
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            echo "$GOOGLE_SERVICES_JSON" | base64 --decode > app/google-services.json
+          else
+            cp app/google-services.example.json app/google-services.json
+          fi
+
       - name: gradlew 실행 권한
         run: chmod +x ./gradlew
 
