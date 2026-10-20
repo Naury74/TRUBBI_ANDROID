@@ -6,6 +6,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.naury.trubbi.R
@@ -25,6 +26,8 @@ fun MapControls(
     modifier: Modifier = Modifier,
     onRecenter: (() -> Unit)? = null,
     onFitAll: (() -> Unit)? = null,
+    recenterIcon: ImageVector = AppIcons.MyLocation,
+    recenterLabel: String? = null,
 ) {
     Column(
         modifier,
@@ -32,7 +35,7 @@ fun MapControls(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (onRecenter != null) {
-            GlassIconButton(AppIcons.MyLocation, onRecenter, stringResource(R.string.map_my_location), tint = MaterialTheme.colorScheme.primary)
+            GlassIconButton(recenterIcon, onRecenter, recenterLabel ?: stringResource(R.string.map_my_location), tint = MaterialTheme.colorScheme.primary)
         }
         if (onFitAll != null) {
             GlassIconButton(AppIcons.Route, onFitAll, stringResource(R.string.map_fit_all))

@@ -196,7 +196,6 @@
     <!-- ─────────────────────────── Album filters / sorting / search ─────────────────────────── -->
     <string name="album_filter_all">All</string>
     <string name="album_filter_favorite">Favorites</string>
-    <string name="search_field_purpose">Purpose</string>
 
     <!-- ─────────────────────────── Album screen ─────────────────────────── -->
     <string name="selected_count">%1$d selected</string>
@@ -207,14 +206,9 @@
     <string name="action_share">Share</string>
 
     <!-- ─────────────────────────── Record detail ─────────────────────────── -->
-    <string name="detail_tap_to_enlarge">Tap to enlarge</string>
     <string name="detail_enlarge">Enlarge</string>
     <string name="detail_copy_value">Copy value</string>
     <string name="detail_edit_image">Edit image</string>
-    <string name="detail_info_job_date">Work date</string>
-    <string name="detail_info_saved_at">Saved at</string>
-    <string name="detail_info_size">Size</string>
-    <string name="detail_info_location">Location</string>
     <string name="detail_no_content">Nothing here yet</string>
     <string name="detail_edit_memo">Edit memo</string>
     <string name="detail_memo_hint">Write a memo</string>
@@ -339,8 +333,6 @@ Finish the journey anyway?</string>
     <string name="pdf_cannot_open">Could not open this document</string>
     <string name="press_back_again">Press back again to exit</string>
     <string name="default_driver_name">Driver</string>
-    <string name="quickdock_title">Quick actions</string>
-    <string name="action_place_search">Place search</string>
     <string name="action_search">Search</string>
     <string name="action_confirm">OK</string>
     <string name="action_cancel">Cancel</string>
@@ -711,8 +703,6 @@ You can keep the original scan images too.</string>
 
     <!-- ─────────────────────────── Home screen ─────────────────────────── -->
     <string name="home_action_start_journey">Start journey</string>
-    <string name="home_action_account">Account · backup</string>
-    <string name="home_action_sign_in">Sign in · backup</string>
     <string name="home_action_scan_barcode">Scan a barcode</string>
     <string name="home_action_import_photo">Import a photo</string>
     <string name="home_action_quick_memo">Quick memo</string>
@@ -789,8 +779,6 @@ You can keep the original scan images too.</string>
     <!-- ─────────────────────────── Journey start wizard — voice prompts ─────────────────────────── -->
 
     <!-- ─────────────────────────── Journey start wizard — screen ─────────────────────────── -->
-    <string name="wizard_unfavorite">Remove from favorites</string>
-    <string name="wizard_favorite">Add to favorites</string>
 
     <!-- ─────────────────────────── Widgets ─────────────────────────── -->
     <string name="widget_scan_barcode">Scan a barcode</string>
@@ -863,6 +851,14 @@ You can keep the original scan images too.</string>
     <string name="voice_stop">Stop</string>
     <string name="planner_voice_examples">e.g. Busan New Port, Pyeongtaek logistics center, current location</string>
     <string name="planner_did_you_mean">Did you mean</string>
-    <string name="planner_voice_searching">Searching for “%1$s”…</string>
     <string name="map_fit_all">Show whole route</string>
+    <string name="precise_location_off">Precise location is off, so the route is rough and arrival alerts may be late.</string>
+    <string name="precise_location_turn_on">Turn on</string>
+    <string name="location_edit">Edit location</string>
+    <string name="location_add">Add location</string>
+    <string name="map_back_to_record">Back to record location</string>
+    <string name="location_pick_title">Pick a location</string>
+    <string name="location_pick_hint">Move the map to place the pin, or search for a place</string>
+    <string name="location_pick_confirm">Use this location</string>
+    <string name="location_pick_search">Search places or addresses</string>
 </resources>

@@ -69,6 +69,11 @@ class RecordRepository @Inject constructor(
             dao.updateLocation(recordId, loc.latitude, loc.longitude, loc.address, DateUtils.now())
         }
     }
+
+    /** 기록 위치를 사용자가 고친 값으로 바꾼다. */
+    suspend fun setLocation(recordId: String, latitude: Double, longitude: Double, address: String?) =
+        dao.updateLocation(recordId, latitude, longitude, address, DateUtils.now())
+
     fun observeRecords(): Flow<List<RecordWithMedia>> = dao.observeRecords()
     fun observeBarcodes(): Flow<List<RecordWithMedia>> = dao.observeBarcodes()
     fun observeDeleted(): Flow<List<RecordWithMedia>> = dao.observeRecordsByDeleted(true)

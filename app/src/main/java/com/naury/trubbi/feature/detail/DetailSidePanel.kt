@@ -347,14 +347,42 @@ internal fun InfoSheet(item: RecordWithMedia, viewModel: DetailViewModel, onSave
         }
         val lat = r.latitude
         val lng = r.longitude
+        // 위치가 틀리게 들어갔거나 없을 때 고칠 수 있다(지도 가운데 핀 또는 장소 검색).
+        var pickingLocation by remember(r.recordId) { mutableStateOf(false) }
         if (lat != null && lng != null) {
             com.naury.trubbi.ui.common.LocationMapCard(
                 latitude = lat,
                 longitude = lng,
                 address = r.locationName,
+                onEdit = { pickingLocation = true },
             )
-        } else if (!r.locationName.isNullOrBlank()) {
-            Text(stringResource(R.string.detail_location_line, r.locationName.orEmpty()), style = MaterialTheme.typography.bodyMedium, color = c.secondaryLabel)
+        } else {
+            if (!r.locationName.isNullOrBlank()) {
+                Text(
+                    stringResource(R.string.detail_location_line, r.locationName.orEmpty()),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = c.secondaryLabel,
+                )
+            }
+            com.naury.kinetica.ui.KButton(
+                stringResource(R.string.location_add),
+                { pickingLocation = true },
+                icon = AppIcons.LocationOn,
+                size = com.naury.kinetica.ui.KButtonSize.Small,
+                variant = com.naury.kinetica.ui.KVariant.Tonal,
+            )
+        }
+        if (pickingLocation) {
+            com.naury.trubbi.ui.common.LocationPicker(
+                start = if (lat != null && lng != null) com.naury.trubbi.ui.common.MapPoint(lat, lng) else null,
+                search = viewModel::searchPlaces,
+                describe = viewModel::describePlace,
+                onPick = { place ->
+                    viewModel.setLocation(r.recordId, place.latitude, place.longitude, place.building ?: place.address)
+                    pickingLocation = false
+                },
+                onDismiss = { pickingLocation = false },
+            )
         }
 
         Text(stringResource(RecordType.MEMO.labelRes), style = MaterialTheme.typography.labelMedium, color = c.secondaryLabel)

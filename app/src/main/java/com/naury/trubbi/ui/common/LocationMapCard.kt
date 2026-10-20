@@ -29,6 +29,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.naury.kinetica.ui.KButton
+import com.naury.kinetica.ui.KButtonSize
+import com.naury.kinetica.ui.KVariant
 import com.naury.trubbi.R
 import com.naury.trubbi.ui.designsystem.AppIcons
 import com.naury.trubbi.ui.designsystem.pressable
@@ -42,6 +45,7 @@ import java.util.Locale
  * 기기에 설치된 지도앱으로 넘긴다.
  *
  * @param address 있으면 좌표 대신 주소를 보여 준다
+ * @param onEdit 주면 "위치 수정" 버튼을 보여 준다
  */
 @Composable
 fun LocationMapCard(
@@ -49,6 +53,7 @@ fun LocationMapCard(
     longitude: Double,
     address: String?,
     modifier: Modifier = Modifier,
+    onEdit: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val colors = LocalTrubbiColors.current
@@ -94,9 +99,23 @@ fun LocationMapCard(
                 handle = handle,
                 modifier = Modifier.fillMaxSize(),
             )
+            if (onEdit != null) {
+                KButton(
+                    stringResource(R.string.location_edit),
+                    onEdit,
+                    icon = AppIcons.Edit,
+                    size = KButtonSize.Small,
+                    // 지도 위라 반투명 버튼은 묻힌다. 채운 버튼으로 둔다.
+                    variant = KVariant.Filled,
+                    modifier = Modifier.align(Alignment.TopStart).padding(10.dp),
+                )
+            }
+            // 기록 위치로 되돌아가는 버튼이다. "현재 위치" 아이콘이면 내 위치로 가는 줄 안다.
             MapControls(
                 handle = handle,
                 onRecenter = { handle.moveTo(latitude, longitude, 16) },
+                recenterIcon = AppIcons.LocationOn,
+                recenterLabel = stringResource(R.string.map_back_to_record),
                 modifier = Modifier.align(Alignment.BottomEnd).padding(end = 12.dp, bottom = 12.dp),
             )
         }

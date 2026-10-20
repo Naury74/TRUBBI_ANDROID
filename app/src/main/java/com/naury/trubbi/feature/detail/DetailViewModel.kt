@@ -9,6 +9,7 @@ import com.naury.trubbi.core.barcode.BarcodeRenderer
 import com.naury.trubbi.core.file.MediaStorage
 import com.naury.trubbi.core.i18n.label
 import com.naury.trubbi.core.i18n.purposeLabel
+import com.naury.trubbi.core.location.LocationProvider
 import com.naury.trubbi.core.ui.StringProvider
 import com.naury.trubbi.data.RecordOrderHolder
 import com.naury.trubbi.data.local.MediaEntity
@@ -85,6 +86,7 @@ class DetailViewModel @Inject constructor(
     private val repo: RecordRepository,
     private val mediaStorage: MediaStorage,
     private val strings: StringProvider,
+    private val location: LocationProvider,
     orderHolder: RecordOrderHolder,
     settings: SettingsRepository,
     savedStateHandle: SavedStateHandle,
@@ -202,6 +204,15 @@ class DetailViewModel @Inject constructor(
     fun toggleFavorite(item: RecordWithMedia) = viewModelScope.launch {
         repo.toggleFavorite(item.record.recordId, !item.record.isFavorite)
     }
+
+    /** 위치 고르기 화면의 장소 검색. */
+    suspend fun searchPlaces(query: String, nearLat: Double?, nearLng: Double?) = location.searchPlaces(query, nearLat = nearLat, nearLng = nearLng)
+
+    /** 고른 좌표의 주소. */
+    suspend fun describePlace(lat: Double, lng: Double) = location.describe(lat, lng)
+
+    /** 기록 위치를 고친다. */
+    fun setLocation(id: String, lat: Double, lng: Double, address: String?) = viewModelScope.launch { repo.setLocation(id, lat, lng, address) }
 
     fun saveMemo(id: String, memo: String) = viewModelScope.launch { repo.updateMemo(id, memo.ifBlank { null }) }
     fun saveTags(id: String, tags: List<String>) = viewModelScope.launch { repo.updateTags(id, tags) }

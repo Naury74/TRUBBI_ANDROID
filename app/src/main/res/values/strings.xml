@@ -196,7 +196,6 @@
     <!-- ─────────────────────────── 앨범 필터 · 정렬 · 검색 ─────────────────────────── -->
     <string name="album_filter_all">전체</string>
     <string name="album_filter_favorite">즐겨찾기</string>
-    <string name="search_field_purpose">용도</string>
 
     <!-- ─────────────────────────── 앨범 화면 ─────────────────────────── -->
     <string name="selected_count">%1$d개 선택</string>
@@ -206,14 +205,9 @@
     <string name="action_share">공유</string>
 
     <!-- ─────────────────────────── 기록 상세 ─────────────────────────── -->
-    <string name="detail_tap_to_enlarge">탭하여 크게 보기</string>
     <string name="detail_enlarge">크게 보기</string>
     <string name="detail_copy_value">값 복사</string>
     <string name="detail_edit_image">이미지 편집</string>
-    <string name="detail_info_job_date">업무 일자</string>
-    <string name="detail_info_saved_at">저장 일시</string>
-    <string name="detail_info_size">용량</string>
-    <string name="detail_info_location">위치</string>
     <string name="detail_no_content">내용이 없습니다</string>
     <string name="detail_edit_memo">메모 편집</string>
     <string name="detail_memo_hint">메모를 입력하세요</string>
@@ -336,8 +330,6 @@
     <string name="pdf_cannot_open">문서를 열 수 없습니다</string>
     <string name="press_back_again">한 번 더 누르면 종료돼요</string>
     <string name="default_driver_name">기사님</string>
-    <string name="quickdock_title">빠른 작업</string>
-    <string name="action_place_search">장소 검색</string>
     <string name="action_search">검색</string>
     <string name="action_confirm">확인</string>
     <string name="action_cancel">취소</string>
@@ -704,8 +696,6 @@
 
     <!-- ─────────────────────────── 홈 화면 ─────────────────────────── -->
     <string name="home_action_start_journey">여정 시작</string>
-    <string name="home_action_account">계정 · 백업</string>
-    <string name="home_action_sign_in">로그인 · 백업</string>
     <string name="home_action_scan_barcode">바코드 스캔</string>
     <string name="home_action_import_photo">사진 가져오기</string>
     <string name="home_action_quick_memo">빠른 메모</string>
@@ -782,8 +772,6 @@
     <!-- ─────────────────────────── 여정 시작 마법사 — 음성 안내 ─────────────────────────── -->
 
     <!-- ─────────────────────────── 여정 시작 마법사 — 화면 ─────────────────────────── -->
-    <string name="wizard_unfavorite">즐겨찾기 해제</string>
-    <string name="wizard_favorite">즐겨찾기 추가</string>
 
     <!-- ─────────────────────────── 위젯 ─────────────────────────── -->
     <string name="widget_scan_barcode">바코드 스캔</string>
@@ -855,6 +843,14 @@
     <string name="voice_stop">그만 듣기</string>
     <string name="planner_voice_examples">예) 부산 신항, 평택 물류센터, 현재 위치</string>
     <string name="planner_did_you_mean">혹시 이곳인가요?</string>
-    <string name="planner_voice_searching">‘%1$s’ 찾는 중…</string>
     <string name="map_fit_all">경로 전체 보기</string>
+    <string name="precise_location_off">정확한 위치가 꺼져 있어 경로가 거칠게 남고 도착 알림이 늦을 수 있어요.</string>
+    <string name="precise_location_turn_on">켜기</string>
+    <string name="location_edit">위치 수정</string>
+    <string name="location_add">위치 추가</string>
+    <string name="map_back_to_record">기록 위치로</string>
+    <string name="location_pick_title">위치 고르기</string>
+    <string name="location_pick_hint">지도를 움직여 핀을 맞추거나 장소를 찾아보세요</string>
+    <string name="location_pick_confirm">이 위치로</string>
+    <string name="location_pick_search">장소·주소 검색</string>
 </resources>
