@@ -56,8 +56,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 광고 동의 확인(필요한 지역만 창이 뜬다)과 SDK 시작. 광고 ID 가 없는 빌드에서는 아무것도 하지 않는다.
-        ads.gatherConsent(this)
         // 시스템 바를 완전히 투명하게 — 내용이 내비게이션 바 아래까지 이어져 보이도록.
         enableEdgeToEdge(
             statusBarStyle = androidx.activity.SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
@@ -89,6 +87,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        // 광고 동의 확인(필요한 지역만 창이 뜬다)과 SDK 시작. 광고 ID 가 없는 빌드에서는 아무것도 하지 않는다.
+        // UMP 는 백그라운드 스레드에서 이 액티비티의 창을 건드리므로, 창이 다 만들어진 뒤(첫 프레임 직후)에 시작한다.
+        // 먼저 부르면 메인 스레드의 창 구성과 겹쳐 "Window couldn't find content container view" 로 죽는다.
+        window.decorView.post { if (!isFinishing && !isDestroyed) ads.gatherConsent(this) }
     }
 }
 
