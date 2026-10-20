@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -339,12 +340,13 @@ private fun JourneyAskSheet(
                 maxLines = 2,
             )
             Spacer(Modifier.height(18.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                PillButton(stringResource(R.string.home_include), onInclude, Modifier.weight(1f), icon = AppIcons.Truck)
+            // 세로로 쌓는다. 반반 너비에서는 영어 문구가 "Add to …"처럼 잘렸다.
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                PillButton(stringResource(R.string.home_include), onInclude, Modifier.fillMaxWidth(), icon = AppIcons.Truck)
                 PillButton(
                     stringResource(R.string.home_keep_standalone),
                     onStandalone,
-                    Modifier.weight(1f),
+                    Modifier.fillMaxWidth(),
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     contentColor = MaterialTheme.colorScheme.onSurface,
                 )
