@@ -1,8 +1,6 @@
 package com.naury.trubbi.core.voice
 
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import com.google.firebase.functions.FirebaseFunctions
 import com.naury.trubbi.core.log.logFailure
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -141,13 +139,17 @@ class VoiceNlu @Inject constructor(
             val place = stripStopWords(raw)
             if (place.length >= 2) return VoiceIntent(VoiceAction.MOVE, place = place, raw = raw, confidence = 0.55f)
         }
-        if (anyOf(t, "여정시작", "바로시작", "지금시작", "시작해", "시작할", "출발하자", "출발할", "출발해", "가자", "고고", "스타트", "떠나자", "완료", "추가완료", "다됐", "다했", "이대로")) {
+        // "가자"·"출발"은 "부산 신항 가자"처럼 목적지와 함께 오는 일이 많다. 그 말만 했을 때만 시작으로 본다.
+        if (anyOf(t, "여정시작", "바로시작", "지금시작", "바로출발", "지금출발", "시작해", "시작할", "출발하자", "고고", "스타트", "떠나자", "추가완료", "다됐", "다했", "이대로") ||
+            t in START_ALONE
+        ) {
             return VoiceIntent(VoiceAction.START, raw = raw, confidence = 0.6f)
         }
         if (anyOf(t, "경유지추가", "경유추가", "경유", "들렀다", "들러서", "거쳐", "들를곳")) {
             return VoiceIntent(VoiceAction.ADD_STOP, kind = stopKind(t), raw = raw, confidence = 0.55f)
         }
-        if (anyOf(t, "현재위치", "현위치", "내위치", "지금위치", "여기서출발", "현장") || t == "여기" || t == "여기요" || t == "여기서") {
+        // "현장"은 "현장 사무소" 같은 장소 이름에도 들어가 현재 위치로 오인됐다. 낱말 전체가 같을 때만 본다.
+        if (PlaceUtterance.HERE_WORDS.any(t::contains) || t in PlaceUtterance.HERE_ALONE) {
             return VoiceIntent(VoiceAction.CURRENT, raw = raw, confidence = 0.6f)
         }
         if (anyOf(t, "나중에", "건너뛰", "생략", "스킵", "패스", "넘어가", "다음에", "일단없", "없어", "없다", "없습니다", "없네", "다됐", "다했")) {
@@ -202,7 +204,8 @@ class VoiceNlu @Inject constructor(
         Regex("([0-9]{1,2})").find(t)?.groupValues?.get(1)?.toIntOrNull()?.let { if (it in 1..30) return it }
         val strong = listOf(
             1 to listOf("첫번째", "첫번", "첫째", "처음", "맨처음", "맨앞", "일번", "한번째"),
-            2 to listOf("두번째", "둘째", "이번째", "두번", "이번"),
+            // "이번"은 "이번엔 ○○" 처럼 순번이 아닌 뜻으로 더 자주 쓰여 단독으로 말했을 때만 2번으로 본다.
+            2 to listOf("두번째", "둘째", "이번째", "두번"),
             3 to listOf("세번째", "셋째", "세번", "삼번째", "삼번"),
             4 to listOf("네번째", "넷째", "네번", "사번째", "사번"),
             5 to listOf("다섯번째", "다섯째", "다섯번", "오번째", "오번"),
@@ -213,31 +216,18 @@ class VoiceNlu @Inject constructor(
         )
         for ((n, ws) in strong) if (ws.any { t.contains(it) }) return n
         return mapOf(
-            "하나" to 1, "첫" to 1, "둘" to 2, "셋" to 3, "넷" to 4, "다섯" to 5, "여섯" to 6, "일곱" to 7, "여덟" to 8, "아홉" to 9,
+            "하나" to 1, "첫" to 1, "둘" to 2, "이번" to 2, "셋" to 3, "넷" to 4, "다섯" to 5, "여섯" to 6, "일곱" to 7, "여덟" to 8, "아홉" to 9,
         )[t]
     }
 
-    private fun stripStopWords(text: String): String {
-        var s = " $text "
-        listOf(
-            "아니", "말고", "그게아니라", "그게아니고", "틀렸어", "틀렸다", "잘못", "바꿔서", "바꿔", "다시",
-            "상차지", "하차지", "상차해서", "하차해서", "상차", "하차", "픽업해서", "픽업",
-            "경유지", "경유", "출발지", "도착지", "목적지", "정차지",
-            "추가해줘", "추가해주세요", "추가하자", "추가해", "추가", "들렀다가", "들렀다", "들를곳", "들를데", "들러서", "들러", "거쳐서", "거쳐",
-            "싣고", "실으러", "실어", "내리러", "내려서", "배송", "납품", "하러",
-            "넣어줘", "넣어주세요", "넣어", "해줘", "해주세요", "할게요", "할게", "할래", "갈게요", "갈게", "갈래", "가자", "좀", "그리고", "또", "이요", "요", "으로", "로",
-            "먼저", "부터", "가는걸로", "제일먼저", "순서바꿔", "이번엔", "이번에",
-        ).forEach { w -> s = s.replace(w, " ") }
-        return s.trim().replace(Regex("\\s+"), " ")
-    }
+    private fun stripStopWords(text: String): String = PlaceUtterance.query(text)
 
-    private fun isOnline(): Boolean = runCatching {
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val caps = cm.getNetworkCapabilities(cm.activeNetwork)
-        caps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
-    }.getOrDefault(false)
+    private fun isOnline(): Boolean = context.hasValidatedNetwork()
 
     private companion object {
         const val TAG = "VoiceNlu"
+
+        /** 이 말만 했을 때 여정 시작으로 보는 짧은 대답. */
+        val START_ALONE = setOf("가자", "가자고", "출발", "출발해", "출발할게", "출발할게요", "시작", "완료", "됐어", "됐어요", "고")
     }
 }

@@ -81,4 +81,50 @@ class VoiceNluLocalTest {
     fun `빈 문장에는 아무 의도도 만들지 않는다`() = runTest {
         assertThat(nlu.interpret("   ", VoiceContext(step = "dest")).action).isEqualTo(VoiceAction.NONE)
     }
+
+    @Test
+    fun `목적지와 함께 말한 가자는 시작이 아니라 장소다`() = runTest {
+        val intent = nlu.interpret("부산 신항 가자", VoiceContext(step = "dest"))
+
+        assertThat(intent.action).isEqualTo(VoiceAction.PLACE)
+        assertThat(intent.place).isEqualTo("부산 신항")
+    }
+
+    @Test
+    fun `가자 한마디는 여정 시작이다`() = runTest {
+        assertThat(nlu.interpret("가자", VoiceContext(step = "extra")).action).isEqualTo(VoiceAction.START)
+    }
+
+    @Test
+    fun `현장이 들어간 장소 이름을 현재 위치로 오인하지 않는다`() = runTest {
+        val intent = nlu.interpret("평택 현장 사무소", VoiceContext(step = "dest"))
+
+        assertThat(intent.action).isEqualTo(VoiceAction.PLACE)
+        assertThat(intent.place).isEqualTo("평택 현장 사무소")
+    }
+
+    @Test
+    fun `장소 이름 속 글자를 조사로 오인해 지우지 않는다`() = runTest {
+        assertThat(nlu.interpret("세종대로", VoiceContext(step = "dest")).place).isEqualTo("세종대로")
+        assertThat(nlu.interpret("신촌로터리로 가요", VoiceContext(step = "dest")).place).isEqualTo("신촌로터리로")
+        assertThat(nlu.interpret("광화문으로 갈게요", VoiceContext(step = "dest")).place).isEqualTo("광화문")
+    }
+
+    @Test
+    fun `이번엔 으로 시작하는 말을 두 번째로 읽지 않는다`() = runTest {
+        val context = VoiceContext(step = "pick", candidates = listOf("A", "B", "C"))
+
+        val intent = nlu.interpret("이번엔 인천항", context)
+
+        assertThat(intent.action).isEqualTo(VoiceAction.PLACE)
+        assertThat(intent.place).isEqualTo("인천항")
+    }
+
+    @Test
+    fun `정정할 때 지시어를 장소 이름에 남기지 않는다`() = runTest {
+        val intent = nlu.interpret("아니 그거 말고 부산 신항", VoiceContext(step = "dest"))
+
+        assertThat(intent.action).isEqualTo(VoiceAction.CORRECT)
+        assertThat(intent.place).isEqualTo("부산 신항")
+    }
 }
