@@ -30,6 +30,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.naury.trubbi.MainActivity
 import com.naury.trubbi.R
 import com.naury.trubbi.core.i18n.label
@@ -80,6 +82,9 @@ class FloatingLauncherService : Service() {
     private var journeyControlOn = false
     private var lastStageSig: String? = null
     private var expanded = false
+
+    /** 앱 화면(편집기 포함)이 하나라도 떠 있는지. 떠 있는 동안에는 버튼을 숨긴다. */
+    private var appInForeground = false
     private var posY = 220
     private var dockedRight = true
     private val cardWidthDp = 220
@@ -102,6 +107,14 @@ class FloatingLauncherService : Service() {
             return
         }
         runCatching { addBubble() }.onFailure { stopSelf() }
+        // 앱 밖에서 쓰라고 띄우는 버튼이라 앱 안에서는 숨긴다. 앱 화면 위에 겹쳐 버튼·제목을 가렸다.
+        scope.launch {
+            ProcessLifecycleOwner.get().lifecycle.currentStateFlow.collect { state ->
+                appInForeground = state.isAtLeast(Lifecycle.State.STARTED)
+                if (appInForeground && expanded) collapse()
+                root?.visibility = if (appInForeground) View.GONE else View.VISIBLE
+            }
+        }
         // 설정과 진행 중 여정을 함께 보고 '다음 단계' 행을 켜고 끈다.
         scope.launch {
             settingsRepo.floatingControl.collect {
@@ -116,7 +129,7 @@ class FloatingLauncherService : Service() {
                 // 단계가 바뀌면(도착·작업·완료) 알아서 펼쳐 다음에 누를 버튼을 눈앞에 둔다.
                 val stageSignature = j?.let { "${it.currentStop?.stopId}:${it.currentStop?.phase}:${it.orderedStops.size}" }
                 val changed = stageSignature != null && lastStageSig != null && stageSignature != lastStageSig
-                if (journeyControlOn && changed && !expanded) expand()
+                if (journeyControlOn && changed && !expanded && !appInForeground) expand()
                 lastStageSig = stageSignature
             }
         }
