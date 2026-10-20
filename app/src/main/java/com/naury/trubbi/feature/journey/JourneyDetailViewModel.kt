@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naury.trubbi.R
 import com.naury.trubbi.core.i18n.label
+import com.naury.trubbi.core.location.LiveLocation
 import com.naury.trubbi.core.location.LocationProvider
 import com.naury.trubbi.core.ui.StringProvider
 import com.naury.trubbi.data.JourneyControlSignal
@@ -24,10 +25,12 @@ import com.naury.trubbi.domain.model.StopKind
 import com.naury.trubbi.domain.model.StopPhase
 import com.naury.trubbi.domain.report.JourneyReportGenerator
 import com.naury.trubbi.domain.tracking.JourneyTracker
+import com.naury.trubbi.ui.common.MapPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -47,6 +50,7 @@ class JourneyDetailViewModel @Inject constructor(
     private val controlSignal: JourneyControlSignal,
     private val location: LocationProvider,
     private val strings: StringProvider,
+    liveLocation: LiveLocation,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -67,6 +71,18 @@ class JourneyDetailViewModel @Inject constructor(
     /** 추적 서비스가 남긴 GPS 자취 — 지도 경로선. */
     val routePoints = repo.observeRoutePoints(journeyId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    /**
+     * 진행 중인 여정이면 지금 위치. 추적 서비스가 걸러 낸 최신 좌표를 쓰고, 아직 없으면 마지막 자취 점을 쓴다.
+     * 끝난 여정에는 현위치를 그리지 않는다(그 여정과 상관없는 위치다).
+     */
+    val myLocation = combine(journey, liveLocation.latest, routePoints) { j, fix, points ->
+        when {
+            j?.journey?.isActive != true -> null
+            fix != null -> MapPoint(fix.latitude, fix.longitude)
+            else -> points.lastOrNull()?.let { MapPoint(it.latitude, it.longitude) }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     /** Itemised expenses of this journey (비용 탭). */
     val expenses = repo.observeExpenses(journeyId)

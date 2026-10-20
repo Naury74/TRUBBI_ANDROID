@@ -856,4 +856,5 @@
     <string name="planner_voice_examples">예) 부산 신항, 평택 물류센터, 현재 위치</string>
     <string name="planner_did_you_mean">혹시 이곳인가요?</string>
     <string name="planner_voice_searching">‘%1$s’ 찾는 중…</string>
+    <string name="map_fit_all">경로 전체 보기</string>
 </resources>

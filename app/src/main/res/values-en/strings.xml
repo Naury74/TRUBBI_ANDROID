@@ -864,4 +864,5 @@ You can keep the original scan images too.</string>
     <string name="planner_voice_examples">e.g. Busan New Port, Pyeongtaek logistics center, current location</string>
     <string name="planner_did_you_mean">Did you mean</string>
     <string name="planner_voice_searching">Searching for “%1$s”…</string>
+    <string name="map_fit_all">Show whole route</string>
 </resources>

@@ -24,6 +24,7 @@ fun MapControls(
     handle: MapHandle,
     modifier: Modifier = Modifier,
     onRecenter: (() -> Unit)? = null,
+    onFitAll: (() -> Unit)? = null,
 ) {
     Column(
         modifier,
@@ -32,6 +33,9 @@ fun MapControls(
     ) {
         if (onRecenter != null) {
             GlassIconButton(AppIcons.MyLocation, onRecenter, stringResource(R.string.map_my_location), tint = MaterialTheme.colorScheme.primary)
+        }
+        if (onFitAll != null) {
+            GlassIconButton(AppIcons.Route, onFitAll, stringResource(R.string.map_fit_all))
         }
         GlassIconButton(AppIcons.Add, { handle.zoomIn() }, stringResource(R.string.map_zoom_in))
         GlassIconButton(AppIcons.Remove, { handle.zoomOut() }, stringResource(R.string.map_zoom_out))

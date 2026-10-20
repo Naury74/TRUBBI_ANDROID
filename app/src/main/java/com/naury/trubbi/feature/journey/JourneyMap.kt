@@ -7,13 +7,10 @@ import android.graphics.Color as AColor
 import android.graphics.Paint
 import android.graphics.RectF
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,10 +18,8 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.imageLoader
 import coil3.request.ImageRequest
@@ -40,8 +35,6 @@ import com.naury.trubbi.ui.common.MapControls
 import com.naury.trubbi.ui.common.MapHandle
 import com.naury.trubbi.ui.common.MapMarker
 import com.naury.trubbi.ui.common.MapPoint
-import com.naury.trubbi.ui.designsystem.AppIcons
-import com.naury.trubbi.ui.designsystem.pressable
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -53,8 +46,10 @@ import kotlinx.coroutines.withContext
  *
  * 기록 마커에는 아이콘 대신 촬영한 사진의 썸네일과 촬영 시각을 함께 표시한다.
  *
- * 카드 안에서는 [interactive] 를 false 로 두어 지도 조작을 막고 [onExpand] 로 전체화면을 연다.
- * 스크롤 중 지도가 제스처를 가로채는 것을 방지한다.
+ * 카드 안에서는 [onExpand] 를 주어 지도 조작을 끄고, 탭하면 전체화면을 연다. 예전에는 카드 지도가 손가락이
+ * 닿자마자 페이지 스크롤을 막아 430dp 지도 위에서는 상세 화면을 위아래로 넘길 수 없었다.
+ *
+ * @param myLocation 진행 중 여정이면 지금 위치. 전체화면에서 파란 점으로 그리고 "현재 위치로" 버튼이 쓴다
  */
 @Composable
 fun JourneyMapCard(
@@ -66,12 +61,20 @@ fun JourneyMapCard(
     interactive: Boolean = false,
     onExpand: (() -> Unit)? = null,
     issues: List<com.naury.trubbi.data.local.IssueEntity> = emptyList(),
+    myLocation: MapPoint? = null,
 ) {
     val context = LocalContext.current
     val primary = MaterialTheme.colorScheme.primary.toArgb()
     val onPrimary = MaterialTheme.colorScheme.onPrimary.toArgb()
 
-    val route = routePoints.map { MapPoint(it.latitude, it.longitude) }
+    val route = remember(routePoints) { routePoints.map { MapPoint(it.latitude, it.longitude) } }
+    val stopPoints = remember(stops) {
+        stops.mapNotNull { s ->
+            val la = s.latitude
+            val ln = s.longitude
+            if (la != null && ln != null) MapPoint(la, ln) else null
+        }
+    }
     val handle = remember { MapHandle() }
     // 현재 작업 중인 정차지(첫 미완료) — 마커를 강조한다.
     val currentStopId = stops.firstOrNull { it.completedAt == null }?.stopId
@@ -88,48 +91,34 @@ fun JourneyMapCard(
             markers = markers,
             route = route,
             routeColor = primary,
+            plannedRoute = stopPoints,
+            myLocation = if (interactive) myLocation else null,
             handle = handle,
+            gesturesEnabled = onExpand == null,
+            onMapTap = onExpand,
+            // 전체화면은 왼쪽 위 닫기 버튼과 오른쪽 아래 조작 버튼이 얹혀 있어 여백을 넉넉히 둔다.
+            framePadding = if (interactive) 72.dp else 40.dp,
             onMarkerClick = { id -> if (!id.startsWith("stop:") && !id.startsWith("issue:")) onRecordClick(id) },
             modifier = Modifier.fillMaxSize(),
         )
-        // 티맵식 떠 있는 조작 — 확대/축소 + 경로 전체 보기(현위치/마커 복귀). 전체화면(interactive)에서 노출.
+        // 티맵식 떠 있는 조작 — 현재 위치로 / 경로 전체 보기 / 확대·축소. 전체화면(interactive)에서 노출.
         if (interactive) {
-            val allPoints = route + stops.mapNotNull { s ->
-                val la = s.latitude
-                val ln = s.longitude
-                if (la != null && ln != null) MapPoint(la, ln) else null
-            }
             MapControls(
                 handle = handle,
-                onRecenter = { handle.fit(allPoints) },
+                onRecenter = myLocation?.let { here -> { handle.moveTo(here.lat, here.lng, 16) } },
+                onFitAll = { handle.fit(route + stopPoints + markers.map { it.point }) },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(end = 14.dp, bottom = 28.dp),
             )
         }
-        // 작은 카드 지도도 두 손가락으로 확대/축소 가능. 전체화면은 우상단 버튼으로.
-        if (onExpand != null) {
-            Box(
-                Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(10.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
-                    .pressable(onClick = onExpand)
-                    .padding(8.dp),
-            ) {
-                Icon(
-                    AppIcons.Fullscreen,
-                    contentDescription = stringResource(R.string.action_fullscreen),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(18.dp),
-                )
-            }
-        }
     }
 }
 
 private val markerTimeFmt = SimpleDateFormat("HH:mm", Locale.KOREA)
+
+/** 지도에 올리는 기록 마커 수 상한. 썸네일을 모두 디코딩하므로 너무 많으면 지도가 늦게 뜬다. */
+private const val MAX_RECORD_MARKERS = 80
 
 private suspend fun buildMarkers(
     context: Context,
@@ -163,7 +152,8 @@ private suspend fun buildMarkers(
         out += MapMarker(id = "issue:${issue.issueId}", point = MapPoint(lat, lng), bitmap = issuePin())
     }
     // 기록 마커 — 찍은 사진 썸네일(없으면 종류 아이콘)과 시각.
-    records.take(80).forEach { rec ->
+    // 기록은 오래된 순으로 온다. 긴 여정에서 최근 기록이 빠지지 않도록 뒤에서 자른다.
+    records.takeLast(MAX_RECORD_MARKERS).forEach { rec ->
         val r = rec.record
         val lat = r.latitude ?: return@forEach
         val lng = r.longitude ?: return@forEach

@@ -1,5 +1,6 @@
 package com.naury.trubbi.feature.journey
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,14 +10,17 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.naury.trubbi.R
 import com.naury.trubbi.ui.designsystem.AppIcons
@@ -39,7 +43,18 @@ fun JourneyMapScreen(
     val routePoints by viewModel.routePoints.collectAsState()
     val records by viewModel.records.collectAsState()
     val issues by viewModel.issues.collectAsState()
+    val myLocation by viewModel.myLocation.collectAsState()
     val j = journey
+
+    // 지도는 밝은 색이라 상태 표시줄 글자를 어둡게 둔다(나갈 때 되돌린다).
+    val view = LocalView.current
+    DisposableEffect(Unit) {
+        val window = (view.context as? Activity)?.window
+        val controller = window?.let { WindowCompat.getInsetsController(it, view) }
+        val previous = controller?.isAppearanceLightStatusBars
+        controller?.isAppearanceLightStatusBars = true
+        onDispose { if (previous != null) controller.isAppearanceLightStatusBars = previous }
+    }
 
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         if (j != null) {
@@ -50,6 +65,7 @@ fun JourneyMapScreen(
                 onRecordClick = onOpenRecord,
                 interactive = true,
                 issues = issues,
+                myLocation = myLocation,
                 modifier = Modifier.fillMaxSize(),
             )
         }
