@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 네이티브 광고 틀(feature/ads/AdViews.kt)의 각 칸 -->
+    <item name="ad_icon" type="id" />
+    <item name="ad_headline" type="id" />
+    <item name="ad_advertiser" type="id" />
+    <item name="ad_media" type="id" />
+    <item name="ad_body" type="id" />
+    <item name="ad_cta" type="id" />
+</resources>

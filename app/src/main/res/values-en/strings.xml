@@ -850,4 +850,7 @@ You can keep the original scan images too.</string>
         <item quantity="one">%1$d stop</item>
         <item quantity="other">%1$d stops</item>
     </plurals>
+    <string name="ad_label">Ad</string>
+    <string name="settings_ad_privacy">Ad privacy settings</string>
+    <string name="settings_ad_privacy_sub">Change your personalized ads consent</string>
 </resources>

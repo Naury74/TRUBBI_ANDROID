@@ -439,7 +439,13 @@ internal fun HomeFeed(
             }
         }
         if (records && state.dateSections.isNotEmpty()) {
-            state.dateSections.forEach { section ->
+            state.dateSections.forEachIndexed { index, section ->
+                // 기록 사이에 광고는 한 장만, 두 번째 날짜 묶음 앞에 둔다(첫 화면의 기록을 밀어내지 않게).
+                if (index == AD_AFTER_SECTIONS) {
+                    item(key = "ad_native", contentType = "ad") {
+                        com.naury.trubbi.feature.ads.NativeRecordAd(Modifier.padding(horizontal = 16.dp))
+                    }
+                }
                 stickyHeader(key = "h_${section.dateIso}", contentType = "dateHeader") {
                     DateStickyHeader(section.dateIso, section.items)
                 }
@@ -610,3 +616,6 @@ private fun FavoritePlacesRow(
 
 /** 홈 화면이 그리는 구역. 홈 탭과 기록 탭이 같은 화면·뷰모델을 나눠 쓴다. */
 enum class HomeSection { TODAY, RECORDS }
+
+/** 기록 탭에서 광고를 끼워 넣을 날짜 묶음 위치. */
+private const val AD_AFTER_SECTIONS = 1

@@ -51,8 +51,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    @javax.inject.Inject
+    lateinit var ads: com.naury.trubbi.feature.ads.AdsController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 광고 동의 확인(필요한 지역만 창이 뜬다)과 SDK 시작. 광고 ID 가 없는 빌드에서는 아무것도 하지 않는다.
+        ads.gatherConsent(this)
         // 시스템 바를 완전히 투명하게 — 내용이 내비게이션 바 아래까지 이어져 보이도록.
         enableEdgeToEdge(
             statusBarStyle = androidx.activity.SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
@@ -79,7 +84,9 @@ class MainActivity : ComponentActivity() {
             }
 
             TrubbiTheme(darkTheme = darkTheme) {
-                TrubbiAppRoot(initialIntent = intent)
+                androidx.compose.runtime.CompositionLocalProvider(com.naury.trubbi.feature.ads.LocalAdsController provides ads) {
+                    TrubbiAppRoot(initialIntent = intent)
+                }
             }
         }
     }

@@ -74,6 +74,9 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val ads = com.naury.trubbi.feature.ads.LocalAdsController.current
+    val adPrivacyRequired by (ads?.privacyOptionsRequired ?: remember { kotlinx.coroutines.flow.MutableStateFlow(false) })
+        .collectAsStateWithLifecycle()
     val purposes by viewModel.purposes.collectAsStateWithLifecycle()
     val defaultPurposeLabel = purposeLabel(settings.defaultPurpose)
     val backupStatus by viewModel.backupStatus.collectAsStateWithLifecycle()
@@ -483,13 +486,26 @@ fun SettingsScreen(
                             leadingIcon = AppIcons.Widgets,
                             leadingTint = c.secondaryLabel,
                             showChevron = false,
-                            showDivider = false,
+                            showDivider = !adPrivacyRequired,
                             onClick = null,
                         )
+                        // 동의가 필요한 지역에서만 보인다(UMP 가 정한다).
+                        if (adPrivacyRequired) {
+                            NavRow(
+                                title = stringResource(R.string.settings_ad_privacy),
+                                subtitle = stringResource(R.string.settings_ad_privacy_sub),
+                                leadingIcon = AppIcons.Lock,
+                                leadingTint = c.secondaryLabel,
+                                showDivider = false,
+                                onClick = { (context as? android.app.Activity)?.let { ads?.showPrivacyOptions(it) } },
+                            )
+                        }
                     }
                 }
             }
         }
+
+        item(key = "ad_banner") { com.naury.trubbi.feature.ads.BannerAd(Modifier.padding(horizontal = 16.dp)) }
 
         item {
             Text(

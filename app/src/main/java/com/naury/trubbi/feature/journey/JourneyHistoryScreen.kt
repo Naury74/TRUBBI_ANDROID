@@ -169,6 +169,7 @@ fun JourneyHistoryScreen(
                     )
                 }
             }
+            item(key = "ad_banner") { com.naury.trubbi.feature.ads.BannerAd() }
         }
     }
 }
