@@ -25,7 +25,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,11 +50,8 @@ import com.naury.trubbi.core.weather.WeatherCondition
 import com.naury.trubbi.data.local.RecordWithMedia
 import com.naury.trubbi.feature.journey.SendOffOverlay
 import com.naury.trubbi.ui.designsystem.AppIcons
-import com.naury.trubbi.ui.designsystem.LocalHazeState
 import com.naury.trubbi.ui.weather.WeatherBackground
 import com.naury.trubbi.ui.weather.WeatherHeader
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 /**
  * 홈 화면.
  *
@@ -254,12 +250,10 @@ fun HomeScreen(
             runCatching { searchFocus.requestFocus() }
         }
     }
-    val hazeState = remember { HazeState() }
-
-    CompositionLocalProvider(LocalHazeState provides hazeState) {
+    run {
         Box(Modifier.fillMaxSize()) {
             // 시간·날씨 배경.
-            Box(Modifier.fillMaxSize().hazeSource(hazeState)) {
+            Box(Modifier.fillMaxSize()) {
                 WeatherBackground(
                     condition = weather?.condition ?: WeatherCondition.CLOUDS,
                     isDay = weather?.isDay ?: true,

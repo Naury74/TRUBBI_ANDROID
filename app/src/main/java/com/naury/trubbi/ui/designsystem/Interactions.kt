@@ -6,40 +6,26 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 
 /**
  * 터치 반응과 화면 배경 수정자.
@@ -118,12 +104,10 @@ fun TrubbiBackground(modifier: Modifier = Modifier, content: @Composable () -> U
     val aTop = if (c.isDark) 0.30f else 0.06f
     val aMid = if (c.isDark) 0.24f else 0.05f
     val aBot = if (c.isDark) 0.20f else 0.04f
-    val hazeState = remember { HazeState() }
     Box(modifier.fillMaxSize()) {
         Box(
             Modifier
                 .matchParentSize()
-                .hazeSource(hazeState)
                 .background(bg)
                 .drawBehind {
                     val r = size.maxDimension
@@ -166,68 +150,6 @@ fun TrubbiBackground(modifier: Modifier = Modifier, content: @Composable () -> U
                 )
             }
         }
-        CompositionLocalProvider(LocalHazeState provides hazeState) {
-            content()
-        }
-    }
-}
-
-/**
- * 아이콘 배지 + 제목으로 된 동작 카드.
- *
- * @param title 카드 제목
- * @param icon 왼쪽 배지 아이콘
- * @param accent 강조색
- * @param onClick 눌렀을 때
- * @param modifier 바깥 배치용
- * @param subtitle 제목 아래 보조 설명(선택)
- * @param shape 모서리 모양
- */
-@Composable
-fun TrubbiActionCard(
-    title: String,
-    icon: ImageVector,
-    accent: Color,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    subtitle: String? = null,
-    shape: Shape = RoundedCornerShape(24.dp),
-) {
-    val c = LocalTrubbiColors.current
-    Column(
-        modifier
-            .pressable(onClick = onClick)
-            .shadow(8.dp, shape, clip = false, ambientColor = Color.Black.copy(alpha = 0.10f), spotColor = Color.Black.copy(alpha = 0.10f))
-            .clip(shape)
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
-    ) {
-        Box(
-            Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(
-                    Brush.linearGradient(
-                        listOf(
-                            accent.copy(alpha = if (c.isDark) 0.30f else 0.18f),
-                            accent.copy(alpha = if (c.isDark) 0.16f else 0.08f),
-                        ),
-                    ),
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(icon, contentDescription = null, tint = accent, modifier = Modifier.size(25.dp))
-        }
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(
-                title,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            if (subtitle != null) {
-                Text(subtitle, style = MaterialTheme.typography.labelMedium, color = c.secondaryLabel)
-            }
-        }
+        content()
     }
 }

@@ -16,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,13 +38,12 @@ import com.naury.kinetica.ui.KVariant
 import com.naury.kinetica.ui.KineticaTheme
 import com.naury.kinetica.ui.SurfaceStyles
 import com.naury.trubbi.ui.theme.LocalTrubbiColors
-import dev.chrisbanes.haze.HazeState
 
 /**
  * 공용 표면과 그 위에 올라가는 기본 조각들.
  *
- * 배경 블러는 [LocalHazeState] 가 있을 때만 쓴다. 구형 기기에서 블러가 프레임을 크게
- * 잡아먹어, 없으면 반투명 처리로 대신한다.
+ * 블러 없이 옅은 면 + 테두리 + 그림자로 유리처럼 보이게 한다. 뒤 화면을 매 프레임 흐리게 하는
+ * 비용 없이 어떤 기기에서도 같은 모양이 나온다.
  */
 
 /**
@@ -59,9 +57,6 @@ fun Modifier.liquidGlass(
     shape: Shape = RoundedCornerShape(20.dp),
     elevation: Dp = 6.dp,
 ): Modifier = glassSurface(shape, elevation)
-
-/** 값이 있으면 [glass] 가 뒤 내용을 실제로 블러 처리한다. 없으면 블러를 생략한다. */
-val LocalHazeState = staticCompositionLocalOf<HazeState?> { null }
 
 /**
  * 목록 섹션·상단 바처럼 넓은 면에 쓰는 표면.
@@ -91,52 +86,6 @@ private fun Modifier.glassSurface(
         .background(veil.copy(alpha = veilAlpha))
         .background(Brush.verticalGradient(listOf(highlight, Color.Transparent)))
         .border(1.dp, c.separator.copy(alpha = 0.5f), shape)
-}
-
-/**
- * 아이콘 + 라벨 + 값 타일.
- *
- * @param icon 왼쪽 아이콘
- * @param label 작은 설명 문구
- * @param value 크게 보여 줄 값
- * @param accent 아이콘 색
- * @param modifier 바깥 배치용
- */
-@Composable
-fun StatTile(
-    icon: ImageVector,
-    label: String,
-    value: String,
-    accent: Color,
-    modifier: Modifier = Modifier,
-) {
-    val c = LocalTrubbiColors.current
-    Row(
-        modifier.glass(RoundedCornerShape(18.dp)).padding(13.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        Box(
-            Modifier
-                .size(38.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(
-                    Brush.linearGradient(listOf(accent.copy(alpha = if (c.isDark) 0.32f else 0.18f), accent.copy(alpha = if (c.isDark) 0.18f else 0.08f))),
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(icon, contentDescription = null, tint = accent, modifier = Modifier.size(19.dp))
-        }
-        Column {
-            Text(label, style = MaterialTheme.typography.labelSmall, color = c.secondaryLabel, maxLines = 1)
-            Text(
-                value,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-            )
-        }
-    }
 }
 
 /**

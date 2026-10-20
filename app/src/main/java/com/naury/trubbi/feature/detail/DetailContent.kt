@@ -109,7 +109,7 @@ fun DetailContent(
     }
 
     val toast = rememberTrubbiToastState()
-    androidx.compose.runtime.CompositionLocalProvider(com.naury.trubbi.ui.designsystem.LocalHazeState provides null) {
+    run {
         Box(modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),

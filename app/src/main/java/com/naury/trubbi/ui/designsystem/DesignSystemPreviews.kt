@@ -84,13 +84,6 @@ private fun SelectorSamples() {
         StatPill(value = "0", label = "동영상", tint = LocalTrubbiColors.current.accent2, modifier = Modifier.weight(1f), active = false)
         StatPill(value = "3", label = "문서", tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.weight(1f))
     }
-    StatTile(
-        icon = AppIcons.Truck,
-        label = "이번 달 운행",
-        value = "1,240 km",
-        accent = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.fillMaxWidth(),
-    )
 }
 
 @Preview(name = "카드 · 헤더 · 라이트", showBackground = true)
