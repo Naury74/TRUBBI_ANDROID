@@ -26,17 +26,18 @@ jobs:
     timeout-minutes: 45
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Robolectric 은 compileSdk 37 테스트 환경에 Java 21 이상을 요구한다. 로컬(Android Studio JBR)·SDK 저장소와 같은 25를 쓴다.
       - name: JDK 25 설치
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '25'
 
+      # setup-gradle v6 의 캐시 구성요소는 Gradle 이용약관(https://gradle.com/legal/terms-of-use/)을 따른다(2026-10 동의).
       - name: Gradle 설정 (의존성 캐시 포함)
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
 
       - name: local.properties 생성
         # 키는 저장소 Secrets 에서 주입한다. 없으면 빈 값으로 두고 빌드는 그대로 통과한다.
@@ -88,7 +89,7 @@ jobs:
 
       - name: 리포트 업로드
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: reports
           path: |
@@ -101,7 +102,7 @@ jobs:
 
       - name: 테스트 결과 요약
         if: always()
-        uses: mikepenz/action-junit-report@v5
+        uses: mikepenz/action-junit-report@v6
         with:
           report_paths: '*/build/test-results/testDebugUnitTest/TEST-*.xml'
           check_name: 단위 테스트 결과
