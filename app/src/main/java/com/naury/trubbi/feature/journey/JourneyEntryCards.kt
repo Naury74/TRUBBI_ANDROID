@@ -6,9 +6,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,8 +27,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -50,97 +56,95 @@ import java.util.Locale
 /**
  * 진행 중 여정이 없을 때 홈에 놓이는 카드 — 시작 입구와 지난 여정 입구.
  */
-/** 진행 중인 여정이 없을 때 보이는 카드. 한 번 누르면 시작 시트가 열린다. */
+/**
+ * 진행 중인 여정이 없을 때 보이는 카드. 한 번 누르면 시작 시트가 열린다.
+ *
+ * 홈에서 가장 중요한 동작이라 브랜드 색으로 채운 카드로 둔다. 예전에는 흰 반투명 카드에 테두리가 깜박여
+ * 눈에는 띄었지만 값싸 보였다. 오른쪽에는 도로를 닮은 곡선을 옅게 깔아 앱 아이콘과 같은 인상을 준다.
+ */
 @Composable
 fun JourneyStartCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val c = LocalTrubbiColors.current
     val primary = MaterialTheme.colorScheme.primary
-    val glow = rememberInfiniteTransition(label = "startGlow")
-    val pulse by glow.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(1600, easing = FastOutSlowInEasing), RepeatMode.Reverse),
-        label = "startGlowPulse",
-    )
     val shape = RoundedCornerShape(26.dp)
-    Row(
+    // 시작 카드의 트럭은 주기적으로 까딱이며 출발을 권한다.
+    val invite = rememberInfiniteTransition(label = "startTruck")
+    val wiggle by invite.animateFloat(
+        initialValue = 0f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = 3600
+                0f at 0
+                -9f at 220 using FastOutSlowInEasing
+                8f at 440 using FastOutSlowInEasing
+                -5f at 640 using FastOutSlowInEasing
+                0f at 840 using FastOutSlowInEasing
+                0f at 3600
+            },
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "startTruckWiggle",
+    )
+    Box(
         modifier
             .fillMaxWidth()
-            .graphicsLayer {
-                val s = 1f + pulse * 0.012f
-                scaleX = s
-                scaleY = s
-            }
-            .shadow(elevation = (6 + pulse * 12).dp, shape = shape, clip = false, ambientColor = primary, spotColor = primary)
-            .glass(shape)
-            .border(width = (1 + pulse * 1.5f).dp, color = primary.copy(alpha = 0.25f + pulse * 0.45f), shape = shape)
-            .pressable(onClick = onClick)
-            .padding(horizontal = 18.dp, vertical = 17.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .shadow(elevation = 14.dp, shape = shape, clip = false, ambientColor = primary, spotColor = primary)
+            .clip(shape)
+            .background(Brush.linearGradient(c.gradient))
+            .drawBehind { drawRoadCurves() }
+            .pressable(onClick = onClick),
     ) {
-        // 시작 카드의 트럭은 주기적으로 까딱이며 출발을 권한다.
-        val invite = rememberInfiniteTransition(label = "startTruck")
-        val wiggle by invite.animateFloat(
-            initialValue = 0f,
-            targetValue = 0f,
-            animationSpec = infiniteRepeatable(
-                animation = keyframes {
-                    durationMillis = 3600
-                    0f at 0
-                    -9f at 220 using FastOutSlowInEasing
-                    8f at 440 using FastOutSlowInEasing
-                    -5f at 640 using FastOutSlowInEasing
-                    0f at 840 using FastOutSlowInEasing
-                    0f at 3600
-                },
-                repeatMode = RepeatMode.Restart,
-            ),
-            label = "startTruckWiggle",
-        )
-        Box(
-            Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(percent = 50))
-                .background(Brush.linearGradient(c.gradient)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                AppIcons.Truck,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(23.dp).graphicsLayer { rotationZ = wiggle },
-            )
-        }
-        Spacer(Modifier.width(14.dp))
-        Column(Modifier.weight(1f)) {
-            Text(
-                stringResource(R.string.journey_start_cta),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Spacer(Modifier.height(2.dp))
-            Text(
-                stringResource(R.string.journey_start_cta_sub),
-                style = MaterialTheme.typography.bodySmall,
-                color = c.secondaryLabel,
-            )
-        }
-        Spacer(Modifier.width(10.dp))
-        Box(
-            Modifier
-                .size(40.dp)
-                .graphicsLayer {
-                    val s = 1f + pulse * 0.06f
-                    scaleX = s
-                    scaleY = s
-                }
-                .clip(RoundedCornerShape(percent = 50))
-                .background(Brush.linearGradient(c.gradient)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(AppIcons.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(22.dp))
+        Row(Modifier.padding(horizontal = 18.dp, vertical = 20.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier.size(50.dp).clip(RoundedCornerShape(16.dp)).background(Color.White.copy(alpha = 0.18f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    AppIcons.Truck,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(25.dp).graphicsLayer { rotationZ = wiggle },
+                )
+            }
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f)) {
+                Text(
+                    stringResource(R.string.journey_start_cta),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = Color.White,
+                )
+                Spacer(Modifier.height(3.dp))
+                Text(
+                    stringResource(R.string.journey_start_cta_sub),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.82f),
+                )
+            }
+            Spacer(Modifier.width(10.dp))
+            Box(
+                Modifier.size(40.dp).clip(RoundedCornerShape(percent = 50)).background(Color.White),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(AppIcons.KeyboardArrowRight, contentDescription = null, tint = primary, modifier = Modifier.size(22.dp))
+            }
         }
     }
+}
+
+/** 카드 오른쪽에 옅게 깔리는 두 갈래 도로 곡선. */
+private fun DrawScope.drawRoadCurves() {
+    val w = size.width
+    val h = size.height
+    val stroke = Stroke(width = h * 0.10f, cap = StrokeCap.Round)
+    val dash = Stroke(width = h * 0.018f, cap = StrokeCap.Round, pathEffect = PathEffect.dashPathEffect(floatArrayOf(h * 0.08f, h * 0.08f)))
+    val road = Path().apply {
+        moveTo(w * 0.62f, h * 1.15f)
+        cubicTo(w * 0.74f, h * 0.55f, w * 0.86f, h * 0.45f, w * 1.08f, -h * 0.1f)
+    }
+    drawPath(road, Color.White.copy(alpha = 0.10f), style = stroke)
+    drawPath(road, Color.White.copy(alpha = 0.22f), style = dash)
+    drawCircle(Color.White.copy(alpha = 0.06f), radius = h * 0.9f, center = Offset(w * 1.02f, h * 0.05f))
 }
 
 /**

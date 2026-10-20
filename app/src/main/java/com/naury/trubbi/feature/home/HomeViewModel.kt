@@ -113,12 +113,10 @@ class HomeViewModel @Inject constructor(
 
     // ── 인사말 ────────────────────────────────────────────────────────────────
 
-    /** 홈에 한 번 뜨는 인사 배너. */
-    val greeting = MutableStateFlow<String?>(null)
-
-    fun clearGreeting() {
-        greeting.value = null
-    }
+    /** 홈 헤더에 머무는 인사말. 시간대에 맞추고, 이름을 저장해 두었으면 호칭을 붙인다. */
+    val greeting = settingsRepo.profile
+        .map { p -> greetingFor(p.name.takeIf { it.isNotBlank() }) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(SUBSCRIBE_KEEP_MS), null)
 
     // ── 앨범 탭 진입 요청 ─────────────────────────────────────────────────────
 
@@ -153,19 +151,11 @@ class HomeViewModel @Inject constructor(
                 delay(WEATHER_REFRESH_MS)
             }
         }
-        viewModelScope.launch { showGreetingIfSignedIn(authRepo) }
     }
 
-    /** 로그인 상태로 홈에 진입하면 인사말을 한 번 표시한다. 이름을 저장해 두었으면 호칭을 붙인다. */
-    private suspend fun showGreetingIfSignedIn(authRepo: AuthRepository) {
-        if (!authRepo.isLoggedIn()) return
-        val name = settingsRepo.profile.firstOrNull()?.name?.takeIf { it.isNotBlank() }
+    private fun greetingFor(name: String?): String {
         val part = strings[timeOfDayGreetingRes()]
-        greeting.value = if (name != null) {
-            strings[R.string.greeting_with_name, name, part]
-        } else {
-            strings[R.string.greeting_plain, part]
-        }
+        return if (name != null) strings[R.string.greeting_with_name, name, part] else strings[R.string.greeting_plain, part]
     }
 
     private fun timeOfDayGreetingRes(): Int = when (LocalTime.now().hour) {

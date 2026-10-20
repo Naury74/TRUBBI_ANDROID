@@ -27,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.pluralStringResource
@@ -47,7 +46,6 @@ import com.naury.trubbi.ui.common.DateFeed
 import com.naury.trubbi.ui.common.RecordGridCell
 import com.naury.trubbi.ui.common.TrubbiCalendar
 import com.naury.trubbi.ui.designsystem.AppIcons
-import com.naury.trubbi.ui.designsystem.StatPill
 import com.naury.trubbi.ui.designsystem.appearOnce
 import com.naury.trubbi.ui.designsystem.glass
 import com.naury.trubbi.ui.designsystem.pressable
@@ -109,6 +107,7 @@ internal fun HomeFeed(
     onOpenJourney: (String) -> Unit,
     onOpenJourneyHistory: () -> Unit,
     onOpenRecords: () -> Unit,
+    onQuickAction: (com.naury.trubbi.navigation.QuickAction) -> Unit = {},
 ) {
     val c = LocalTrubbiColors.current
     // 홈 탭은 오늘 현황과 여정만, 기록 탭은 검색·필터·날짜 타임라인만 그린다(둘이 같은 뷰모델을 나눠 쓴다).
@@ -188,6 +187,12 @@ internal fun HomeFeed(
                             }
                         }
                     }
+                }
+            }
+            // 바로가기 — 여정이 없을 때만. 진행 중에는 여정 카드가 할 일을 이끈다.
+            if (today && activeJourney == null) {
+                item(key = "quick") {
+                    HomeQuickActions(onQuickAction, Modifier.appearOnce(40).padding(horizontal = 16.dp))
                 }
             }
             // 지난 여정 — 여정 카드 바로 아래. 카드로 노출 + 최근 3건 바로 진입.
@@ -295,69 +300,17 @@ internal fun HomeFeed(
                 }
             }
 
-            val todayTotal = state.summary.photos + state.summary.videos + state.summary.barcodes + state.summary.memos
-            if (today && todayTotal > 0) {
-                item {
-                    Column(
-                        Modifier
-                            .appearOnce(60)
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth()
-                            .glass(RoundedCornerShape(26.dp))
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        Row(Modifier.fillMaxWidth().padding(start = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                stringResource(R.string.home_today),
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier.weight(1f),
-                            )
-                            Text(
-                                DateUtils.formatDate(DateUtils.todayIso()),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = c.secondaryLabel,
-                            )
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-                            StatPill(
-                                state.summary.photos.toString(),
-                                stringResource(RecordType.PHOTO.labelRes),
-                                MaterialTheme.colorScheme.primary,
-                                Modifier.weight(1f).pressable { openRecordsWith("PHOTO") },
-                                active = state.summary.photos > 0,
-                            )
-                            StatPill(
-                                state.summary.videos.toString(),
-                                stringResource(RecordType.VIDEO.labelRes),
-                                c.accent2,
-                                Modifier.weight(1f).pressable { openRecordsWith("VIDEO") },
-                                active = state.summary.videos > 0,
-                            )
-                            StatPill(
-                                state.summary.documents.toString(),
-                                stringResource(RecordType.DOCUMENT.labelRes),
-                                MaterialTheme.colorScheme.tertiary,
-                                Modifier.weight(1f).pressable { openRecordsWith("DOCUMENT") },
-                                active = state.summary.documents > 0,
-                            )
-                            StatPill(
-                                state.summary.barcodes.toString(),
-                                stringResource(RecordType.BARCODE.labelRes),
-                                c.green,
-                                Modifier.weight(1f).pressable { openRecordsWith("BARCODE") },
-                                active = state.summary.barcodes > 0,
-                            )
-                            StatPill(
-                                state.summary.memos.toString(),
-                                stringResource(RecordType.MEMO.labelRes),
-                                if (c.isDark) com.naury.trubbi.ui.theme.MonoAmberDark else com.naury.trubbi.ui.theme.MonoAmberLight,
-                                Modifier.weight(1f).pressable { openRecordsWith("MEMO") },
-                                active = state.summary.memos > 0,
-                            )
-                        }
-                    }
+            if (today) {
+                item(key = "today") {
+                    TodaySummaryCard(
+                        photos = state.summary.photos,
+                        videos = state.summary.videos,
+                        documents = state.summary.documents,
+                        barcodes = state.summary.barcodes,
+                        memos = state.summary.memos,
+                        onOpenType = ::openRecordsWith,
+                        modifier = Modifier.appearOnce(60).padding(horizontal = 16.dp),
+                    )
                 }
             }
         }
@@ -365,7 +318,7 @@ internal fun HomeFeed(
         // 1) 즐겨찾기
         if (today && state.favorites.isNotEmpty()) {
             item {
-                SectionHeader(stringResource(R.string.home_favorites), stringResource(R.string.home_see_all)) {
+                HomeSectionHeader(stringResource(R.string.home_favorites), stringResource(R.string.home_see_all)) {
                     openRecordsWith(com.naury.trubbi.domain.record.HomeTimelineBuilder.FAVORITE_FILTER)
                 }
             }
@@ -392,7 +345,7 @@ internal fun HomeFeed(
         // 2) 최근 저장
         if (today && state.recents.isNotEmpty()) {
             item {
-                SectionHeader(stringResource(R.string.home_recent), stringResource(R.string.home_see_all)) {
+                HomeSectionHeader(stringResource(R.string.home_recent), stringResource(R.string.home_see_all)) {
                     openRecordsWith(com.naury.trubbi.domain.record.HomeTimelineBuilder.ALL_FILTER)
                 }
             }
@@ -547,27 +500,6 @@ private fun TypeCount(icon: androidx.compose.ui.graphics.vector.ImageVector, n: 
             androidx.compose.material3.Icon(icon, contentDescription = null, tint = c.secondaryLabel, modifier = Modifier.size(13.dp))
             Text("$n", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurface)
         }
-    }
-}
-
-@Composable
-private fun SectionHeader(title: String, actionLabel: String, onAction: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            title,
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-            color = Color.White,
-            modifier = Modifier.weight(1f),
-        )
-        Text(
-            actionLabel,
-            style = MaterialTheme.typography.labelMedium,
-            color = Color.White.copy(alpha = 0.85f),
-            modifier = Modifier.pressable { onAction() },
-        )
     }
 }
 

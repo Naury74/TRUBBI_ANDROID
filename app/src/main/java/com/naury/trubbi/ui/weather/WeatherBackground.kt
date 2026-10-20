@@ -34,7 +34,6 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.naury.trubbi.core.weather.WeatherCondition
 import java.time.LocalTime
 import kotlin.math.PI
-import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
 
@@ -51,13 +50,20 @@ import kotlin.random.Random
  * @param condition 지금 날씨
  * @param isDay 낮이면 true. 같은 날씨라도 밤은 색과 요소가 다르다
  * @param modifier 바깥 배치용
+ * @param decor false 면 해·달·구름 같은 그림은 빼고 하늘색과 비·눈만 그린다(제목만 있는 짧은 머리용)
  */
 @Composable
 fun WeatherBackground(
     condition: WeatherCondition,
     isDay: Boolean,
     modifier: Modifier = Modifier,
+    decor: Boolean = true,
 ) {
+    // 맑은 날은 직접 그린 해·달이 더 차분하다. 맑음 Lottie(겹 링 해)는 크고 투박해 헤더 버튼과 겹쳐 보였다.
+    if (condition == WeatherCondition.CLEAR) {
+        WeatherBackgroundIllustrated(condition, isDay, modifier, decor)
+        return
+    }
     val composition by rememberLottieComposition(
         LottieCompositionSpec.Asset(weatherAssetName(condition, isDay)),
     )
@@ -193,67 +199,70 @@ fun WeatherBackground(
                     }
                 }
             }
-            when (condition) {
-                WeatherCondition.CLOUDS, WeatherCondition.FOG -> {
-                    val yBase = if (condition == WeatherCondition.FOG) 0.12f else 0.055f
-                    val backSize = w * 0.42f
-                    val backPhase = (travelBack + 0.45f) % 1f
-                    LottieAnimation(
-                        composition = composition,
-                        iterations = LottieConstants.IterateForever,
-                        renderMode = com.airbnb.lottie.RenderMode.HARDWARE,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .size(backSize)
-                            .offset(x = -backSize + (w + backSize) * backPhase, y = h * (yBase + 0.07f) + h * 0.008f * bob2)
-                            .graphicsLayer { alpha = 0.42f },
-                    )
-                    val frontSize = w * 0.62f
-                    LottieAnimation(
-                        composition = composition,
-                        iterations = LottieConstants.IterateForever,
-                        renderMode = com.airbnb.lottie.RenderMode.HARDWARE,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .size(frontSize)
-                            .offset(x = -frontSize + (w + frontSize) * travel, y = h * yBase + h * 0.012f * bob)
-                            .graphicsLayer { alpha = 0.88f },
-                    )
-                }
-                WeatherCondition.CLEAR -> {
-                    val elem = w * 0.56f
-                    LottieAnimation(
-                        composition = composition,
-                        iterations = LottieConstants.IterateForever,
-                        renderMode = com.airbnb.lottie.RenderMode.HARDWARE,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .size(elem)
-                            .offset(x = w - elem * 1.02f + w * 0.012f * sway, y = h * 0.04f + h * 0.010f * bob)
-                            .graphicsLayer {
-                                scaleX = breathe
-                                scaleY = breathe
-                                alpha = 0.92f
-                            },
-                    )
-                }
-                else -> {
-                    val elem = w * 0.52f
-                    LottieAnimation(
-                        composition = composition,
-                        iterations = LottieConstants.IterateForever,
-                        renderMode = com.airbnb.lottie.RenderMode.HARDWARE,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .size(elem)
-                            .offset(x = w - elem * 1.06f + w * 0.025f * sway, y = h * 0.05f + h * 0.012f * bob)
-                            .graphicsLayer { alpha = 0.92f },
-                    )
+            if (decor) {
+                when (condition) {
+                    WeatherCondition.CLOUDS, WeatherCondition.FOG -> {
+                        val yBase = if (condition == WeatherCondition.FOG) 0.12f else 0.055f
+                        val backSize = w * 0.42f
+                        val backPhase = (travelBack + 0.45f) % 1f
+                        LottieAnimation(
+                            composition = composition,
+                            iterations = LottieConstants.IterateForever,
+                            renderMode = com.airbnb.lottie.RenderMode.HARDWARE,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .size(backSize)
+                                .offset(x = -backSize + (w + backSize) * backPhase, y = h * (yBase + 0.07f) + h * 0.008f * bob2)
+                                .graphicsLayer { alpha = 0.42f },
+                        )
+                        val frontSize = w * 0.62f
+                        LottieAnimation(
+                            composition = composition,
+                            iterations = LottieConstants.IterateForever,
+                            renderMode = com.airbnb.lottie.RenderMode.HARDWARE,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .size(frontSize)
+                                .offset(x = -frontSize + (w + frontSize) * travel, y = h * yBase + h * 0.012f * bob)
+                                .graphicsLayer { alpha = 0.88f },
+                        )
+                    }
+                    WeatherCondition.CLEAR -> {
+                        val elem = w * 0.56f
+                        LottieAnimation(
+                            composition = composition,
+                            iterations = LottieConstants.IterateForever,
+                            renderMode = com.airbnb.lottie.RenderMode.HARDWARE,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .size(elem)
+                                .offset(x = w - elem * 1.02f + w * 0.012f * sway, y = h * 0.04f + h * 0.010f * bob)
+                                .graphicsLayer {
+                                    scaleX = breathe
+                                    scaleY = breathe
+                                    alpha = 0.92f
+                                },
+                        )
+                    }
+                    else -> {
+                        // 오른쪽 위 버튼과 겹치지 않게 조금 내려 작게 둔다.
+                        val elem = w * 0.40f
+                        LottieAnimation(
+                            composition = composition,
+                            iterations = LottieConstants.IterateForever,
+                            renderMode = com.airbnb.lottie.RenderMode.HARDWARE,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .size(elem)
+                                .offset(x = w - elem * 1.04f + w * 0.02f * sway, y = h * 0.16f + h * 0.012f * bob)
+                                .graphicsLayer { alpha = 0.92f },
+                        )
+                    }
                 }
             }
         }
     } else {
-        WeatherBackgroundIllustrated(condition, isDay, modifier)
+        WeatherBackgroundIllustrated(condition, isDay, modifier, decor)
     }
 }
 
@@ -275,6 +284,7 @@ private fun WeatherBackgroundIllustrated(
     condition: WeatherCondition,
     isDay: Boolean,
     modifier: Modifier = Modifier,
+    decor: Boolean = true,
 ) {
     val transition = rememberInfiniteTransition(label = "weather")
     val fall by transition.animateFloat(
@@ -322,12 +332,12 @@ private fun WeatherBackgroundIllustrated(
         Canvas(Modifier.fillMaxSize()) {
             when (condition) {
                 WeatherCondition.CLEAR -> if (isDay) {
-                    drawSun(pulse, drift)
+                    if (decor) drawSun(pulse, drift)
                 } else {
                     drawStars(stars, pulse)
-                    drawMoon()
+                    if (decor) drawMoon()
                 }
-                WeatherCondition.CLOUDS -> {
+                WeatherCondition.CLOUDS -> if (decor) {
                     if (isDay) drawSun(pulse * 0.5f, drift, dim = true)
                     drawClouds(clouds, drift)
                 }
@@ -402,35 +412,34 @@ private fun DrawScope.drawVignette() {
     )
 }
 
+/**
+ * 해. 빛살 선 없이 겹친 빛무리와 원반만 그린다(선은 싸 보였다). 기온 오른쪽, 헤더 버튼 아래에 둔다.
+ */
 private fun DrawScope.drawSun(pulse: Float, drift: Float, dim: Boolean = false) {
-    val center = Offset(size.width * 0.8f, size.height * 0.26f)
-    val r = size.minDimension * 0.13f
-    val k = if (dim) 0.5f else 1f
+    val center = Offset(size.width * 0.80f, size.height * 0.42f + sin(drift * 2f * PI.toFloat()) * size.height * 0.006f)
+    val r = size.minDimension * 0.105f
+    val k = if (dim) 0.45f else 1f
     drawCircle(
-        Brush.radialGradient(listOf(Color(0xFFFFF3C4).copy(alpha = 0.55f * k), Color.Transparent), center = center, radius = r * 3.2f),
-        radius = r * 3.2f,
+        Brush.radialGradient(
+            listOf(Color(0xFFFFE7A3).copy(alpha = 0.38f * k), Color(0xFFFFD27A).copy(alpha = 0.10f * k), Color.Transparent),
+            center = center,
+            radius = r * (3.6f + 0.25f * pulse),
+        ),
+        radius = r * (3.6f + 0.25f * pulse),
         center = center,
     )
-    if (!dim) {
-        val rays = 12
-        for (i in 0 until rays) {
-            val a = (i.toFloat() / rays) * 2f * PI.toFloat() + drift * 2f * PI.toFloat()
-            val inner = r * 1.5f
-            val outer = r * (2.2f + 0.3f * pulse)
-            drawLine(
-                Color(0xFFFFE9A8).copy(alpha = 0.22f),
-                start = Offset(center.x + cos(a) * inner, center.y + sin(a) * inner),
-                end = Offset(center.x + cos(a) * outer, center.y + sin(a) * outer),
-                strokeWidth = 3f,
-            )
-        }
-    }
-    drawCircle(Color(0xFFFFE08A).copy(alpha = 0.95f * k), radius = r * (0.95f + 0.05f * pulse), center = center)
+    drawCircle(Color(0xFFFFF4D2).copy(alpha = 0.20f * k), radius = r * 1.3f, center = center)
+    drawCircle(
+        Brush.radialGradient(listOf(Color(0xFFFFF6D8), Color(0xFFFFD36B)), center = Offset(center.x - r * 0.3f, center.y - r * 0.3f), radius = r * 1.3f),
+        radius = r,
+        center = center,
+        alpha = 0.96f * k,
+    )
 }
 
 private fun DrawScope.drawMoon() {
-    val center = Offset(size.width * 0.78f, size.height * 0.24f)
-    val r = size.minDimension * 0.1f
+    val center = Offset(size.width * 0.80f, size.height * 0.42f)
+    val r = size.minDimension * 0.09f
     drawCircle(
         Brush.radialGradient(listOf(Color(0xFFCBD6F0).copy(alpha = 0.4f), Color.Transparent), center = center, radius = r * 3f),
         radius = r * 3f,

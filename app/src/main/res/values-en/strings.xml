@@ -223,8 +223,8 @@
     <string name="greeting_morning">Good morning</string>
     <string name="greeting_afternoon">Drive safe today</string>
     <string name="greeting_evening">Thanks for the hard work today</string>
-    <string name="greeting_with_name">%1$s, %2$s 👋</string>
-    <string name="greeting_plain">%1$s 👋</string>
+    <string name="greeting_with_name">%2$s, %1$s</string>
+    <string name="greeting_plain">%1$s</string>
     <string name="name_prefix">%1$s, </string>
     <string name="safety_rain"> Watch out for wet roads!</string>
     <string name="safety_snow"> Keep extra distance on snow!</string>

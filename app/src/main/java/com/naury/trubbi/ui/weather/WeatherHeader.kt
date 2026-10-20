@@ -1,6 +1,7 @@
 package com.naury.trubbi.ui.weather
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -23,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -86,6 +89,7 @@ fun WeatherHeader(
     email: String?,
     providers: List<String>,
     emailVerified: Boolean,
+    greeting: String?,
     onAvatar: () -> Unit,
     onSettings: () -> Unit,
     onSearch: () -> Unit,
@@ -93,7 +97,7 @@ fun WeatherHeader(
 ) {
     val progress = collapse.coerceIn(0f, 1f)
     val condition = weather?.condition ?: WeatherCondition.CLOUDS
-    val bannerHeight = lerp(228.dp, 58.dp, progress)
+    val bannerHeight = lerp(204.dp, 58.dp, progress)
 
     Box(modifier.fillMaxWidth().height(bannerHeight + topPadding)) {
         // 접히면 로고가 사라지고 그 자리를 위치가 차지한다.
@@ -108,8 +112,7 @@ fun WeatherHeader(
             Modifier.align(Alignment.TopEnd).padding(top = topPadding + 8.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            GlassIconButton(AppIcons.Settings, onSettings, stringResource(R.string.action_settings), size = 40.dp)
-            Spacer(Modifier.width(8.dp))
+            // 설정은 아래 탭 바와 프로필 메뉴에 있어 여기서는 뺀다(버튼 셋이 몰려 답답했다).
             GlassIconButton(AppIcons.Search, onSearch, stringResource(R.string.action_search), size = 40.dp)
             Spacer(Modifier.width(8.dp))
             var showProfile by remember { mutableStateOf(false) }
@@ -139,42 +142,56 @@ fun WeatherHeader(
         Row(
             Modifier
                 .align(Alignment.TopStart)
-                .padding(top = lerp(topPadding + 54.dp, topPadding + 16.dp, progress), start = 20.dp, end = 120.dp),
+                .padding(top = lerp(topPadding + 58.dp, topPadding + 16.dp, progress), start = 20.dp, end = 120.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(AppIcons.LocationOn, contentDescription = null, tint = Color.White, modifier = Modifier.size(lerp(18.dp, 19.dp, progress)))
-            Spacer(Modifier.width(6.dp))
+            Icon(AppIcons.LocationOn, contentDescription = null, tint = Color.White.copy(alpha = 0.9f), modifier = Modifier.size(lerp(15.dp, 19.dp, progress)))
+            Spacer(Modifier.width(4.dp))
             Text(
                 shortAddress(weather?.place, stringResource(R.string.weather_no_location)),
-                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold, fontSize = (16f + 2f * progress).sp),
-                color = Color.White,
+                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold, fontSize = (14f + 4f * progress).sp),
+                color = Color.White.copy(alpha = 0.9f + 0.1f * progress),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
         }
 
-        // 큰 기온과 날씨 — 접히면 그대로 사라진다.
-        if (weather != null) {
-            Column(
-                Modifier
-                    .align(Alignment.TopStart)
-                    .padding(top = topPadding + 126.dp, start = 18.dp, end = 20.dp)
-                    .graphicsLayer { alpha = 1f - progress },
-            ) {
+        // 인사 → 기온·날씨. 접히면 함께 사라진다.
+        Column(
+            Modifier
+                .align(Alignment.TopStart)
+                .padding(top = topPadding + 86.dp, start = 20.dp, end = 20.dp)
+                .graphicsLayer { alpha = 1f - progress * 1.4f },
+        ) {
+            greeting?.let {
                 Text(
-                    "${weather.temperatureC}°",
-                    style = MaterialTheme.typography.displayLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 68.sp,
-                        lineHeight = 72.sp,
-                    ),
+                    it,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
-                Spacer(Modifier.height(2.dp))
+            }
+            if (weather != null) {
+                Spacer(Modifier.height(10.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(headerIcon(condition), contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text(stringResource(weather.labelRes), style = MaterialTheme.typography.bodyLarge, color = Color.White.copy(alpha = 0.95f))
+                    Text(
+                        "${weather.temperatureC}°",
+                        style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 52.sp, lineHeight = 56.sp),
+                        color = Color.White,
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Row(
+                        Modifier
+                            .clip(RoundedCornerShape(percent = 50))
+                            .background(Color.White.copy(alpha = 0.18f))
+                            .padding(horizontal = 10.dp, vertical = 5.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(headerIcon(condition), contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(5.dp))
+                        Text(stringResource(weather.labelRes), style = MaterialTheme.typography.labelLarge, color = Color.White)
+                    }
                 }
             }
         }

@@ -51,6 +51,7 @@ import com.naury.trubbi.core.weather.WeatherCondition
 import com.naury.trubbi.data.local.RecordWithMedia
 import com.naury.trubbi.feature.journey.SendOffOverlay
 import com.naury.trubbi.ui.designsystem.AppIcons
+import com.naury.trubbi.ui.theme.LocalTrubbiColors
 import com.naury.trubbi.ui.weather.WeatherBackground
 import com.naury.trubbi.ui.weather.WeatherHeader
 /**
@@ -83,6 +84,7 @@ fun HomeScreen(
     onOpenJourneyHistory: () -> Unit,
     onOpenAccount: () -> Unit,
     contentPadding: PaddingValues,
+    onQuickAction: (com.naury.trubbi.navigation.QuickAction) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.library.state.collectAsStateWithLifecycle()
@@ -104,6 +106,8 @@ fun HomeScreen(
     val arrivalPrompt by viewModel.journey.arrivalPrompt.collectAsStateWithLifecycle()
     val confirm by viewModel.journey.confirm.collectAsStateWithLifecycle()
     val signedIn by viewModel.signedIn.collectAsStateWithLifecycle()
+    // 인사는 잠깐 뜨는 토스트 대신 헤더에 머문다. 토스트는 로고 위를 덮었다.
+    val greeting by viewModel.greeting.collectAsStateWithLifecycle()
     val account by viewModel.account.collectAsStateWithLifecycle()
     var showStartSheet by remember { mutableStateOf(false) }
     // 홈 다중선택 공유 갤러리 대상.
@@ -262,23 +266,37 @@ fun HomeScreen(
     }
     run {
         Box(Modifier.fillMaxSize()) {
-            // 시간·날씨 배경.
-            Box(Modifier.fillMaxSize()) {
-                WeatherBackground(
-                    condition = weather?.condition ?: WeatherCondition.CLOUDS,
-                    isDay = weather?.isDay ?: true,
-                    modifier = Modifier.fillMaxSize(),
-                )
-                Box(
-                    Modifier.fillMaxSize().background(
-                        Brush.verticalGradient(
-                            0.0f to Color.Black.copy(alpha = 0.45f),
-                            0.28f to Color.Black.copy(alpha = 0.22f),
-                            0.6f to Color.Black.copy(alpha = 0.14f),
-                            1.0f to Color.Black.copy(alpha = 0.32f),
+            // 시간·날씨 하늘은 위쪽 히어로에만 두고, 그 아래는 차분한 앱 배경으로 녹여 낸다. 예전에는 화면 전체가
+            // 하늘이라 카드들이 파란 바탕 위에 떠 보였고, 아래로 갈수록 글자 대비가 흐려졌다.
+            val pageColor = MaterialTheme.colorScheme.background
+            val heroHeight = contentPadding.calculateTopPadding() + if (section == HomeSection.TODAY) HERO_HEIGHT else RECORDS_HERO_HEIGHT
+            Box(Modifier.fillMaxSize().background(pageColor)) {
+                Box(Modifier.fillMaxWidth().height(heroHeight)) {
+                    WeatherBackground(
+                        condition = weather?.condition ?: WeatherCondition.CLOUDS,
+                        isDay = weather?.isDay ?: true,
+                        modifier = Modifier.fillMaxSize(),
+                        decor = section == HomeSection.TODAY,
+                    )
+                    // 다크 테마에서는 낮 하늘도 한 톤 낮춰 페이지와 밝기를 맞춘다.
+                    if (LocalTrubbiColors.current.isDark) {
+                        Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.28f)))
+                    }
+                    // 위쪽은 상태 표시줄·로고가 읽히도록 살짝 어둡게.
+                    Box(
+                        Modifier.fillMaxSize().background(
+                            Brush.verticalGradient(0f to Color.Black.copy(alpha = 0.28f), 0.45f to Color.Black.copy(alpha = 0.06f), 1f to Color.Transparent),
                         ),
-                    ),
-                )
+                    )
+                    // 아래쪽은 페이지 색으로 부드럽게 이어 붙인다.
+                    Box(
+                        Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                            .height(HERO_FADE)
+                            .background(Brush.verticalGradient(listOf(Color.Transparent, pageColor))),
+                    )
+                }
                 // 선택 모드에서는 화면 전체에 오버레이를 씌운다.
                 androidx.compose.animation.AnimatedVisibility(visible = selectionMode, enter = fadeIn(), exit = fadeOut()) {
                     Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.62f)))
@@ -305,6 +323,7 @@ fun HomeScreen(
                                 providers = account?.providers.orEmpty(),
                                 emailVerified = account?.emailVerified == true,
                                 onAvatar = { profilePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                                greeting = greeting,
                                 onSettings = onOpenSettings,
                                 onSearch = { searchMode = true },
                             )
@@ -381,6 +400,7 @@ fun HomeScreen(
                     onOpenJourney = onOpenJourney,
                     onOpenJourneyHistory = onOpenJourneyHistory,
                     onOpenRecords = onOpenRecords,
+                    onQuickAction = onQuickAction,
                 )
             }
 
@@ -410,20 +430,6 @@ fun HomeScreen(
 
             // 단계 시작/완료를 중앙에 또렷하게 확인.
             com.naury.trubbi.feature.journey.StageConfirmOverlay(confirm, viewModel.journey::clearConfirm)
-
-            // 재방문 환영 인사 — 상단에서 잠깐 내려왔다 사라진다. 상단 바를 잠시 덮으므로 불투명한 토스트로 띄운다.
-            val greeting by viewModel.greeting.collectAsStateWithLifecycle()
-            val greetingToast = com.naury.kinetica.ui.rememberKToastState()
-            // 스플래시가 걷힌 뒤에 띄운다. 토스트는 별도 창이라 스플래시보다 위에 그려진다.
-            val appReady = com.naury.trubbi.ui.designsystem.LocalAppReady.current
-            LaunchedEffect(greeting, appReady) {
-                if (!appReady) return@LaunchedEffect
-                greeting?.let {
-                    greetingToast.show(it, durationMs = 2600)
-                    viewModel.clearGreeting()
-                }
-            }
-            com.naury.kinetica.ui.KToastHost(greetingToast, Modifier.align(Alignment.TopCenter))
 
             HomeOverlays(
                 viewModel = viewModel,
@@ -481,3 +487,12 @@ private fun RecordsHeader(topPadding: androidx.compose.ui.unit.Dp, onSearch: () 
         )
     }
 }
+
+/** 홈 탭 하늘(히어로) 높이. 헤더 아래 첫 카드까지 하늘이 비친다. */
+private val HERO_HEIGHT = 330.dp
+
+/** 기록 탭은 제목만 있어 하늘을 짧게 둔다. */
+private val RECORDS_HERO_HEIGHT = 190.dp
+
+/** 하늘이 페이지 색으로 녹아드는 구간. */
+private val HERO_FADE = 140.dp

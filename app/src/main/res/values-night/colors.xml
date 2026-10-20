@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- 다크 모드의 창 배경·시스템 스플래시. 밝은 값이면 앱이 뜰 때 흰 화면이 번쩍였다. -->
+    <color name="trubbi_bg">#FF0A1120</color>
+
     <!-- 야간 운전 때 위젯이 눈부시지 않게. -->
     <color name="widget_surface">#FF161B26</color>
     <color name="widget_outline">#33FFFFFF</color>

@@ -222,8 +222,8 @@
     <string name="greeting_morning">좋은 아침이에요</string>
     <string name="greeting_afternoon">오늘도 안전 운행하세요</string>
     <string name="greeting_evening">오늘도 고생 많으셨어요</string>
-    <string name="greeting_with_name">%1$s 님, %2$s 👋</string>
-    <string name="greeting_plain">%1$s 👋</string>
+    <string name="greeting_with_name">%1$s 님, %2$s</string>
+    <string name="greeting_plain">%1$s</string>
     <string name="name_prefix">%1$s님, </string>
     <string name="safety_rain"> 빗길 조심하세요!</string>
     <string name="safety_snow"> 눈길 안전거리 충분히요!</string>

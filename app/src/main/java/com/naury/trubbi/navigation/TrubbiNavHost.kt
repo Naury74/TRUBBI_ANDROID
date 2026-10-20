@@ -84,6 +84,17 @@ fun TrubbiNavHost(
         if (currentTab != MainTab.HOME) navController.navigateTab(Routes.HOME)
     }
 
+    // 탭 바 "+" 메뉴와 홈 바로가기가 함께 쓰는 동작.
+    val onQuick: (QuickAction) -> Unit = { action ->
+        when (action) {
+            QuickAction.PLAN_ROUTE -> homeDo(HomeAction.PLAN_ROUTE)
+            QuickAction.IMPORT_PHOTO -> homeDo(HomeAction.IMPORT_PHOTO)
+            QuickAction.DOCUMENT -> navController.navigate(Routes.camera(mode = "document"))
+            QuickAction.BARCODE -> navController.navigate(Routes.barcode())
+            QuickAction.MEMO -> navController.navigate(Routes.memo())
+        }
+    }
+
     // 홈·기록 탭은 날씨 배경이라 상태 표시줄 글자를 흰색으로, 나머지 탭은 테마 밝기를 따른다.
     // 하위 화면(상세·카메라 등)은 각자 정하므로 탭에 있을 때만 건드린다.
     val view = LocalView.current
@@ -124,6 +135,7 @@ fun TrubbiNavHost(
                                 onOpenJourneyHistory = { navController.navigateTab(Routes.JOURNEYS) },
                                 onOpenAccount = { navController.navigate(Routes.ACCOUNT) },
                                 contentPadding = contentPadding,
+                                onQuickAction = onQuick,
                                 viewModel = homeVm,
                             )
                         }
@@ -295,15 +307,7 @@ fun TrubbiNavHost(
                     journeyActive = activeJourney != null,
                     onSelect = { tab -> navController.navigateTab(tab.route) },
                     onCapture = { navController.navigate(Routes.camera()) },
-                    onQuick = { action ->
-                        when (action) {
-                            QuickAction.PLAN_ROUTE -> homeDo(HomeAction.PLAN_ROUTE)
-                            QuickAction.IMPORT_PHOTO -> homeDo(HomeAction.IMPORT_PHOTO)
-                            QuickAction.DOCUMENT -> navController.navigate(Routes.camera(mode = "document"))
-                            QuickAction.BARCODE -> navController.navigate(Routes.barcode())
-                            QuickAction.MEMO -> navController.navigate(Routes.memo())
-                        }
-                    },
+                    onQuick = onQuick,
                     modifier = Modifier.align(Alignment.BottomCenter),
                 )
             }
