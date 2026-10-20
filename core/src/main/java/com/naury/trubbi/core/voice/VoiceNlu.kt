@@ -12,7 +12,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 /**
  * 자연어 의도 해석 (음성 비서의 두뇌).
  *
- * 온라인이면 Claude Haiku 4.5 기반 `parseIntent` Cloud Function 으로 문맥까지 이해해
+ * 온라인이면 Claude Haiku 5.5 기반 `parseIntent` Cloud Function 으로 문맥까지 이해해
  * "아니 그거 말고 부산 신항" 같은 정정도 잡아낸다. 오프라인/실패 시엔 기기 내 휴리스틱
  * ([local])으로 폴백 → 인터넷이 없어도 기본 동작은 보장. 절대 throw 하지 않는다.
  *

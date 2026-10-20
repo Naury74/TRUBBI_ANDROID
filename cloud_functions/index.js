@@ -35,7 +35,9 @@ exports.synthesizeSpeech = functions.onCall(async (request) => {
   if (!request.auth) throw new functions.HttpsError("unauthenticated", "로그인이 필요해요");
   const text = ((request.data && request.data.text) || "").toString().trim().slice(0, 400);
   if (!text) throw new functions.HttpsError("invalid-argument", "text 필요");
-  const voiceName = (request.data && request.data.voice) || "ko-KR-Chirp3-HD-Aoede";
+  // 앱이 보낸 목소리 이름은 한국어 목소리만 받는다(임의 목소리로 과금 단가가 높은 모델을 부르지 못하게).
+  const requested = ((request.data && request.data.voice) || "").toString();
+  const voiceName = /^ko-KR-[A-Za-z0-9-]{1,40}$/.test(requested) ? requested : "ko-KR-Chirp3-HD-Aoede";
 
   // Chirp3-HD voices don't accept pitch; keep audioConfig minimal. Fall back to Neural2 if the
   // requested voice isn't available so the client still gets cloud audio.
@@ -183,7 +185,7 @@ const INTENT_SYSTEM = [
 ].join("\n");
 
 /**
- * 자연어 의도 해석 (Claude Haiku 4.5). 로그인 사용자만. Anthropic 키는 함수 시크릿에만 존재.
+ * 자연어 의도 해석 (Claude Haiku 5.5). 로그인 사용자만. Anthropic 키는 함수 시크릿에만 존재.
  * 앱에서 data: { transcript, context:{ step, candidates, decided, lastPrompt } } 로 호출 → { intent }.
  */
 exports.parseIntent = functions.onCall({ secrets: [ANTHROPIC_API_KEY] }, async (request) => {
@@ -195,15 +197,16 @@ exports.parseIntent = functions.onCall({ secrets: [ANTHROPIC_API_KEY] }, async (
   const payload = JSON.stringify({
     transcript,
     step: ctx.step || "dest",
-    candidates: Array.isArray(ctx.candidates) ? ctx.candidates.slice(0, 8) : [],
-    decided: Array.isArray(ctx.decided) ? ctx.decided.slice(0, 8) : [],
-    lastPrompt: ctx.lastPrompt || null,
+    candidates: clipList(ctx.candidates),
+    decided: clipList(ctx.decided),
+    lastPrompt: ctx.lastPrompt ? ctx.lastPrompt.toString().slice(0, 200) : null,
   });
 
   try {
-    const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY.value() });
+    // 앱은 7초 뒤 기기 내 해석으로 넘어간다. 그보다 먼저 끝나도록 시간 제한과 재시도를 줄인다.
+    const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY.value(), timeout: 6000, maxRetries: 1 });
     const msg = await client.messages.create({
-      model: "claude-haiku-4-5",
+      model: "claude-haiku-5-5",
       max_tokens: 300,
       system: INTENT_SYSTEM,
       tools: [INTENT_TOOL],
@@ -218,6 +221,11 @@ exports.parseIntent = functions.onCall({ secrets: [ANTHROPIC_API_KEY] }, async (
     throw new functions.HttpsError("internal", "해석 실패");
   }
 });
+
+/** 앱이 보낸 이름 목록을 개수·길이 제한해 프롬프트에 넣는다. */
+function clipList(list) {
+  return Array.isArray(list) ? list.slice(0, 8).map((x) => (x == null ? "" : x.toString().slice(0, 60))) : [];
+}
 
 /** 카카오 accessToken 검증 → customToken. 앱에서 data: { accessToken } 로 호출. */
 exports.authKakao = functions.onCall(async (request) => {

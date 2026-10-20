@@ -2,7 +2,7 @@
   "name": "trubbi-functions",
   "description": "TRUBBI Cloud Functions (social login custom tokens + cloud TTS)",
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "main": "index.js",
   "dependencies": {
